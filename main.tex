@@ -37,27 +37,12 @@ Hier kommt hin, was halt in eine Einleitung soll:
     \item was soll die in dieser Arbeit umgesetzte Variante (gut) können?
     
 \end{itemize}
-
-\section{Datenstruktur}
-
-Hier wird erläutert, wie meine konkrete Implementierung Terme speichert und verwaltet. Vielleicht werden auch ein paar grundlegene Algorithmen auf der Datenstruktur erklärt, sofern ich mein exaktes Vorgehen in keinem Paper wiederfinde.\\
-Denkbare Algorithmen zum erklären:
-\begin{itemize}
-    \item Falten eines Terms
-    \item Sortieren eines Terms / ordnen von Teiltermen
-    \item exaktes Ausrechen von Teilbäumen ohne Variablen (und warum ich das mit dem Zusammenfassen von geschachtelten Summen und weiteren Sachen in einen Algorithmus zusammenwursten musste)
-    \item Frage: aktuell parse ich einen String zum bauen eines Terms noch in $O(n^2)$. Das ist warscheinlich nicht optimal. Ergo würde ich diesen Teil wenn, dann eher am Rande erwähnen. Ist es für die Arbeit wichtig, das noch zu optimieren (unter der Vorraussetzung, dass die von mir gewählte Grammatik kontextfrei ist, was sie aber glaube ich ist)?
-\end{itemize}
-
-Mögliche Tangente: Meine Idee (und Umsetzung) einer Art Aufzählung (in C\texttt{++} und Co. as enum in der Sprache enthalten), die Hirarchien erlaubt und damit Basis eines (wie ich finde) relativ eleganten Typsystems für die einzelnen Arten von Termknoten darstellt. (Tangente der Tangente: Das native C\texttt{++} Typsystem mit Umsetzung von Polymorphie als Vererbung erschwert einem nicht nur das Speichern eines polymorphen Baums in einem Array, sondern verteilt auch den Code jedes Algorithmus über die verschiedenen Klassen, die die einzelnen Baumknotenarten modellieren. Deswegen habe ich mir was eingendes gebastelt)
-~\\~
-
-\clearpage
-
 \subsection{Definitionen}
 Eine Menge von Termen $T$ ist in dieser Arbeit in Abhängigkeit der Mengen $F$ und $\Sigma$, sowie der Funktion $\mathrm{rank} : F \rightarrow \mathbb{N}_0$, definiert. $$T(F, \Sigma) \coloneqq \Sigma \cup \{(f, t_1, \dots, t_n)~|~f\in F,~\mathrm{rank}(f) = n,~ t_i \in T(F, \Sigma)\}$$ \\
 Elemente $f\in F$ werden \textit{Funktionssymbole} genannt, Elemente $s \in \Sigma$ werden \textit{Konstantensymbole} genannt. $(f, t_1, \dots, t_n) \in T \setminus \Sigma$ wird auch als $f(t_1, \dots, t_n)$ geschrieben und \textit{Funktionsanwendung} genannt. \\
 Wichtig ist, dass auf der Definitionsebene nicht zwischen einem Konstantensymbol $s \in \Sigma$ unterschieden wird, dessen Wert eindeutig ist, etwa der konkreten Komplexen Zahl $s = 3-5i$ und einem Symbol, welches vom Kontext abhängt, etwa dem Zeichen $s = x$ (vorrausgesetzt $3-5i,~x \in \Sigma$). 
+
+
 
 \subsubsection{Funktionsauswertung}
 Ein Funktionssymbol ist in der allgemeinen Definition eines Terms noch keine Funktion, da die Abbildungsvorschrift, sowie Definitionsmenge und Bildmenge nicht definiert sind. Ein Funktionssymbol ohne diese Eigenschaften kann daher eher als Datenstruktur gesehen werden, etwa die Funktionsanwendung des Funktionssymbols $pair$ auf die zwei Parameter $a$ und $b$ als ein Paar: $pair(a, b)$.\\
@@ -68,7 +53,7 @@ $$\mathrm{eval}(v, t) = \begin{cases}
             t &,~ t\in \Sigma \\
             v(s_1, \dots, s_n) &,~ t = (f, t_1, \dots , t_n), ~s_i = \mathrm{eval}(v, t_i)
             \end{cases}$$
-Als Beispiel ist $\Sigma = \mathbb{N}$, $F = \{sum, product, power\}$ und $v$ definiert als
+Als Beispiel ist $\Sigma = \mathbb{N}_0$, $F = \{sum, product, power\}$ und $v$ definiert als
 $$v(f, s_1, \dots, s_n) = \begin{cases}
 s_1 + s_2 &,~ f = sum\\
 s_1 \cdot s_2 &,~ f = product\\
@@ -96,33 +81,21 @@ Nicht mehr ausreichend ist $\mathrm{eval}$, wenn auch Symbole unbekannten Wertes
 
 
 
+\section{Datenstruktur}
 
+Hier wird erläutert, wie meine konkrete Implementierung Terme speichert und verwaltet. Vielleicht werden auch ein paar grundlegene Algorithmen auf der Datenstruktur erklärt, sofern ich mein exaktes Vorgehen in keinem Paper wiederfinde.\\
+Denkbare Algorithmen zum erklären:
+\begin{itemize}
+    \item Falten eines Terms
+    \item Sortieren eines Terms / ordnen von Teiltermen
+    \item exaktes Ausrechen von Teilbäumen ohne Variablen (und warum ich das mit dem Zusammenfassen von geschachtelten Summen und weiteren Sachen in einen Algorithmus zusammenwursten musste)
+    \item Frage: aktuell parse ich einen String zum bauen eines Terms noch in $O(n^2)$. Das ist warscheinlich nicht optimal. Ergo würde ich diesen Teil wenn, dann eher am Rande erwähnen. Ist es für die Arbeit wichtig, das noch zu optimieren (unter der Vorraussetzung, dass die von mir gewählte Grammatik kontextfrei ist, was sie aber glaube ich ist)?
+\end{itemize}
 
-Eine Menge von Funktionssymbolen $F$ kann auf folgendem Weg um die Menge der Funktionen, die nur durch ihre Abbildungsvorschrift identifiziert sind, $L$ (auch \textit{Lambdas}) zu $F_L$ erweitert werden.
-$$F_L \coloneqq F \cup L$$
-$$L \coloneqq T(F_L, \Sigma \cup P)$$
-$$P \cap \Sigma = \emptyset$$
-$$pos \colon P \rightarrow \mathbb{N}_0, ~pos\text{ ist bijektiv}$$
-Ein Element $x \in P$ wird Lambdaparameter genannt. Ein Lambdaparameter kann eindeutig über seinen Index in der Argumentliste identifiziert werden. So bildet $pos$ die Lambdaparameter $x$ und $y$ der Lambdadefinition $(\lambda x y. x+y)$ auf $pos(x) = 0$ und $pos(y) = 1$ ab. \\~\\~\\
+Mögliche Tangente: Meine Idee (und Umsetzung) einer Art Aufzählung (in C\texttt{++} und Co. as enum in der Sprache enthalten), die Hirarchien erlaubt und damit Basis eines (wie ich finde) relativ eleganten Typsystems für die einzelnen Arten von Termknoten darstellt. (Tangente der Tangente: Das native C\texttt{++} Typsystem mit Umsetzung von Polymorphie als Vererbung erschwert einem nicht nur das Speichern eines polymorphen Baums in einem Array, sondern verteilt auch den Code jedes Algorithmus über die verschiedenen Klassen, die die einzelnen Baumknotenarten modellieren. Deswegen habe ich mir was eingendes gebastelt)
+~\\~
 
-
-
-
-
-Im folgenden wird hauptsächlich von zwei verschiedenen Arten von Termen gesprochen. Ein Literal ist das zu vereinfachende Objekt, während ein Musterterm genutzt wird um Muster im Literal zu erkennen und diese zu ersetzen. \\
-
-Die Ausdrücke, die im Laufe dieser Arbeit vereinfacht werden sollen, werden im folgenden oft nur als Term bezeichnet. Ein solcher Term ist entweder eine Komplexe Zahl, ein nur über seinen Namen spezifiziertes Symbol (z.B. $pi$ oder $a$) oder ein Funktionsname in Kombination mit Funktionsparametern, welche selbst Terme sind (z.B. $sin(pi)$ oder $f(3)$). \\
-Formal sind Terme wiefolgt definiert. Sei $\mathbb{C}$ der Körper der Komplexen Zahlen, $\Sigma^+$ die Menge aller Zeichenketten positiver Länge auf einer Zeichenmenge $\Sigma$ und sei $\text{rank} \colon \Sigma^+ \rightarrow \mathcal{P}(\mathbb{N}_0)$ die Funktion, die für den Name eines Funktionsterms angibt, welche Anzahlen von Aufrufparametern gültig sind. Im folgenden wird angenommen, dass ein Funktionsterm entweder eine eindeutige Stelligkeit hat oder eine beliebige Anzahl von Parametern zulässt, also 
-$\text{rank} \colon \Sigma^+ \rightarrow \{\{n\}~|~n \in \mathbb{N}_0\} \cup \{\mathbb{N}_0\}$. 
-Die Menge der Terme ist dann definiert als 
-$$\mathbb{T} \coloneqq \mathbb{C} \cup \Sigma^+ \cup \mathbb{F}$$
-$$\mathbb{F} \coloneqq \{(s, (t_1, \dots, t_n)) ~|~ s \in \Sigma^+ \land t_1, \dots, t_n \in \mathbb{T} \land n \in \text{rank}(s)\}$$
-wobei $\mathbb{F}$ die Menge aller Funktionsterme darstellt. Als kompaktere Schreibweise kann ein Funktionsterm $(s, (t_1, \dots, t_n))$ auch $s(t_1, \dots, t_n)$ geschrieben werden.
-Ein Symbol ist zudem unterscheidbar von einem Funktionsterm gleichen Namens und null Parametern, so ist $f$ ungleich $f()$.\\
-Ein Funktionsterm hat wenig mit einer tatsächlichen Funktion zu tun. Weder Bildmenge noch Abbildungsvorschrift sind spezifiziert und auch die Definitionsmenge ist höchstens in ihrer Dimension eingeschränkt. Die passendere Interpretation des Funktionsterms ist daher die der Datenstruktur. Ein Beispiel ist die Darstellung einer Liste durch den Funktionsterm mit entspechendem Name, welcher eine beliebige Anzahl von Parametern übergeben bekommen kann, etwa $list()$ oder $list(3.0, pi, sin(3.0))$.
-\\~\\
-
-
+\clearpage
 Sowohl der zu vereinfachende Term, als auch die Vereinfachungsregeln liegen im Programm als Baumstruktur vor. Die Knoten des Baumes haben jeweils einen der folgenden Typen:
 \begin{enumerate}
     \item Komlexe Zahl \\
