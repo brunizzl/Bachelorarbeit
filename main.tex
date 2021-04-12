@@ -12,6 +12,7 @@
 \usepackage{mathtools}
 \usepackage{amssymb}
 \usepackage{amsmath} %  \begin{cases}  Wert 1 & Bedingung 1 \\ Wert 2 & Bedingung 2 \\ \end{cases} 
+\usepackage{qtree}
 
 \begin{document}
 
@@ -38,16 +39,54 @@ Hier kommt hin, was halt in eine Einleitung soll:
     
 \end{itemize}
 \subsection{Definitionen}
-Eine Menge von Termen $T$ ist in dieser Arbeit in Abhängigkeit der Mengen $F$ und $\Sigma$, sowie der Funktion $\mathrm{rank} : F \rightarrow \mathbb{N}_0$, definiert. $$T(F, \Sigma) \coloneqq \Sigma \cup \{(f, t_1, \dots, t_n)~|~f\in F,~\mathrm{rank}(f) = n,~ t_i \in T(F, \Sigma)\}$$ \\
-Elemente $f\in F$ werden \textit{Funktionssymbole} genannt, Elemente $s \in \Sigma$ werden \textit{Konstantensymbole} genannt. $(f, t_1, \dots, t_n) \in T \setminus \Sigma$ wird auch als $f(t_1, \dots, t_n)$ geschrieben und \textit{Funktionsanwendung} genannt. \\
-Wichtig ist, dass auf der Definitionsebene nicht zwischen einem Konstantensymbol $s \in \Sigma$ unterschieden wird, dessen Wert eindeutig ist, etwa der konkreten Komplexen Zahl $s = 3-5i$ und einem Symbol, welches vom Kontext abhängt, etwa dem Zeichen $s = x$ (vorrausgesetzt $3-5i,~x \in \Sigma$). 
+Eine Menge von Termen $T$ ist in dieser Arbeit immer  in Abhängigkeit der Mengen $F$ und $\Sigma$ definiert.
+$$T(F, \Sigma) \coloneqq \Sigma ~\cup~ \{
+(f, t_1, \dots, t_n)
+~|
+~f\in F,
+~ t_1, \dots,t_n \in T(F, \Sigma)
+\}$$ 
+Elemente $f\in F$ werden \textit{Funktionssymbole} genannt, Elemente $s \in \Sigma$ werden \textit{Konstantensymbole} genannt.
+Wichtig ist, dass vorerst nicht zwischen einem Konstantensymbol $s \in \Sigma$ unterschieden wird, welches bekannte Eigenschaften hat, etwa der Komplexen Zahl $s = -5i$ und einem Symbol, wessen Eigenschaften vom Kontext abhängen können, etwa dem Zeichen $s = \mathrm x$ (vorrausgesetzt $-5i,~\mathrm x \in \Sigma$). \\
+ $(f, t_1, \dots, t_n) \in T \setminus \Sigma$ wird auch als $f(t_1, \dots, t_n)$ geschrieben und \textit{Funktionsanwendung} von $f$ auf die \textit{Parameter} $t_1, \dots, t_n$ genannt. $t_1, \dots, t_n$ sind zudem die \emph{Kinder} ihres Vaters $f$. Kinder sind allgemeiner \textit{Nachkommen}. Nachkommen verhalten sich transitiv, also ein Nachkomme $z$ des Nachkommen $y$ von $x$ ist auch ein Nachkomme von $x$. Umgekehrt ist $x$ \textit{Ahne} von $y$ und $z$. \\
+Ein \textit{Teilterm} ist Nachkomme des äußersten Funktionssymbols oder der gesamte Term. \\
+Häufig werden Abschnitte der Parameter einer Funktionsanwendung beliebiger Länge der Form $t_i, \dots, t_k$ vorkommen. Kompakt wird $ts...$ für den (möglicherweise leeren) Abschnitt des Funktionsanwendungstupels geschrieben. \\$f(t_1, \dots, t_k, a, t_{k+2}, \dots, t_n)$ kann also äquivalent $f(ts..., a, rs...)$ geschrieben werden, mit $(t_1, \dots, t_k) = (ts...)$ und $(t_{k+2}, \dots, t_n) = (rs...)$.\\
 
 
+\subsubsection{Beispiel}
+Wählt man $F = \{\mathrm f, \mathrm g\}$ und $\Sigma = \{\mathrm a, \mathrm b, \mathrm c\}$, ist 
+$t = \mathrm f(\mathrm b, \mathrm g(\mathrm f(\mathrm a), \mathrm b)) \in T(F, \Sigma)$ ein Term, dargestellt in Abb. \ref{ersterBeispielBaum}. $\mathrm b$ ist ein Kind von $\mathrm g$ und ein Ahne von $\mathrm f$. Damit ist $\mathrm g$ Vater von $\mathrm b$. $\mathrm g(...)$ ist zudem Kind von $\mathrm f$. $\mathrm b$ und $\mathrm f(\mathrm a)$ sind Teilterme von $t$.
+
+\begin{figure}
+\Tree[.f
+	b
+	[.g 
+		[.f a ]
+		b ]]
+\label{ersterBeispielBaum}
+\caption{Baumdarstellung des Terms $\mathrm f(\mathrm b, \mathrm g(\mathrm f(\mathrm a), \mathrm b))$ }
+\end{figure}
+
+\subsubsection{Stelligkeit von Funktionssymbolen}
+Der Beispielterm aus Abb. \ref{ersterBeispielBaum} hat zwei Funktionsanwendungen von $\mathrm f$, jedoch einmal mit den zwei Parametern $\mathrm b$ und einer Anwendung von $\mathrm g$ und das zweite Mal mit nur einem Parameter $\mathrm a$. Die Funktionssymbole, für die eine Funktionsanwendung mit beliebig vielen Parametern sinvoll ist, nennen wir \textit{variadisch}. Ergibt eine Funktionsanwendung für ein Funktionssymbol nur mit einer festen Anzahl von Parametern Sinn, wird im folgenden von einer \textit{festen Stelligkeit} gesprochen. Um ausschließlich Terme zu erlauben, die in dieser Hinsicht sinvoll sind, wird jedem Funktionssymbol $f \in F$ von der Funktion $\mathrm {arity} \colon F \rightarrow \mathbb N \cup \omega$ eine Stelligkeit zugewiesen. Ist $\mathrm {arity}(f) = \omega$, so ist $f$ ein variadisches Funktionssymbol. Im folgenden werden ausschließlich Terme betrachtet, die Funktionsanwendungen mit der passenden Anzahl von Parametern enthalten.
+$$T(F, \Sigma) \coloneqq \Sigma ~\cup~ \{
+(f, ts...)
+~|
+~f\in F,
+~\mathrm{arity}(f) \in \{n, \omega\},
+~ ts... \in T(F, \Sigma)
+\}$$
 
 \subsubsection{Funktionsauswertung}
-Ein Funktionssymbol ist in der allgemeinen Definition eines Terms noch keine Funktion, da die Abbildungsvorschrift, sowie Definitionsmenge und Bildmenge nicht definiert sind. Ein Funktionssymbol ohne diese Eigenschaften kann daher eher als Datenstruktur gesehen werden, etwa die Funktionsanwendung des Funktionssymbols $pair$ auf die zwei Parameter $a$ und $b$ als ein Paar: $pair(a, b)$.\\
+Ein Funktionssymbol ist in der allgemeinen Definition eines Terms noch keine Funktion, da die Abbildungsvorschrift, sowie Definitionsmenge und Bildmenge nicht definiert sind. Eine Funktionsanwendung kann allerdings als Datenstruktur gesehen werden, etwa die des Funktionssymbols $pair$ auf die zwei Parameter $a$ und $b$ als ein Paar: $pair(a, b)$.\\
 Die erste Erweiterung der Funktionssymbolmenge zur Menge von Funktionen folgt mittels der $\mathrm{eval}$ Funktion.
-$$\tilde{T}(F, \Sigma) \coloneqq \{(f, s_1, \dots, s_n)~|~f \in F,~\mathrm{rank}(f) = n,~s_i \in \Sigma\}$$
+$$\tilde{T}(F, \Sigma) \coloneqq \{
+(f, zs...)
+~|
+~f \in F,
+~\mathrm{arity}(f) \in \{n, \omega\},
+~zs... \in \Sigma
+\}$$
 $$\mathrm{eval} \colon (\tilde{T} \rightarrow \Sigma) \times T \rightarrow \Sigma$$
 $$\mathrm{eval}(v, t) = \begin{cases} 
             t &,~ t\in \Sigma \\
@@ -73,13 +112,45 @@ Der Term $t = sum(3, product(2, 4))$ kann dann ausgewertet werden zu
 \\
 Nicht mehr ausreichend ist $\mathrm{eval}$, wenn auch Symbole unbekannten Wertes in $\Sigma$ aufgenommen werden oder wenn manche Funktionen nicht von bzw. nach $\Sigma$ abbilden. 
 
-\subsubsection{Variadische Funktionen}
 
+\section {Erste Normalform}
+In diesem Abschnitt werden erste Termumformungen beschrieben, die isolierte Eingenschaften einzelner Funktionen ausnutzen. Ziel ist es kommutative und assoziative Funktionsanwendungen eindeutig darzustellen.\\
 
+\subsection {Assoziative Funktionsanwendungen}
+Die geschachtelte Anwendung einer assoziativen Funktion führt je nach Klammersetzung zu verschiedenen mathematisch equivalenten Termen. Als Beispiel dient hier die Addition, dargestellt als Anwendung des Funktionssymbols $+$. Die folgenden Ausdrücke sind paarweise verschiedene Terme, jedoch alle mathematisch äquivalent.
+\begin{equation}
+	\begin{split}
+	+(+(+(a, b), c), d) &= +(+(a, +(b, c)), d)\\
+	&= +(+(a, b), +(c, d))\\
+	&= +(a, +(b, +(c, d)))\\
+	&= \dots \\
+	\end{split}
+\end{equation}
+Das ist in den meisten Situationen kein Problem, da in Infixnotation Klammern nur zur Gruppierung notwendig sind und per Definition der Assoziativität in diesem Fall keinen Unterschied machen, also weggelassen werden können: $a + b + c + d$. Es gibt mehrere Optionen eine solche Schachtelung in einem Term zu normalisieren, also in eine eindeutige Form zu bringen. Die erste ist, festzulegen, dass höchstens einer der beiden Parameter der binären assoziativen Funktion wieder Ergebnis dieser Funktion sein darf. Wählt man den zweiten Parameter dafür aus, ist wird die Summe in der Normalform dargestellt als $+(a, +(b, +(c, d)))$. Diese Methode nennt sich Pivotisierung und wird in \textbf{Quellen} näher untersucht.\\
+Alternativ kann man die Summe von zwei Parametern auch als Spezialfall einer Summe von $n \in \mathbb{N}$ Parametern auffassen, dann gewohnt geschrieben als $\Sigma_{x \in \{a, b, c, d\}} x$. Dieser Weg wird im folgenden gewählt, wobei die Darstellung als Term dann $+(a, b, c, d)$ ist. \\
+Die Normalisierung assoziativer Funktionsanwendungen des Funktionssymbols $f$ ersetzt dann alle Teilterme der Form $f(as..., f(bs...), cs...)$ zu $f(as..., bs..., cs...)$.
 
+\subsection{Kommutative Funktionsanwendungen}
+Eine Normalform für kommutative Funktionsanwendungen erfordert eine totale Ordnung auf der Menge aller Terme $T(F, \Sigma)$. Aufbauend auf einer totalen Ordnung von $\Sigma$ und einer totalen Ordnung von $F$, kann eine lexikographische Ordnung wie folgt definiert werden. 
+\begin{itemize}
+	\item{sind $s, \tilde{s} \in T$ Konstantensymbole, so ist die Ordnung identisch zu der Ordnung in $\Sigma$}
+	\item{sind $s, a, \in T$ und $s$ ein Konstantensymbol und $a$ eine Funktionsanwendung ist $s < a$ }
+	\item{sind $a = f(ts...), b = g(rs...) \in T$ Funktionsanwendungen und ist $f \neq g$ gilt $a < b \iff f < g $}
+	\item{sind $a = f(t_1, \dots, t_n), b = f(r_1, \dots, r_m) \in T$ Funktionsanwendungen, und $\tilde{t_1}, \dots, \tilde{t_n}$, $\tilde{r_1}, \dots, \tilde{r_m}$ die normalisierten Parameter von $a$ und $b$, ist die Ordnung wiefolgt}
+	\begin{itemize}
+		\item{wenn $\exists k \leq \min{(n, m)} \colon \forall i < k ~ \tilde{t_i} = \tilde{r_i} ,~ \tilde{t_k} \neq \tilde{r_k} $ sind $a$ und $b$ so geordnet wie $\tilde{t_k}$ und $\tilde{r_k}$}
+		\item{gilt $n < m$ und $\forall i < n\colon \tilde{t_i} = \tilde{r_i}$ ist $a < b$}
+		\item{gilt $n = m$ und $\forall i \leq n\colon \tilde{t_i} = \tilde{r_i}$ ist $a = b$}
+	\end{itemize}
+\end{itemize}
+Zur Normalisierung einer kommutativen Funktionsanwendung werden zuerst alle Parameter normalisiert, dann können die Parameter nach der lexikographischen Ordnung von $T$ sortiert werden.
 
-
-
+\subsection{Teilweise Auswertung}
+Mit der Darstellung assoziativer Funktionen als variadische Funktionen, ist es möglich, dass eine Funktion mittels $\mathrm{eval}$ teilweise ausgewertet werden kann, also gilt für assoziative Funktionssymbole $f \in F$
+$$f(a, b) = c \implies f(xs..., a, b, ys...) = f(xs..., c, ys...)$$
+Ist $f$ zudem kommutativ gilt 
+$$f(a, b) = c \implies f(xs..., a, ys..., b, zs...) = f(xs..., c, ys..., zs...)$$
+Eine normalisierte Funktionsanwendung ist damit so weit wie möglich ausgewertet. Sollte sie ganz ausgewertet werden können, ist die normalisierte Funktionsanwendung das Ergebnis der Auswertung.
 
 \section{Datenstruktur}
 
