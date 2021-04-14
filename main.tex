@@ -13,6 +13,8 @@
 \usepackage{amssymb}
 \usepackage{amsmath} %  \begin{cases}  Wert 1 & Bedingung 1 \\ Wert 2 & Bedingung 2 \\ \end{cases} 
 \usepackage{qtree}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
 
 \begin{document}
 
@@ -24,8 +26,8 @@
 %\cleardoublepage <- für andere Dokumenttypen
 
 \section{Einleitung}
-
-Hier kommt hin, was halt in eine Einleitung soll:
+\begin{itshape}
+Anmerkung: Hier kommt hin, was halt in eine Einleitung soll:
 \begin{itemize}
     \item was ist ein Termersetzungssystem?
     \item Einsatz von Termersetzungssystemen
@@ -33,12 +35,14 @@ Hier kommt hin, was halt in eine Einleitung soll:
         \item Beweisprüfer /Beweisassistenten
         \item Arithmetikausdrücke vereinfachen
         \item Optimierender Compiler
+	\item Interpreter funktionaler Sprachen
         \item bestimmt noch mehr
     \end{itemize}
     \item was soll die in dieser Arbeit umgesetzte Variante (gut) können?
-    
 \end{itemize}
-\subsection{Definitionen}
+\end{itshape}
+
+\section{Definitionen}
 Eine Menge von Termen $T$ ist in dieser Arbeit immer  in Abhängigkeit der Mengen $F$ und $\Sigma$ definiert.
 $$T(F, \Sigma) \coloneqq \Sigma ~\cup~ \{
 (f, t_1, \dots, t_n)
@@ -50,12 +54,12 @@ Elemente $f\in F$ werden \textit{Funktionssymbole} genannt, Elemente $s \in \Sig
 Wichtig ist, dass vorerst nicht zwischen einem Konstantensymbol $s \in \Sigma$ unterschieden wird, welches bekannte Eigenschaften hat, etwa der Komplexen Zahl $s = -5i$ und einem Symbol, wessen Eigenschaften vom Kontext abhängen können, etwa dem Zeichen $s = \mathrm x$ (vorrausgesetzt $-5i,~\mathrm x \in \Sigma$). \\
  $(f, t_1, \dots, t_n) \in T \setminus \Sigma$ wird auch als $f(t_1, \dots, t_n)$ geschrieben und \textit{Funktionsanwendung} von $f$ auf die \textit{Parameter} $t_1, \dots, t_n$ genannt. $t_1, \dots, t_n$ sind zudem die \emph{Kinder} ihres Vaters $f$. Kinder sind allgemeiner \textit{Nachkommen}. Nachkommen verhalten sich transitiv, also ein Nachkomme $z$ des Nachkommen $y$ von $x$ ist auch ein Nachkomme von $x$. Umgekehrt ist $x$ \textit{Ahne} von $y$ und $z$. \\
 Ein \textit{Teilterm} ist Nachkomme des äußersten Funktionssymbols oder der gesamte Term. \\
-Häufig werden Abschnitte der Parameter einer Funktionsanwendung beliebiger Länge der Form $t_i, \dots, t_k$ vorkommen. Kompakt wird $ts...$ für den (möglicherweise leeren) Abschnitt des Funktionsanwendungstupels geschrieben. \\$f(t_1, \dots, t_k, a, t_{k+2}, \dots, t_n)$ kann also äquivalent $f(ts..., a, rs...)$ geschrieben werden, mit $(t_1, \dots, t_k) = (ts...)$ und $(t_{k+2}, \dots, t_n) = (rs...)$.\\
+Häufig werden Abschnitte der Parameter einer Funktionsanwendung beliebiger Länge der Form $t_i, \dots, t_k$ vorkommen. Kompakt wird $ts...$ für den (möglicherweise leeren) Abschnitt des Funktionsanwendungstupels geschrieben. \\$f(t_1, \dots, t_k, a, t_{k+2}, \dots, t_n)$ kann also äquivalent $f(ts..., a, rs...)$ geschrieben werden, mit $(t_1, \dots, t_k) = (ts...)$ und $(t_{k+2}, \dots, t_n) = (rs...)$.\\~\\
 
 
-\subsubsection{Beispiel}
+\textbf{Beispiel}\\
 Wählt man $F = \{\mathrm f, \mathrm g\}$ und $\Sigma = \{\mathrm a, \mathrm b, \mathrm c\}$, ist 
-$t = \mathrm f(\mathrm b, \mathrm g(\mathrm f(\mathrm a), \mathrm b)) \in T(F, \Sigma)$ ein Term, dargestellt in Abb. \ref{ersterBeispielBaum}. $\mathrm b$ ist ein Kind von $\mathrm g$ und ein Ahne von $\mathrm f$. Damit ist $\mathrm g$ Vater von $\mathrm b$. $\mathrm g(...)$ ist zudem Kind von $\mathrm f$. $\mathrm b$ und $\mathrm f(\mathrm a)$ sind Teilterme von $t$.
+$t = \mathrm f(\mathrm b, \mathrm g(\mathrm f(\mathrm a), \mathrm b)) \in T(F, \Sigma)$ ein Term, dargestellt in Abb. \ref{ersterBeispielBaum}. $\mathrm b$ ist ein Kind von $\mathrm g$ und ein Ahne von $\mathrm f$. Damit ist $\mathrm g$ Vater von $\mathrm b$. $\mathrm g(ts...)$ ist zudem Kind von $\mathrm f$. $\mathrm b$ und $\mathrm f(\mathrm a)$ sind Teilterme von $t$.
 
 \begin{figure}
 \Tree[.f
@@ -67,17 +71,17 @@ $t = \mathrm f(\mathrm b, \mathrm g(\mathrm f(\mathrm a), \mathrm b)) \in T(F, \
 \caption{Baumdarstellung des Terms $\mathrm f(\mathrm b, \mathrm g(\mathrm f(\mathrm a), \mathrm b))$ }
 \end{figure}
 
-\subsubsection{Stelligkeit von Funktionssymbolen}
+\subsection{Stelligkeit von Funktionssymbolen}
 Der Beispielterm aus Abb. \ref{ersterBeispielBaum} hat zwei Funktionsanwendungen von $\mathrm f$, jedoch einmal mit den zwei Parametern $\mathrm b$ und einer Anwendung von $\mathrm g$ und das zweite Mal mit nur einem Parameter $\mathrm a$. Die Funktionssymbole, für die eine Funktionsanwendung mit beliebig vielen Parametern sinvoll ist, nennen wir \textit{variadisch}. Ergibt eine Funktionsanwendung für ein Funktionssymbol nur mit einer festen Anzahl von Parametern Sinn, wird im folgenden von einer \textit{festen Stelligkeit} gesprochen. Um ausschließlich Terme zu erlauben, die in dieser Hinsicht sinvoll sind, wird jedem Funktionssymbol $f \in F$ von der Funktion $\mathrm {arity} \colon F \rightarrow \mathbb N \cup \omega$ eine Stelligkeit zugewiesen. Ist $\mathrm {arity}(f) = \omega$, so ist $f$ ein variadisches Funktionssymbol. Im folgenden werden ausschließlich Terme betrachtet, die Funktionsanwendungen mit der passenden Anzahl von Parametern enthalten.
 $$T(F, \Sigma) \coloneqq \Sigma ~\cup~ \{
-(f, ts...)
+(f, t_1, \dots, t_n)
 ~|
 ~f\in F,
 ~\mathrm{arity}(f) \in \{n, \omega\},
-~ ts... \in T(F, \Sigma)
+~  t_1, \dots, t_n \in T(F, \Sigma)
 \}$$
 
-\subsubsection{Funktionsauswertung}
+\subsection{Funktionsauswertung}
 Ein Funktionssymbol ist in der allgemeinen Definition eines Terms noch keine Funktion, da die Abbildungsvorschrift, sowie Definitionsmenge und Bildmenge nicht definiert sind. Eine Funktionsanwendung kann allerdings als Datenstruktur gesehen werden, etwa die des Funktionssymbols $pair$ auf die zwei Parameter $a$ und $b$ als ein Paar: $pair(a, b)$.\\
 Die erste Erweiterung der Funktionssymbolmenge zur Menge von Funktionen folgt mittels der $\mathrm{eval}$ Funktion.
 $$\tilde{T}(F, \Sigma) \coloneqq \{
@@ -127,11 +131,11 @@ Die geschachtelte Anwendung einer assoziativen Funktion führt je nach Klammerse
 	\end{split}
 \end{equation}
 Das ist in den meisten Situationen kein Problem, da in Infixnotation Klammern nur zur Gruppierung notwendig sind und per Definition der Assoziativität in diesem Fall keinen Unterschied machen, also weggelassen werden können: $a + b + c + d$. Es gibt mehrere Optionen eine solche Schachtelung in einem Term zu normalisieren, also in eine eindeutige Form zu bringen. Die erste ist, festzulegen, dass höchstens einer der beiden Parameter der binären assoziativen Funktion wieder Ergebnis dieser Funktion sein darf. Wählt man den zweiten Parameter dafür aus, ist wird die Summe in der Normalform dargestellt als $+(a, +(b, +(c, d)))$. Diese Methode nennt sich Pivotisierung und wird in \textbf{Quellen} näher untersucht.\\
-Alternativ kann man die Summe von zwei Parametern auch als Spezialfall einer Summe von $n \in \mathbb{N}$ Parametern auffassen, dann gewohnt geschrieben als $\Sigma_{x \in \{a, b, c, d\}} x$. Dieser Weg wird im folgenden gewählt, wobei die Darstellung als Term dann $+(a, b, c, d)$ ist. \\
+Alternativ kann man die Summe von zwei Parametern auch als Spezialfall einer Summe von $n \in \mathbb{N}$ Parametern auffassen, dann gewohnt geschrieben als $\Sigma_{x \in \{a, b, c, d\}} x$. Dieser Weg wird im folgenden gewählt, wobei die Darstellung als Term dann $+(a, b, c, d)$ ist. Assoziative Funktionen sind in der gewählten Darstellung damit variadisch. \\
 Die Normalisierung assoziativer Funktionsanwendungen des Funktionssymbols $f$ ersetzt dann alle Teilterme der Form $f(as..., f(bs...), cs...)$ zu $f(as..., bs..., cs...)$.
 
 \subsection{Kommutative Funktionsanwendungen}
-Eine Normalform für kommutative Funktionsanwendungen erfordert eine totale Ordnung auf der Menge aller Terme $T(F, \Sigma)$. Aufbauend auf einer totalen Ordnung von $\Sigma$ und einer totalen Ordnung von $F$, kann eine lexikographische Ordnung wie folgt definiert werden. 
+Eine Normalform für kommutative Funktionsanwendungen erfordert eine totale Ordnung auf der Menge aller Terme $T(F, \Sigma)$. Aufbauend auf einer totalen Ordnung von $\Sigma$ und einer totalen Ordnung von $F$, kann eine lexikographische Ordnung von $T$ wie folgt definiert werden. 
 \begin{itemize}
 	\item{sind $s, \tilde{s} \in T$ Konstantensymbole, so ist die Ordnung identisch zu der Ordnung in $\Sigma$}
 	\item{sind $s, a, \in T$ und $s$ ein Konstantensymbol und $a$ eine Funktionsanwendung ist $s < a$ }
@@ -152,49 +156,63 @@ Ist $f$ zudem kommutativ gilt
 $$f(a, b) = c \implies f(xs..., a, ys..., b, zs...) = f(xs..., c, ys..., zs...)$$
 Eine normalisierte Funktionsanwendung ist damit so weit wie möglich ausgewertet. Sollte sie ganz ausgewertet werden können, ist die normalisierte Funktionsanwendung das Ergebnis der Auswertung.
 
-\section{Datenstruktur}
 
-Hier wird erläutert, wie meine konkrete Implementierung Terme speichert und verwaltet. Vielleicht werden auch ein paar grundlegene Algorithmen auf der Datenstruktur erklärt, sofern ich mein exaktes Vorgehen in keinem Paper wiederfinde.\\
+\section{Patternmatching}
+Im vorigen Abschnitt wurde eine erste Normalform für Terme definiert. Alle Vereinfachungen, die dort behandelt wurden, sind recht einfach und direkt zu implementieren, da nur auf lokale Eigenschaften des zu vereinfachenden Terms Rücksicht genommen werden muss. In diesem Abschnitt wird beschrieben, wie ein Term auch zuverlässig auf komplexere Muster geprüft werden kann, so dass nach Implementierung der Mustererkennung selbst jede einzelne Vereinfachungsregel durch zwei Muster beschrieben werden kann: ein Muster gibt an, welche Struktur im zu vereinfachenden Term gesucht wird, ein zweites Muster gibt an, zu was diese Struktur transformiert wird. Ein Beispiel für ein solches Musterpaar ist etwa die Anwendung der ersten binomischen Formel:
+$$a^2 + 2 a b + b^2 \rightarrow (a + b)^2$$
+In der etablierten Schreibweise als Term dann geschrieben als:
+$$sum(pow(a, 2), product(2, a, b), pow(b, 2)) \rightarrow pow(sum(a, b), 2)$$
+Die Zeichen $a$ und $b$ stehen dabei nicht für Elemente von $\Sigma$, sondern dienen lediglich als Platzhalter für beliebige Teilterme, wobei die verschiedenen Vorkommnisse des selben Zeichens immer auch mit äquivalenten Termen assoziiert werden müssen. Ein solches Zeichen wird im folgenden \textit{Mustervariable} genannt.
+
+\subsection{Muster}
+Eine Menge von Termen $T(F, \Sigma)$ kann durch jeweilige Vereinigung von $F$ und $\Sigma$ mit der Menge der Mustervariablen $V$ zu einer Menge von Mustertermen $M$ erweitert werden. 
+
+$$M(F, \Sigma) \coloneqq T(F \cup V, \Sigma \cup V)$$
+
+Ein Term $t \in T(F, \Sigma)$ wird zur Abgrenzung im folgenden \textit{Literal} genannt, ein Term $m \in M(F, \Sigma)$ wird als Muster bezeichnet. Die Literale sind damit eine Teilmenge aller Muster. Bewusst wird hier nicht ausgeschlossen, dass $V$ bereits in $F$ und $\Sigma$ enthalten sein kann. Die im folgenden beschriebenen Techniken zur Transformation eines Terms können also auch genutzt werden um kompliziertere Muster zu erzeugen.
+
+\subsection{Naiver Algorithmus}
+\begin{itshape}
+Anmerkung: den, der sich diesen Algorithmus zuerst ausgedacht hat muss ich noch rausfinden, danach wird der Unterkapitelname entsprechend angepasst.
+\end{itshape}
+
+\begin{algorithm}
+\caption{My algorithm}\label{euclid}
+\begin{algorithmic}[1]
+\State $\textit{stringlen} \gets \text{length of }\textit{string}$
+\State $i \gets \textit{patlen}$
+\If {$i > \textit{stringlen}$} \Return false
+\EndIf
+\State $j \gets \textit{patlen}$
+\If {$\textit{string}(i) = \textit{path}(j)$}
+\State $j \gets j-1$.
+\State $i \gets i-1$.
+\State \textbf{goto} \emph{loop}.
+\State \textbf{close};
+\EndIf
+\State $i \gets i+\max(\textit{delta}_1(\textit{string}(i)),\textit{delta}_2(j))$.
+\State \textbf{goto} \emph{top}.
+\end{algorithmic}
+\end{algorithm}
+
+\section{Umsetzung in C\texttt{++}}
+\begin{itshape}
+Anmerkung: Hier wird erläutert, wie meine konkrete Implementierung Terme speichert und verwaltet. Vielleicht werden auch ein paar grundlegene Algorithmen auf der Datenstruktur erklärt, sofern ich mein exaktes Vorgehen in keinem Paper wiederfinde.\\
 Denkbare Algorithmen zum erklären:
 \begin{itemize}
     \item Falten eines Terms
     \item Sortieren eines Terms / ordnen von Teiltermen
-    \item exaktes Ausrechen von Teilbäumen ohne Variablen (und warum ich das mit dem Zusammenfassen von geschachtelten Summen und weiteren Sachen in einen Algorithmus zusammenwursten musste)
-    \item Frage: aktuell parse ich einen String zum bauen eines Terms noch in $O(n^2)$. Das ist warscheinlich nicht optimal. Ergo würde ich diesen Teil wenn, dann eher am Rande erwähnen. Ist es für die Arbeit wichtig, das noch zu optimieren (unter der Vorraussetzung, dass die von mir gewählte Grammatik kontextfrei ist, was sie aber glaube ich ist)?
+    \item exaktes Ausrechnen von Teilbäumen ohne Variablen (und warum ich das mit dem Zusammenfassen von geschachtelten Summen und weiteren Sachen in einen Algorithmus zusammenwursten musste)
+    \item Frage: aktuell parse ich einen String zum bauen eines Terms noch in $O(n^2)$. Das ist wahrscheinlich nicht optimal. Ergo würde ich diesen Teil wenn, dann eher am Rande erwähnen. Ist es für die Arbeit wichtig, das noch zu optimieren (unter der Voraussetzung, dass die von mir gewählte Grammatik kontextfrei ist, was sie aber glaube ich ist)?
 \end{itemize}
 
-Mögliche Tangente: Meine Idee (und Umsetzung) einer Art Aufzählung (in C\texttt{++} und Co. as enum in der Sprache enthalten), die Hirarchien erlaubt und damit Basis eines (wie ich finde) relativ eleganten Typsystems für die einzelnen Arten von Termknoten darstellt. (Tangente der Tangente: Das native C\texttt{++} Typsystem mit Umsetzung von Polymorphie als Vererbung erschwert einem nicht nur das Speichern eines polymorphen Baums in einem Array, sondern verteilt auch den Code jedes Algorithmus über die verschiedenen Klassen, die die einzelnen Baumknotenarten modellieren. Deswegen habe ich mir was eingendes gebastelt)
-~\\~
-
-\clearpage
-Sowohl der zu vereinfachende Term, als auch die Vereinfachungsregeln liegen im Programm als Baumstruktur vor. Die Knoten des Baumes haben jeweils einen der folgenden Typen:
-\begin{enumerate}
-    \item Komlexe Zahl \\
-    Jeder bekannte Wert wird intern als komplexe Zahl mit Realteil und Imaginärteil als Fließkommazahl doppelter Präzesion aus der C\texttt{++} Standardbibliothek gespeichert.
-    \item Variable \\
-    Eine Variable besteht nur aus ihrem Name, welcher als Array von ASCII Buchstaben vorliegt.
-    \item Bekannte Funktion \\
-    Im Speicher des einzelnen Terms ist eine dem Programm bekannte Funktion als Array von Referenzen auf ihre Parameter gespeichert. Auf der Datenebene ist dabei nicht direkt erkennbar, ob die Funktion eine feste Anzahl von Parametern hat, wie etwa die Exponentialfunktion, oder variadisch ist, wie zum Beispiel die Summe. Dies erlaubt es, oft nicht zwischen beiden Arten differenzieren zu müssen.
-    \item Unbekannte Funktion \\
-    Funktionen, deren Name dem Programm nicht bekannt sind, speichern diesen pro Instanz, analog zur Variable. Vor dem Namensarray befindet sich ein Parameterarray, identisch zu dem der bekannten Funktion. Damit muss in vielen Fällen auch nicht zwischen bekannten Funktionen und unbekannten Funktionen unterschieden werden.
-    \item Baum-Mustervariable \\
-    Während die normale Variable vor allem im zu vereinfachenden Term erwartet wird, ist die Baum-Mustervariable das Symbol, welches in einem Muster für einen Teilbaum des zu vereinfachenden Terms steht. 
-    \item Wert-Mustervariable \\
-    Ähnlich wie die Baum-Mustervariable steht auch diese representativ für einen Teil des zu vereinfachenden Baums, hier allerdings nicht für einen beliebigen Teilbaum, sondern einen bekannten Zahlenwert. Die Separierung von der Baum- Mustervariable ist notwendig, um mehr Arten von Werten erkennen zu können, ohne extra ein System für das Überprüfen von Logikbedingungen einbauen zu müssen (wenn auch dieses mächtiger wäre).
-\end{enumerate}
-\clearpage
-
-
-\section{Patternmatching}
-Hier stelle ich vor, was für Matchingalgorithmen (für Bäume mit Knoten beliebigen Grades) ich in der Literatur finde. (Hoffentlich finde ich nicht den von mir genutzten, aber den als erster entdeckt zu haben halte ich für unwarscheinlich.)
-Den von mir genutzen Algorithmus würde ich hier im Detail erklären und die Laufzeit analysieren. Spoiler: ich meine gelesen zu haben, dass das matchen von Mustern mit möglichen Mehrfachnennungen von Mustervariablen in variadischen Ausdrücken NP-schwer ist, aber vielleicht kann ich für praxisrelevante Teilmengen aller Musterterme bessere Worst-Case Laufzeiten erzielen. (Das optimieren meines Algorithmus ist noch im Gange).
-\\~\\
-
-\textbf{einfacher Matchingalgorithmus}
+Mögliche Tangente: Meine Idee (und Umsetzung) einer Art Aufzählung (in C\texttt{++} und Co. als enum in der Sprache enthalten), die Hierarchien erlaubt und damit Basis eines (wie ich finde) relativ eleganten Typsystems für die einzelnen Arten von Termknoten darstellt. (Tangente der Tangente: Das native C\texttt{++} Typsystem mit Umsetzung von Polymorphie als Vererbung erschwert einem nicht nur das Speichern eines polymorphen Baums in einem Array, sondern verteilt auch den Code jedes Algorithmus über die verschiedenen Klassen, die die einzelnen Baumknotenarten modellieren. Deswegen habe ich mir was eignendes gebastelt)
+\end{itshape}
 
 
 \section{Vereinfachen von Arithmetischen Termen}
-Ich habe begonnen das Termersetzungssystem zu entwickeln, um Arithmetische Ausdrücke zu vereinfachen (etwa $a + 2 a \rightarrow 3 a$). Wie genau ich das umsetze, wird in diesem Abschnitt erläutert.
+\begin{itshape}
+Anmerkung: Ich habe begonnen das Termersetzungssystem zu entwickeln, um Arithmetische Ausdrücke zu vereinfachen (etwa $a + 2 a \rightarrow 3 a$). Wie genau ich das umsetze, wird in diesem Abschnitt erläutert.
 \\Während die Datenstruktur und der Matchingalgorithmus schon benutzbar sind, ist dieser Teil von mir bisher so gut wie gar nicht implementiert worden. Der grobe Plan ist aber folgender:
 \begin{enumerate}
     \item Funktionen höherer Ordnung anwenden:
@@ -229,9 +247,12 @@ Anmerkung 2: es kann sein, dass ich manche Eigenschaften der Normalformauch wäh
 
 \subsection{Vergleich meiner Features mit anderen Computeralgebrasystemen}
 Ich bin ja nicht der erste, der auf die Idee kommt, Terme zusammenzufassen. Wolphram Alpha und Maple sind zwar nicht Open Source, aber andere Optionen, wie etwa SymPy aus der Python Standardbibliothek soweit ich weiß schon. Da lässt sich bestimmt ein bisschen vergleichen, wie andere Leute die selben Probleme lösen.
+\end{itshape}
 
 \section{Zusammenfassung}
+\begin{itshape}
 Was halt in eine Zusammenfassung kommt
+\end{itshape}
 
 %\bibliographystyle{plain}
 %\bibliography{references}
