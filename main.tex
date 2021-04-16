@@ -16,6 +16,9 @@
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
 
+\DeclarePairedDelimiter\paren{(}{)}
+\DeclarePairedDelimiter\curl{\{}{\}}
+
 \begin{document}
 
 \maketitle
@@ -43,23 +46,21 @@ Anmerkung: Hier kommt hin, was halt in eine Einleitung soll:
 \end{itshape}
 
 \section{Definitionen}
-Eine Menge von Termen $T$ ist in dieser Arbeit immer  in Abhängigkeit der Mengen $F$ und $\Sigma$ definiert.
-$$T(F, \Sigma) \coloneqq \Sigma ~\cup~ \{
-(f, t_1, \dots, t_n)
+Eine Menge von Termen $T$ ist in dieser Arbeit immer  in Abhängigkeit der Menge $F$, sowie der Stelligkeitsfunktion $\mathrm{arity} \colon F \rightarrow \mathbb{N}_0 \cup \omega$.
+$$T(F) \coloneqq \curl*{
+(f, t_0, \dots, t_{n-1})
 ~|
 ~f\in F,
-~ t_1, \dots,t_n \in T(F, \Sigma)
-\}$$ 
-Elemente $f\in F$ werden \textit{Funktionssymbole} genannt, Elemente $s \in \Sigma$ werden \textit{Konstantensymbole} genannt.
-Wichtig ist, dass vorerst nicht zwischen einem Konstantensymbol $s \in \Sigma$ unterschieden wird, welches bekannte Eigenschaften hat, etwa der Komplexen Zahl $s = -5i$ und einem Symbol, wessen Eigenschaften vom Kontext abhängen können, etwa dem Zeichen $s = \mathrm x$ (vorrausgesetzt $-5i,~\mathrm x \in \Sigma$). \\
- $(f, t_1, \dots, t_n) \in T \setminus \Sigma$ wird auch als $f(t_1, \dots, t_n)$ geschrieben und \textit{Funktionsanwendung} von $f$ auf die \textit{Parameter} $t_1, \dots, t_n$ genannt. $t_1, \dots, t_n$ sind zudem die \emph{Kinder} ihres Vaters $f$. Kinder sind allgemeiner \textit{Nachkommen}. Nachkommen verhalten sich transitiv, also ein Nachkomme $z$ des Nachkommen $y$ von $x$ ist auch ein Nachkomme von $x$. Umgekehrt ist $x$ \textit{Ahne} von $y$ und $z$. \\
+~\mathrm{arity}(f) \in \{n, \omega\},
+~ t_0, \dots,t_{n-1} \in T(F)
+}$$ 
+Elemente $f\in F$ werden \textit{Funktionssymbole} genannt. Ist $\mathrm{arity}(f) = \omega$, wird $f$ als \textit{variadisches} Funktionssymbol bezeichnet. Ist $\mathrm{arity}(f) = 0$, wird $f$ als Konstantensymbol bezeichnet.
+
+Wichtig ist, dass vorerst nicht zwischen einem Konstantensymbol $c \in F$ unterschieden wird, welches bekannte Eigenschaften hat, etwa der Komplexen Zahl $c = -5i$ und einem Symbol, wessen Eigenschaften vom Kontext abhängen können, etwa dem Zeichen $c = \mathrm x$ (vorrausgesetzt $-5i,~\mathrm x \in F$). \\
+ $(f, t_0, \dots, t_{n-1}) \in T$ mit $n > 0$ wird auch als $f(t_1, \dots, t_n)$ geschrieben und \textit{Funktionsanwendung} von $f$ auf die \textit{Parameter} $t_1, \dots, t_n$ genannt. $t_1, \dots, t_n$ sind zudem die \emph{Kinder} ihres Vaters $f$. Kinder sind allgemeiner \textit{Nachkommen}. Nachkommen verhalten sich transitiv, also ein Nachkomme $z$ des Nachkommen $y$ von $x$ ist auch ein Nachkomme von $x$. Umgekehrt ist $x$ \textit{Ahne} von $y$ und $z$. \\
 Ein \textit{Teilterm} ist Nachkomme des äußersten Funktionssymbols oder der gesamte Term. \\
-Häufig werden Abschnitte der Parameter einer Funktionsanwendung beliebiger Länge der Form $t_i, \dots, t_k$ vorkommen. Kompakt wird $ts...$ für den (möglicherweise leeren) Abschnitt des Funktionsanwendungstupels geschrieben. \\$f(t_1, \dots, t_k, a, t_{k+2}, \dots, t_n)$ kann also äquivalent $f(ts..., a, rs...)$ geschrieben werden, mit $(t_1, \dots, t_k) = (ts...)$ und $(t_{k+2}, \dots, t_n) = (rs...)$.\\~\\
+Häufig werden Abschnitte der Parameter einer Funktionsanwendung beliebiger Länge der Form $t_i, \dots, t_k$ vorkommen. Kompakt wird $ts...$ für den (möglicherweise leeren) Abschnitt des Funktionsanwendungstupels geschrieben. \\$f(t_0, \dots, t_k, a, t_{k+2}, \dots, t_n)$ kann also äquivalent $f(ts..., a, rs...)$ geschrieben werden, mit $(t_0, \dots, t_k) = (ts...)$ und $(t_{k+2}, \dots, t_n) = (rs...)$.\\~\\
 
-
-\textbf{Beispiel}\\
-Wählt man $F = \{\mathrm f, \mathrm g\}$ und $\Sigma = \{\mathrm a, \mathrm b, \mathrm c\}$, ist 
-$t = \mathrm f(\mathrm b, \mathrm g(\mathrm f(\mathrm a), \mathrm b)) \in T(F, \Sigma)$ ein Term, dargestellt in Abb. \ref{ersterBeispielBaum}. $\mathrm b$ ist ein Kind von $\mathrm g$ und ein Ahne von $\mathrm f$. Damit ist $\mathrm g$ Vater von $\mathrm b$. $\mathrm g(ts...)$ ist zudem Kind von $\mathrm f$. $\mathrm b$ und $\mathrm f(\mathrm a)$ sind Teilterme von $t$.
 
 \begin{figure}
 \Tree[.f
@@ -68,54 +69,54 @@ $t = \mathrm f(\mathrm b, \mathrm g(\mathrm f(\mathrm a), \mathrm b)) \in T(F, \
 		[.f a ]
 		b ]]
 \label{ersterBeispielBaum}
-\caption{Baumdarstellung des Terms $\mathrm f(\mathrm b, \mathrm g(\mathrm f(\mathrm a), \mathrm b))$ }
+\caption{Baumdarstellung des Terms $f(b, g(f(a), b))$ }
 \end{figure}
 
-\subsection{Stelligkeit von Funktionssymbolen}
-Der Beispielterm aus Abb. \ref{ersterBeispielBaum} hat zwei Funktionsanwendungen von $\mathrm f$, jedoch einmal mit den zwei Parametern $\mathrm b$ und einer Anwendung von $\mathrm g$ und das zweite Mal mit nur einem Parameter $\mathrm a$. Die Funktionssymbole, für die eine Funktionsanwendung mit beliebig vielen Parametern sinvoll ist, nennen wir \textit{variadisch}. Ergibt eine Funktionsanwendung für ein Funktionssymbol nur mit einer festen Anzahl von Parametern Sinn, wird im folgenden von einer \textit{festen Stelligkeit} gesprochen. Um ausschließlich Terme zu erlauben, die in dieser Hinsicht sinvoll sind, wird jedem Funktionssymbol $f \in F$ von der Funktion $\mathrm {arity} \colon F \rightarrow \mathbb N \cup \omega$ eine Stelligkeit zugewiesen. Ist $\mathrm {arity}(f) = \omega$, so ist $f$ ein variadisches Funktionssymbol. Im folgenden werden ausschließlich Terme betrachtet, die Funktionsanwendungen mit der passenden Anzahl von Parametern enthalten.
-$$T(F, \Sigma) \coloneqq \Sigma ~\cup~ \{
-(f, t_1, \dots, t_n)
-~|
-~f\in F,
-~\mathrm{arity}(f) \in \{n, \omega\},
-~  t_1, \dots, t_n \in T(F, \Sigma)
-\}$$
+\textbf{Beispiel}\\
+Wählt man $F = \{f, g, a, b, c\}$ kann $\mathrm{arity}$ gewählt werden als 
+$$ \mathrm{arity}(v) = \begin{cases} \omega & v = f \\
+	2 & v = g \\ 
+	0 & v \not\in \{f, g\} \end{cases} $$
+$t = f(b, g(f(a), b)) \in T(F)$ ist ein Term, dargestellt in Abb. \ref{ersterBeispielBaum}. $b$ ist ein Kind von $g$ und ein Ahne von $f$. Damit ist $g$ Vater von $b$. $\mathrm g(ts...)$ ist zudem Kind von $f$. $b$ und $f(a)$ sind Teilterme von $t$.
 
 \subsection{Funktionsauswertung}
-Ein Funktionssymbol ist in der allgemeinen Definition eines Terms noch keine Funktion, da die Abbildungsvorschrift, sowie Definitionsmenge und Bildmenge nicht definiert sind. Eine Funktionsanwendung kann allerdings als Datenstruktur gesehen werden, etwa die des Funktionssymbols $pair$ auf die zwei Parameter $a$ und $b$ als ein Paar: $pair(a, b)$.\\
+Ein Funktionssymbol ist in der allgemeinen Definition eines Terms noch keine Funktion, da die Abbildungsvorschrift, sowie Definitionsmenge und Bildmenge nicht definiert sind. Eine Funktionsanwendung kann allerdings als Datenstruktur gesehen werden, etwa die des binären Funktionssymbols $pair$ auf die zwei Parameter $a$ und $b$ als ein Paar: $pair(a, b)$ oder die des variadischen Funktionssymbols $set$ als Darstellungsmöglichkeit für endliche Mengen innerhalb eines Terms.\\
 Die erste Erweiterung der Funktionssymbolmenge zur Menge von Funktionen folgt mittels der $\mathrm{eval}$ Funktion.
-$$\tilde{T}(F, \Sigma) \coloneqq \{
-(f, zs...)
-~|
-~f \in F,
-~\mathrm{arity}(f) \in \{n, \omega\},
-~zs... \in \Sigma
-\}$$
-$$\mathrm{eval} \colon (\tilde{T} \rightarrow \Sigma) \times T \rightarrow \Sigma$$
-$$\mathrm{eval}(v, t) = \begin{cases} 
-            t &,~ t\in \Sigma \\
-            v(s_1, \dots, s_n) &,~ t = (f, t_1, \dots , t_n), ~s_i = \mathrm{eval}(v, t_i)
-            \end{cases}$$
-Als Beispiel ist $\Sigma = \mathbb{N}_0$, $F = \{sum, product, power\}$ und $v$ definiert als
-$$v(f, s_1, \dots, s_n) = \begin{cases}
-s_1 + s_2 &,~ f = sum\\
-s_1 \cdot s_2 &,~ f = product\\
-(s_1)^{s_2} &,~ f = power\\
+$$T_Y \coloneqq \{(f, y_0, \dots, y_{n-1})~|~f \in F,~\mathrm{arity}(f) \in \{n, \omega\},
+~ y_0, \dots,y_{n-1} \in Y\}$$
+$$\mathrm{eval} \colon (T_Y \rightarrow Y) \times T \rightarrow Y$$
+\begin{equation*}
+	\begin{split}
+	\mathrm{eval}(v, t) &= \mathrm{eval}(v, (f, t_0, \dots , t_{n-1})) \\
+	&= v(f, \mathrm{eval}(v, t_0), \dots, \mathrm{eval}(v, t_{n-1}))
+	\end{split}
+\end{equation*}
+Die Funktion $v \colon T_Y \rightarrow Y$ wird dabei als \textit{Interpretation} von $T$ bezeichnet. Für einen Term $t \in T$ ist $\mathrm{eval}(v, t)$ die \textit{Auswertung} von $t$.
+\\~\\
+
+\textbf{Beispiel}\\
+Als Beispiel ist $F = \mathbb{N}_0 \cup \{+, \cdot \}$ mit $\mathrm{arity}(f) = 0$ für $f\in \mathbb{N}_0$ und $\mathrm{arity}(f) = \omega$ für $f\in \{+, \cdot \}$.
+Als Interpretation kann dann die Auswertung des Terms zu den natürlichen Zahlen gewählt werden.
+$$v(f, y_0, \dots, y_{n-1}) = \begin{cases}
+f & f \in \mathbb{N}_0\\
+\Sigma_{i = 0}^{n-1} y_i & f = +\\
+\Pi_{i = 0}^{n-1} y_i & f = \cdot\\
 \end{cases}$$
-Der Term $t = sum(3, product(2, 4))$ kann dann ausgewertet werden zu 
-\begin{equation}
+Der Term $t = +(3, \cdot(2, 4))$ kann dann ausgewertet werden zu 
+\begin{equation*}
     \begin{split}
-    \mathrm{eval}(v, t) &= \mathrm{eval}(v, sum(3, product(2, 4))) \\
-    &= v(sum, \mathrm{eval}(v, 3), \mathrm{eval}(v, product(2, 4))) \\
-    &= v(sum, 3, v(product, \mathrm{eval}(v, 2), \mathrm{eval}(v, 4))) \\
-    &= v(sum, 3, v(product, 2, 4)) \\
-    &= v(sum, 3, 8) \\
+    \mathrm{eval}(v, t) &= \mathrm{eval}(v, +(3, \cdot(2, 4))) \\
+    &= v(+, \mathrm{eval}(v, 3), \mathrm{eval}(v, \cdot(2, 4))) \\
+    &= v(+, 3, v(\cdot, \mathrm{eval}(v, 2), \mathrm{eval}(v, 4))) \\
+    &= v(+, 3, v(\cdot, 2, 4)) \\
+    &= v(+, 3, 8) \\
     &= 11 \\
     \end{split}
-\end{equation}
-\\
-Nicht mehr ausreichend ist $\mathrm{eval}$, wenn auch Symbole unbekannten Wertes in $\Sigma$ aufgenommen werden oder wenn manche Funktionen nicht von bzw. nach $\Sigma$ abbilden. 
+\end{equation*}
 
+\subsection{Äquivalenz}
+Das Kernthema dieser Arbeit ist die Vereinfachung von Termen. Eine Vereinfachung ist allerdings nur gültig, sofern sich die Bedeutung des vereinfachten Terms gegenüber der des ursprünglichen Terms nicht geändert hat. Da ein Term in sich keine Bedeutung trägt, muss eine Vereinfachung immer in Bezug auf eine Interpretation gesehen werden. Etwa kann der Ausdruck $X A X^{-1}$ zu $A$ vereinfacht werden, wenn $X, A \in \mathbb{C} \setminus \{0\}$, allerdings ist die Vereinfachung allgemein nicht möglich, sollten die Symbole $X$ und $A$ für Matritzen stehen. \\
+Im folgenden wird von der Assoziativität oder Kommutativität bestimmter Funktionssymbole gesprochen. Diese ist immer im Kontext einer entsprechenden Interpretation zu sehen. Gleichzeitig ist aber auch klar, dass unabhängig von der Interpretation verschiedene Funktionssymbole die Rolle der Multiplikation übernehmen müssen, sollte sowohl skalare Multiplikation als auch Matrixmultiplikation in einem Term möglich sein. 
 
 \section {Erste Normalform}
 In diesem Abschnitt werden erste Termumformungen beschrieben, die isolierte Eingenschaften einzelner Funktionen ausnutzen. Ziel ist es kommutative und assoziative Funktionsanwendungen eindeutig darzustellen.\\
@@ -130,21 +131,19 @@ Die geschachtelte Anwendung einer assoziativen Funktion führt je nach Klammerse
 	&= \dots \\
 	\end{split}
 \end{equation}
-Das ist in den meisten Situationen kein Problem, da in Infixnotation Klammern nur zur Gruppierung notwendig sind und per Definition der Assoziativität in diesem Fall keinen Unterschied machen, also weggelassen werden können: $a + b + c + d$. Es gibt mehrere Optionen eine solche Schachtelung in einem Term zu normalisieren, also in eine eindeutige Form zu bringen. Die erste ist, festzulegen, dass höchstens einer der beiden Parameter der binären assoziativen Funktion wieder Ergebnis dieser Funktion sein darf. Wählt man den zweiten Parameter dafür aus, ist wird die Summe in der Normalform dargestellt als $+(a, +(b, +(c, d)))$. Diese Methode nennt sich Pivotisierung und wird in \textbf{Quellen} näher untersucht.\\
+Es gibt mehrere Optionen eine solche Schachtelung in einem Term zu normalisieren, also in eine eindeutige Form zu bringen. Die erste ist, festzulegen, dass höchstens einer der beiden Parameter der binären assoziativen Funktion wieder Ergebnis dieser Funktion sein darf. Wählt man den zweiten Parameter dafür aus, ist wird die Summe in der Normalform dargestellt als $+(a, +(b, +(c, d)))$. Diese Methode nennt sich Pivotisierung und wird in \textbf{Quellen} näher untersucht.\\
 Alternativ kann man die Summe von zwei Parametern auch als Spezialfall einer Summe von $n \in \mathbb{N}$ Parametern auffassen, dann gewohnt geschrieben als $\Sigma_{x \in \{a, b, c, d\}} x$. Dieser Weg wird im folgenden gewählt, wobei die Darstellung als Term dann $+(a, b, c, d)$ ist. Assoziative Funktionen sind in der gewählten Darstellung damit variadisch. \\
-Die Normalisierung assoziativer Funktionsanwendungen des Funktionssymbols $f$ ersetzt dann alle Teilterme der Form $f(as..., f(bs...), cs...)$ zu $f(as..., bs..., cs...)$.
+Die Normalisierung von Funktionsanwendungen des assoziativen Funktionssymbols $f$ ersetzt dann alle Teilterme der Form $f(as..., f(bs...), cs...)$ zu $f(as..., bs..., cs...)$.
 
 \subsection{Kommutative Funktionsanwendungen}
-Eine Normalform für kommutative Funktionsanwendungen erfordert eine totale Ordnung auf der Menge aller Terme $T(F, \Sigma)$. Aufbauend auf einer totalen Ordnung von $\Sigma$ und einer totalen Ordnung von $F$, kann eine lexikographische Ordnung von $T$ wie folgt definiert werden. 
+Eine Normalform für kommutative Funktionsanwendungen erfordert eine totale Ordnung auf der Menge aller Terme $T(F, \Sigma)$. Aufbauend auf einer totalen Ordnung von $F$, kann eine lexikographische Ordnung von $T$ wie folgt definiert werden. 
 \begin{itemize}
-	\item{sind $s, \tilde{s} \in T$ Konstantensymbole, so ist die Ordnung identisch zu der Ordnung in $\Sigma$}
-	\item{sind $s, a, \in T$ und $s$ ein Konstantensymbol und $a$ eine Funktionsanwendung ist $s < a$ }
 	\item{sind $a = f(ts...), b = g(rs...) \in T$ Funktionsanwendungen und ist $f \neq g$ gilt $a < b \iff f < g $}
 	\item{sind $a = f(t_1, \dots, t_n), b = f(r_1, \dots, r_m) \in T$ Funktionsanwendungen, und $\tilde{t_1}, \dots, \tilde{t_n}$, $\tilde{r_1}, \dots, \tilde{r_m}$ die normalisierten Parameter von $a$ und $b$, ist die Ordnung wiefolgt}
 	\begin{itemize}
-		\item{wenn $\exists k \leq \min{(n, m)} \colon \forall i < k ~ \tilde{t_i} = \tilde{r_i} ,~ \tilde{t_k} \neq \tilde{r_k} $ sind $a$ und $b$ so geordnet wie $\tilde{t_k}$ und $\tilde{r_k}$}
-		\item{gilt $n < m$ und $\forall i < n\colon \tilde{t_i} = \tilde{r_i}$ ist $a < b$}
-		\item{gilt $n = m$ und $\forall i \leq n\colon \tilde{t_i} = \tilde{r_i}$ ist $a = b$}
+		\item{wenn $\exists k \leq \min{(n, m)} \colon \forall i < k ~ \tilde{t_i} = \tilde{r_i} ,~ \tilde{t_k} \neq \tilde{r_k} $ gilt $a$ und $b$ sind geordnet wie $\tilde{t_k}$ und $\tilde{r_k}$}
+		\item{ist $n < m$ und $\forall i < n\colon \tilde{t_i} = \tilde{r_i}$ gilt $a < b$}
+		\item{ist $n = m$ und $\forall i \leq n\colon \tilde{t_i} = \tilde{r_i}$ gilt $a = b$}
 	\end{itemize}
 \end{itemize}
 Zur Normalisierung einer kommutativen Funktionsanwendung werden zuerst alle Parameter normalisiert, dann können die Parameter nach der lexikographischen Ordnung von $T$ sortiert werden.
@@ -165,11 +164,11 @@ $$sum(pow(a, 2), product(2, a, b), pow(b, 2)) \rightarrow pow(sum(a, b), 2)$$
 Die Zeichen $a$ und $b$ stehen dabei nicht für Elemente von $\Sigma$, sondern dienen lediglich als Platzhalter für beliebige Teilterme, wobei die verschiedenen Vorkommnisse des selben Zeichens immer auch mit äquivalenten Termen assoziiert werden müssen. Ein solches Zeichen wird im folgenden \textit{Mustervariable} genannt.
 
 \subsection{Muster}
-Eine Menge von Termen $T(F, \Sigma)$ kann durch jeweilige Vereinigung von $F$ und $\Sigma$ mit der Menge der Mustervariablen $V$ zu einer Menge von Mustertermen $M$ erweitert werden. 
+Eine Menge von Termen $T(F)$ kann durch Vereinigung von $F$ mit der Menge der Mustervariablen $V$ zu einer Menge von Mustertermen $M$ erweitert werden. 
 
-$$M(F, \Sigma) \coloneqq T(F \cup V, \Sigma \cup V)$$
-
-Ein Term $t \in T(F, \Sigma)$ wird zur Abgrenzung im folgenden \textit{Literal} genannt, ein Term $m \in M(F, \Sigma)$ wird als Muster bezeichnet. Die Literale sind damit eine Teilmenge aller Muster. Bewusst wird hier nicht ausgeschlossen, dass $V$ bereits in $F$ und $\Sigma$ enthalten sein kann. Die im folgenden beschriebenen Techniken zur Transformation eines Terms können also auch genutzt werden um kompliziertere Muster zu erzeugen.
+$$M(F) \coloneqq T(F \cup V)$$
+$$\forall c\in V \colon \mathrm{arity}(c) = \omega$$
+Ein drei-Tupel $(m, v, t) \in (M, M_T \rightarrow T, T)$ wird als \textit{Match} bezeichnet, wenn die Auswertung eines Literals mit der Interpretation $v \colon M_T \rightarrow T$ wieder in dem selben Literal resultiert, also $ \forall \tilde{t} \in T \colon \mathrm{eval}(v, \tilde{t}) =\tilde{t}$. Zudem muss $m$ mit $v$ zu $t$ ausgewertet werden, also $\mathrm{eval}(v, m) = t$.
 
 \subsection{Naiver Algorithmus}
 \begin{itshape}
