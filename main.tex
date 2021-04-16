@@ -46,6 +46,8 @@ Anmerkung: Hier kommt hin, was halt in eine Einleitung soll:
 \end{itshape}
 
 \section{Definitionen}
+
+\subsection{Term}
 Eine Menge von Termen $T$ ist in dieser Arbeit immer  in Abhängigkeit der Mengen $F$ und $C$, sowie der Stelligkeitsfunktion $\mathrm{arity} \colon F \rightarrow \mathbb{N} \cup \{\omega\}$.
 $$T(F, C) \coloneqq C \cup \curl*{
 (f, t_1, \dots, t_n)
@@ -75,20 +77,22 @@ Sei $F = \{f, g\}$ und $C = \{a, b, c\}$ sowie $\mathrm{arity}(f) = \omega$ und 
 $t = f(b, g(f(a), b)) \in T(F, C)$ ist ein Term, dargestellt in Abb. \ref{ersterBeispielBaum}. $b$ ist ein Kind von $\tilde{t} = g(f(a), b)$ und ein Ahne von $t$.
 
 \subsection{Funktionsauswertung}
-Ein Funktionssymbol ist in der allgemeinen Definition eines Terms noch keine Funktion, da die Abbildungsvorschrift, sowie Definitionsmenge und Bildmenge nicht definiert sind. Eine Funktionsanwendung kann allerdings als Datenstruktur gesehen werden, etwa die des binären Funktionssymbols $pair$ auf die zwei Parameter $a$ und $b$ als ein Paar: $pair(a, b)$ oder die des variadischen Funktionssymbols $set$ als Darstellungsmöglichkeit für endliche Mengen innerhalb eines Terms.\\
-Die Erweiterung der Funktionssymbolmenge zur Menge von Funktionen, die von einem Raum $Y^n$ nach $Y$ abbilden, folgt mittels der $\mathrm{eval}$ Funktion.
+Ein Funktionssymbol ist in der allgemeinen Definition eines Terms noch keine Funktion, da die Abbildungsvorschrift, sowie Definitionsmenge und Bildmenge nicht definiert sind. Eine Funktionsanwendung wird primär als Datenstruktur gesehen, etwa die des binären Funktionssymbols $pair$ auf die zwei Parameter $a$ und $b$ als ein Paar: $pair(a, b)$ oder die des variadischen Funktionssymbols $set$ als Darstellungsmöglichkeit für endliche Mengen innerhalb eines Terms.\\
+Die Erweiterung des Funktionssymbols zur Funktion, die von einem Raum $Y^n$ nach $Y$ abbildet, folgt mittels der $\mathrm{eval}$ Funktion.
 
 $$T_Y \coloneqq \{(f, y_0, \dots, y_{n-1})~|~f \in F,~\mathrm{arity}(f) \in \{n, \omega\},
 ~ y_0, \dots,y_{n-1} \in Y\}$$
+\begin{equation*}
+    \begin{split}
+	\mathrm{eval} &\colon (T_Y \rightarrow Y) \times (C \rightarrow Y) \times T \rightarrow Y\\
+	\mathrm{eval} &(u, v, t) = \begin{cases}
+		u(f, \mathrm{eval}(u, v, t_0), \dots, \mathrm{eval}(u, v, t_{n-1})) & t = f(t_1, \dots, t_n)\\
+		v(c)                                                                                      & t = c
+		\end{cases}
+    \end{split}
+\end{equation*}
 
-$$\mathrm{eval} \colon (T_Y \rightarrow Y) \times (C \rightarrow Y) \times T \rightarrow Y$$
-
-$$\mathrm{eval}(u, v, t) = \begin{cases}
-	u(f, \mathrm{eval}(u, v, t_0), \dots, \mathrm{eval}(u, v, t_{n-1})) & t = f(t_1, \dots, t_n)\\
-	v(c)                                                                                               & t = c
-\end{cases}$$
-
-Die das Paar $(u, v) \in (T_Y \rightarrow Y) \times (C \rightarrow Y)$ wird dabei als \textit{Interpretation} von $T$ bezeichnet. Für einen Term $t \in T$ ist $\mathrm{eval}(u, v, t)$ die \textit{Auswertung} von $t$.
+Das Paar $(u, v) \in (T_Y \rightarrow Y) \times (C \rightarrow Y)$ wird dabei als \textit{Interpretation} von $T$ bezeichnet. Für einen Term $t \in T$ ist $\mathrm{eval}(u, v, t)$ die \textit{Auswertung} von $t$.
 \\~\\
 
 \textbf{Beispiel}\\
@@ -134,7 +138,7 @@ Alternativ kann man die Summe von zwei Parametern auch als Spezialfall einer Sum
 Die Normalisierung von Funktionsanwendungen des assoziativen Funktionssymbols $f$ ersetzt dann alle Teilterme der Form $f(as..., f(bs...), cs...)$ zu $f(as..., bs..., cs...)$.
 
 \subsection{Kommutative Funktionsanwendungen}
-Eine Normalform für kommutative Funktionsanwendungen erfordert eine totale Ordnung auf der Menge aller Terme $T(F, C)$. Aufbauend auf einer totalen Ordnung von $F$ und $C$, kann eine lexikographische Ordnung von $T$ wie folgt definiert werden. 
+Eine Normalform für kommutative Funktionsanwendungen erfordert eine totale Ordnung auf der Menge aller Terme $T(F, C)$. Aufbauend auf einer totalen Ordnung von $F$ sowie $C$, kann eine lexikographische Ordnung von $T$ wie folgt definiert werden. 
 \begin{itemize}
 	\item{sind $s, \tilde{s} \in T$ Konstantensymbole, so ist die Ordnung identisch zu der Ordnung in $C$}
 	\item{sind $s, a, \in T$ und $s$ ein Konstantensymbol und $a$ eine Funktionsanwendung gilt $s < a$ }
@@ -150,9 +154,9 @@ Zur Normalisierung einer kommutativen Funktionsanwendung werden zuerst alle Para
 
 \subsection{Teilweise Auswertung}
 Mit der Darstellung assoziativer Funktionen als variadische Funktionen, ist es möglich, dass eine Funktion teilweise ausgewertet werden kann, also gilt für assoziative Funktionssymbole $f \in F$
-$$\mathrm{eval}(u, v, f(a, b)) = c \implies f(xs..., a, b, ys...) = f(xs..., c, ys...)$$
+$$\mathrm{eval}(u, v, f(a, b)) = c \in T \implies f(xs..., a, b, ys...) = f(xs..., c, ys...)$$
 Ist $f$ zudem kommutativ gilt 
-$$\mathrm{eval}(u, v, f(a, b)) = c \implies f(xs..., a, ys..., b, zs...) = f(xs..., c, ys..., zs...)$$
+$$\mathrm{eval}(u, v, f(a, b)) = c \in T \implies f(xs..., a, ys..., b, zs...) = f(xs..., c, ys..., zs...)$$
 Eine normalisierte Funktionsanwendung ist so weit wie möglich ausgewertet. Sollte sie ganz ausgewertet werden können, ist die normalisierte Funktionsanwendung das Ergebnis der Auswertung.
 
 \section{Patternmatching}
