@@ -46,20 +46,18 @@ Anmerkung: Hier kommt hin, was halt in eine Einleitung soll:
 \end{itshape}
 
 \section{Definitionen}
-Eine Menge von Termen $T$ ist in dieser Arbeit immer  in Abhängigkeit der Menge $F$, sowie der Stelligkeitsfunktion $\mathrm{arity} \colon F \rightarrow \mathbb{N}_0 \cup \omega$.
-$$T(F) \coloneqq \curl*{
-(f, t_0, \dots, t_{n-1})
+Eine Menge von Termen $T$ ist in dieser Arbeit immer  in Abhängigkeit der Mengen $F$ und $C$, sowie der Stelligkeitsfunktion $\mathrm{arity} \colon F \rightarrow \mathbb{N} \cup \{\omega\}$.
+$$T(F, C) \coloneqq C \cup \curl*{
+(f, t_1, \dots, t_n)
 ~|
 ~f\in F,
 ~\mathrm{arity}(f) \in \{n, \omega\},
-~ t_0, \dots,t_{n-1} \in T(F)
+~ t_1, \dots,t_n \in T(F, C)
 }$$ 
-Elemente $f\in F$ werden \textit{Funktionssymbole} genannt. Ist $\mathrm{arity}(f) = \omega$, wird $f$ als \textit{variadisches} Funktionssymbol bezeichnet. Ist $\mathrm{arity}(f) = 0$, wird $f$ als Konstantensymbol bezeichnet.
-
-Wichtig ist, dass vorerst nicht zwischen einem Konstantensymbol $c \in F$ unterschieden wird, welches bekannte Eigenschaften hat, etwa der Komplexen Zahl $c = -5i$ und einem Symbol, wessen Eigenschaften vom Kontext abhängen können, etwa dem Zeichen $c = \mathrm x$ (vorrausgesetzt $-5i,~\mathrm x \in F$). \\
- $(f, t_0, \dots, t_{n-1}) \in T$ mit $n > 0$ wird auch als $f(t_1, \dots, t_n)$ geschrieben und \textit{Funktionsanwendung} von $f$ auf die \textit{Parameter} $t_1, \dots, t_n$ genannt. $t_1, \dots, t_n$ sind zudem die \emph{Kinder} ihres Vaters $f$. Kinder sind allgemeiner \textit{Nachkommen}. Nachkommen verhalten sich transitiv, also ein Nachkomme $z$ des Nachkommen $y$ von $x$ ist auch ein Nachkomme von $x$. Umgekehrt ist $x$ \textit{Ahne} von $y$ und $z$. \\
-Ein \textit{Teilterm} ist Nachkomme des äußersten Funktionssymbols oder der gesamte Term. \\
-Häufig werden Abschnitte der Parameter einer Funktionsanwendung beliebiger Länge der Form $t_i, \dots, t_k$ vorkommen. Kompakt wird $ts...$ für den (möglicherweise leeren) Abschnitt des Funktionsanwendungstupels geschrieben. \\$f(t_0, \dots, t_k, a, t_{k+2}, \dots, t_n)$ kann also äquivalent $f(ts..., a, rs...)$ geschrieben werden, mit $(t_0, \dots, t_k) = (ts...)$ und $(t_{k+2}, \dots, t_n) = (rs...)$.\\~\\
+Elemente $f\in F$ werden \emph{Funktionssymbole} genannt. Ist $\mathrm{arity}(f) = \omega$, wird $f$ als \emph{variadisches} Funktionssymbol bezeichnet. Elemente $c \in C$ werden als Konstantensymbole bezeichnet.
+Wichtig ist, dass vorerst nicht zwischen einem Konstantensymbol $c \in C$ unterschieden wird, welches bekannte Eigenschaften hat, etwa der Komplexen Zahl $c = -5i$ und einem Symbol, wessen Eigenschaften vom Kontext abhängen können, etwa dem Zeichen $c = \mathrm x$ (vorrausgesetzt $-5i,~\mathrm x \in C$). \\
+ $(f, t_1, \dots, t_n) \in T$ wird auch als $f(t_1, \dots, t_n)$ geschrieben und \emph{Funktionsanwendung} von $f$ auf die \emph{Parameter} $t_1, \dots, t_n$ genannt. $t_1, \dots, t_n$ sind zudem die \emph{Kinder} ihres \emph{Vaters} $f(t_1, \dots, t_n)$. Kinder sind allgemeiner \textit{Nachkommen}. Nachkommen verhalten sich transitiv, also ein Nachkomme $z$ des Nachkommen $y$ von $x$ ist auch ein Nachkomme von $x$. Umgekehrt ist $x$ \emph{Ahne} von $y$ und $z$. \\
+Häufig werden Abschnitte der Parameter einer Funktionsanwendung beliebiger Länge der Form $t_i, \dots, t_k$ vorkommen. Kompakt wird $ts...$ für den (möglicherweise leeren) Abschnitt des Funktionsanwendungstupels geschrieben. \\$f(t_1, \dots, t_k, a, t_{k+2}, \dots, t_n)$ kann also äquivalent $f(ts..., a, rs...)$ geschrieben werden, mit $(t_1, \dots, t_k) = (ts...)$ und $(t_{k+2}, \dots, t_n) = (rs...)$.\\~\\
 
 
 \begin{figure}
@@ -73,71 +71,73 @@ Häufig werden Abschnitte der Parameter einer Funktionsanwendung beliebiger Län
 \end{figure}
 
 \textbf{Beispiel}\\
-Wählt man $F = \{f, g, a, b, c\}$ kann $\mathrm{arity}$ gewählt werden als 
-$$ \mathrm{arity}(v) = \begin{cases} \omega & v = f \\
-	2 & v = g \\ 
-	0 & v \not\in \{f, g\} \end{cases} $$
-$t = f(b, g(f(a), b)) \in T(F)$ ist ein Term, dargestellt in Abb. \ref{ersterBeispielBaum}. $b$ ist ein Kind von $g$ und ein Ahne von $f$. Damit ist $g$ Vater von $b$. $\mathrm g(ts...)$ ist zudem Kind von $f$. $b$ und $f(a)$ sind Teilterme von $t$.
+Sei $F = \{f, g\}$ und $C = \{a, b, c\}$ sowie $\mathrm{arity}(f) = \omega$ und $\mathrm{arity}(g) = 2$.\\
+$t = f(b, g(f(a), b)) \in T(F, C)$ ist ein Term, dargestellt in Abb. \ref{ersterBeispielBaum}. $b$ ist ein Kind von $\tilde{t} = g(f(a), b)$ und ein Ahne von $t$.
 
 \subsection{Funktionsauswertung}
 Ein Funktionssymbol ist in der allgemeinen Definition eines Terms noch keine Funktion, da die Abbildungsvorschrift, sowie Definitionsmenge und Bildmenge nicht definiert sind. Eine Funktionsanwendung kann allerdings als Datenstruktur gesehen werden, etwa die des binären Funktionssymbols $pair$ auf die zwei Parameter $a$ und $b$ als ein Paar: $pair(a, b)$ oder die des variadischen Funktionssymbols $set$ als Darstellungsmöglichkeit für endliche Mengen innerhalb eines Terms.\\
-Die erste Erweiterung der Funktionssymbolmenge zur Menge von Funktionen folgt mittels der $\mathrm{eval}$ Funktion.
+Die Erweiterung der Funktionssymbolmenge zur Menge von Funktionen, die von einem Raum $Y^n$ nach $Y$ abbilden, folgt mittels der $\mathrm{eval}$ Funktion.
+
 $$T_Y \coloneqq \{(f, y_0, \dots, y_{n-1})~|~f \in F,~\mathrm{arity}(f) \in \{n, \omega\},
 ~ y_0, \dots,y_{n-1} \in Y\}$$
-$$\mathrm{eval} \colon (T_Y \rightarrow Y) \times T \rightarrow Y$$
-\begin{equation*}
-	\begin{split}
-	\mathrm{eval}(v, t) &= \mathrm{eval}(v, (f, t_0, \dots , t_{n-1})) \\
-	&= v(f, \mathrm{eval}(v, t_0), \dots, \mathrm{eval}(v, t_{n-1}))
-	\end{split}
-\end{equation*}
-Die Funktion $v \colon T_Y \rightarrow Y$ wird dabei als \textit{Interpretation} von $T$ bezeichnet. Für einen Term $t \in T$ ist $\mathrm{eval}(v, t)$ die \textit{Auswertung} von $t$.
+
+$$\mathrm{eval} \colon (T_Y \rightarrow Y) \times (C \rightarrow Y) \times T \rightarrow Y$$
+
+$$\mathrm{eval}(u, v, t) = \begin{cases}
+	u(f, \mathrm{eval}(u, v, t_0), \dots, \mathrm{eval}(u, v, t_{n-1})) & t = f(t_1, \dots, t_n)\\
+	v(c)                                                                                               & t = c
+\end{cases}$$
+
+Die das Paar $(u, v) \in (T_Y \rightarrow Y) \times (C \rightarrow Y)$ wird dabei als \textit{Interpretation} von $T$ bezeichnet. Für einen Term $t \in T$ ist $\mathrm{eval}(u, v, t)$ die \textit{Auswertung} von $t$.
 \\~\\
 
 \textbf{Beispiel}\\
-Als Beispiel ist $F = \mathbb{N}_0 \cup \{+, \cdot \}$ mit $\mathrm{arity}(f) = 0$ für $f\in \mathbb{N}_0$ und $\mathrm{arity}(f) = \omega$ für $f\in \{+, \cdot \}$.
-Als Interpretation kann dann die Auswertung des Terms zu den natürlichen Zahlen gewählt werden.
-$$v(f, y_0, \dots, y_{n-1}) = \begin{cases}
-f & f \in \mathbb{N}_0\\
+Sei $F = \{+, \cdot \}$ und $C = \mathbb{N}$ mit $\mathrm{arity}(f) = \omega$ für $f\in \{+, \cdot \}$.
+Als Interpretation kann dann die Auswertung des Terms zu den natürlichen Zahlen gewählt werden, wobei $\mathrm{id}$ für die Identitätsfunktion steht.
+$$u(f, y_0, \dots, y_{n-1}) = \begin{cases}
 \Sigma_{i = 0}^{n-1} y_i & f = +\\
 \Pi_{i = 0}^{n-1} y_i & f = \cdot\\
 \end{cases}$$
+$$v = \mathrm{id}$$
 Der Term $t = +(3, \cdot(2, 4))$ kann dann ausgewertet werden zu 
 \begin{equation*}
     \begin{split}
-    \mathrm{eval}(v, t) &= \mathrm{eval}(v, +(3, \cdot(2, 4))) \\
-    &= v(+, \mathrm{eval}(v, 3), \mathrm{eval}(v, \cdot(2, 4))) \\
-    &= v(+, 3, v(\cdot, \mathrm{eval}(v, 2), \mathrm{eval}(v, 4))) \\
-    &= v(+, 3, v(\cdot, 2, 4)) \\
-    &= v(+, 3, 8) \\
+    \mathrm{eval}(u, v, t) &= \mathrm{eval}(u, v, +(3, \cdot(2, 4))) \\
+    &= u(+, \mathrm{eval}(u, v, 3), \mathrm{eval}(u, v, \cdot(2, 4))) \\
+    &= u(+, v(3), u(\cdot, \mathrm{eval}(u, v, 2), \mathrm{eval}(u, v, 4))) \\
+    &= u(+, v(3), u(\cdot, v(2), v(4))) \\
+    &= u(+, 3, u(\cdot, 2, 4)) \\
+    &= u(+, 3, 8) \\
     &= 11 \\
     \end{split}
 \end{equation*}
 
 \subsection{Äquivalenz}
 Das Kernthema dieser Arbeit ist die Vereinfachung von Termen. Eine Vereinfachung ist allerdings nur gültig, sofern sich die Bedeutung des vereinfachten Terms gegenüber der des ursprünglichen Terms nicht geändert hat. Da ein Term in sich keine Bedeutung trägt, muss eine Vereinfachung immer in Bezug auf eine Interpretation gesehen werden. Etwa kann der Ausdruck $X A X^{-1}$ zu $A$ vereinfacht werden, wenn $X, A \in \mathbb{C} \setminus \{0\}$, allerdings ist die Vereinfachung allgemein nicht möglich, sollten die Symbole $X$ und $A$ für Matritzen stehen. \\
-Im folgenden wird von der Assoziativität oder Kommutativität bestimmter Funktionssymbole gesprochen. Diese ist immer im Kontext einer entsprechenden Interpretation zu sehen. Gleichzeitig ist aber auch klar, dass unabhängig von der Interpretation verschiedene Funktionssymbole die Rolle der Multiplikation übernehmen müssen, sollte sowohl skalare Multiplikation als auch Matrixmultiplikation in einem Term möglich sein. 
+Im folgenden wird von der Assoziativität oder Kommutativität bestimmter Funktionssymbole gesprochen. Diese ist immer im Kontext einer entsprechenden Interpretation zu sehen. Gleichzeitig ist aber auch klar, dass unabhängig von der Interpretation verschiedene Funktionssymbole die Rolle der Multiplikation übernehmen müssen, sollte sowohl skalare Multiplikation als auch Matrixmultiplikation im selben Term möglich sein. 
 
 \section {Erste Normalform}
 In diesem Abschnitt werden erste Termumformungen beschrieben, die isolierte Eingenschaften einzelner Funktionen ausnutzen. Ziel ist es kommutative und assoziative Funktionsanwendungen eindeutig darzustellen.\\
 
 \subsection {Assoziative Funktionsanwendungen}
 Die geschachtelte Anwendung einer assoziativen Funktion führt je nach Klammersetzung zu verschiedenen mathematisch equivalenten Termen. Als Beispiel dient hier die Addition, dargestellt als Anwendung des Funktionssymbols $+$. Die folgenden Ausdrücke sind paarweise verschiedene Terme, jedoch alle mathematisch äquivalent.
-\begin{equation}
+\begin{equation*}
 	\begin{split}
 	+(+(+(a, b), c), d) &= +(+(a, +(b, c)), d)\\
 	&= +(+(a, b), +(c, d))\\
 	&= +(a, +(b, +(c, d)))\\
 	&= \dots \\
 	\end{split}
-\end{equation}
+\end{equation*}
 Es gibt mehrere Optionen eine solche Schachtelung in einem Term zu normalisieren, also in eine eindeutige Form zu bringen. Die erste ist, festzulegen, dass höchstens einer der beiden Parameter der binären assoziativen Funktion wieder Ergebnis dieser Funktion sein darf. Wählt man den zweiten Parameter dafür aus, ist wird die Summe in der Normalform dargestellt als $+(a, +(b, +(c, d)))$. Diese Methode nennt sich Pivotisierung und wird in \textbf{Quellen} näher untersucht.\\
 Alternativ kann man die Summe von zwei Parametern auch als Spezialfall einer Summe von $n \in \mathbb{N}$ Parametern auffassen, dann gewohnt geschrieben als $\Sigma_{x \in \{a, b, c, d\}} x$. Dieser Weg wird im folgenden gewählt, wobei die Darstellung als Term dann $+(a, b, c, d)$ ist. Assoziative Funktionen sind in der gewählten Darstellung damit variadisch. \\
 Die Normalisierung von Funktionsanwendungen des assoziativen Funktionssymbols $f$ ersetzt dann alle Teilterme der Form $f(as..., f(bs...), cs...)$ zu $f(as..., bs..., cs...)$.
 
 \subsection{Kommutative Funktionsanwendungen}
-Eine Normalform für kommutative Funktionsanwendungen erfordert eine totale Ordnung auf der Menge aller Terme $T(F, \Sigma)$. Aufbauend auf einer totalen Ordnung von $F$, kann eine lexikographische Ordnung von $T$ wie folgt definiert werden. 
+Eine Normalform für kommutative Funktionsanwendungen erfordert eine totale Ordnung auf der Menge aller Terme $T(F, C)$. Aufbauend auf einer totalen Ordnung von $F$ und $C$, kann eine lexikographische Ordnung von $T$ wie folgt definiert werden. 
 \begin{itemize}
+	\item{sind $s, \tilde{s} \in T$ Konstantensymbole, so ist die Ordnung identisch zu der Ordnung in $C$}
+	\item{sind $s, a, \in T$ und $s$ ein Konstantensymbol und $a$ eine Funktionsanwendung gilt $s < a$ }
 	\item{sind $a = f(ts...), b = g(rs...) \in T$ Funktionsanwendungen und ist $f \neq g$ gilt $a < b \iff f < g $}
 	\item{sind $a = f(t_1, \dots, t_n), b = f(r_1, \dots, r_m) \in T$ Funktionsanwendungen, und $\tilde{t_1}, \dots, \tilde{t_n}$, $\tilde{r_1}, \dots, \tilde{r_m}$ die normalisierten Parameter von $a$ und $b$, ist die Ordnung wiefolgt}
 	\begin{itemize}
@@ -149,26 +149,25 @@ Eine Normalform für kommutative Funktionsanwendungen erfordert eine totale Ordn
 Zur Normalisierung einer kommutativen Funktionsanwendung werden zuerst alle Parameter normalisiert, dann können die Parameter nach der lexikographischen Ordnung von $T$ sortiert werden.
 
 \subsection{Teilweise Auswertung}
-Mit der Darstellung assoziativer Funktionen als variadische Funktionen, ist es möglich, dass eine Funktion mittels $\mathrm{eval}$ teilweise ausgewertet werden kann, also gilt für assoziative Funktionssymbole $f \in F$
-$$f(a, b) = c \implies f(xs..., a, b, ys...) = f(xs..., c, ys...)$$
+Mit der Darstellung assoziativer Funktionen als variadische Funktionen, ist es möglich, dass eine Funktion teilweise ausgewertet werden kann, also gilt für assoziative Funktionssymbole $f \in F$
+$$\mathrm{eval}(u, v, f(a, b)) = c \implies f(xs..., a, b, ys...) = f(xs..., c, ys...)$$
 Ist $f$ zudem kommutativ gilt 
-$$f(a, b) = c \implies f(xs..., a, ys..., b, zs...) = f(xs..., c, ys..., zs...)$$
-Eine normalisierte Funktionsanwendung ist damit so weit wie möglich ausgewertet. Sollte sie ganz ausgewertet werden können, ist die normalisierte Funktionsanwendung das Ergebnis der Auswertung.
-
+$$\mathrm{eval}(u, v, f(a, b)) = c \implies f(xs..., a, ys..., b, zs...) = f(xs..., c, ys..., zs...)$$
+Eine normalisierte Funktionsanwendung ist so weit wie möglich ausgewertet. Sollte sie ganz ausgewertet werden können, ist die normalisierte Funktionsanwendung das Ergebnis der Auswertung.
 
 \section{Patternmatching}
 Im vorigen Abschnitt wurde eine erste Normalform für Terme definiert. Alle Vereinfachungen, die dort behandelt wurden, sind recht einfach und direkt zu implementieren, da nur auf lokale Eigenschaften des zu vereinfachenden Terms Rücksicht genommen werden muss. In diesem Abschnitt wird beschrieben, wie ein Term auch zuverlässig auf komplexere Muster geprüft werden kann, so dass nach Implementierung der Mustererkennung selbst jede einzelne Vereinfachungsregel durch zwei Muster beschrieben werden kann: ein Muster gibt an, welche Struktur im zu vereinfachenden Term gesucht wird, ein zweites Muster gibt an, zu was diese Struktur transformiert wird. Ein Beispiel für ein solches Musterpaar ist etwa die Anwendung der ersten binomischen Formel:
 $$a^2 + 2 a b + b^2 \rightarrow (a + b)^2$$
 In der etablierten Schreibweise als Term dann geschrieben als:
 $$sum(pow(a, 2), product(2, a, b), pow(b, 2)) \rightarrow pow(sum(a, b), 2)$$
-Die Zeichen $a$ und $b$ stehen dabei nicht für Elemente von $\Sigma$, sondern dienen lediglich als Platzhalter für beliebige Teilterme, wobei die verschiedenen Vorkommnisse des selben Zeichens immer auch mit äquivalenten Termen assoziiert werden müssen. Ein solches Zeichen wird im folgenden \textit{Mustervariable} genannt.
+Die Zeichen $a$ und $b$ stehen dabei nicht für Elemente in $C$, sondern dienen lediglich als Platzhalter für beliebige Teilterme, wobei die verschiedenen Vorkommnisse des selben Zeichens immer auch mit äquivalenten Termen assoziiert werden müssen. Ein solches Zeichen wird im folgenden \textit{Mustervariable} genannt.
 
 \subsection{Muster}
-Eine Menge von Termen $T(F)$ kann durch Vereinigung von $F$ mit der Menge der Mustervariablen $V$ zu einer Menge von Mustertermen $M$ erweitert werden. 
+Eine Menge von Termen $T(F)$ kann durch Vereinigung von $C$ mit der Menge der Mustervariablen $X$ zu einer Menge von Mustertermen $M$ erweitert werden. 
 
-$$M(F) \coloneqq T(F \cup V)$$
-$$\forall c\in V \colon \mathrm{arity}(c) = \omega$$
-Ein drei-Tupel $(m, v, t) \in (M, M_T \rightarrow T, T)$ wird als \textit{Match} bezeichnet, wenn die Auswertung eines Literals mit der Interpretation $v \colon M_T \rightarrow T$ wieder in dem selben Literal resultiert, also $ \forall \tilde{t} \in T \colon \mathrm{eval}(v, \tilde{t}) =\tilde{t}$. Zudem muss $m$ mit $v$ zu $t$ ausgewertet werden, also $\mathrm{eval}(v, m) = t$.
+$$M(F, C) \coloneqq T(F, C \cup X)$$
+
+Ein drei-Tupel $(m, v, t) \in M \times (C \cup X \rightarrow T) \times T$ wird als \textit{Match} bezeichnet, wenn die Auswertung eines Literals mit der Interpretation $(\mathrm{id}, v)$ wieder in dem selben Literal resultiert, also $ \forall \tilde{t} \in T \colon \mathrm{eval}(\mathrm{id}, v, \tilde{t}) =\tilde{t}$. Zudem muss $m$ zu $t$ ausgewertet werden, also $\mathrm{eval}(\mathrm{id}, v, m) = t$. Anschaulich ist jede Konstante $c \in C$ Fixpunkt von $v$, wohingegen Mustervariablen $x \in X$ auf Nachkommen von $t$ abgebildet werden.
 
 \subsection{Naiver Algorithmus}
 \begin{itshape}
