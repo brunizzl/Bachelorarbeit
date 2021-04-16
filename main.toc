@@ -1,0 +1,34 @@
+\boolfalse {citerequest}\boolfalse {citetracker}\boolfalse {pagetracker}\boolfalse {backtracker}\relax 
+\babel@toc {ngerman}{}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {1}Einleitung}{2}{}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {2}Definitionen}{2}{}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {2.1}Term}{2}{}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {2.2}Funktionsauswertung}{3}{}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {2.3}Äquivalenz}{4}{}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {3}Erste Normalform}{4}{}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {3.1}Assoziative Funktionsanwendungen}{4}{}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {3.2}Kommutative Funktionsanwendungen}{5}{}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {3.3}Teilweise Auswertung}{6}{}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {4}Patternmatching}{6}{}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.1}Muster}{6}{}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.2}Naiver Algorithmus}{7}{}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {5}Umsetzung in C\texttt {++}}{7}{}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {6}Vereinfachen von Arithmetischen Termen}{8}{}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {6.1}Vergleich meiner Features mit anderen Computeralgebrasystemen}{9}{}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {7}Zusammenfassung}{9}{}%

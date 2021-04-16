@@ -6,7 +6,6 @@
 \author{Bruno Borchardt}
 \date{heute}
 
-\usepackage{natbib}
 \usepackage{graphicx}
 \usepackage[ngerman]{babel}
 \usepackage{mathtools}
@@ -15,6 +14,11 @@
 \usepackage{qtree}
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
+
+\usepackage[backend=biber, style=alphabetic]{biblatex}
+\addbibresource{quellen.bib}
+%\bibliographystyle{plain}
+%\bibliography{references}
 
 \DeclarePairedDelimiter\paren{(}{)}
 \DeclarePairedDelimiter\curl{\{}{\}}
@@ -43,6 +47,7 @@ Anmerkung: Hier kommt hin, was halt in eine Einleitung soll:
     \end{itemize}
     \item was soll die in dieser Arbeit umgesetzte Variante (gut) können?
 \end{itemize}
+in \cite{fpSchool} stehen sachen drin
 \end{itshape}
 
 \section{Definitionen}
@@ -256,6 +261,7 @@ Ich bin ja nicht der erste, der auf die Idee kommt, Terme zusammenzufassen. Wolp
 Was halt in eine Zusammenfassung kommt
 \end{itshape}
 
-%\bibliographystyle{plain}
-%\bibliography{references}
+
+\printbibliography
+
 \end{document}
