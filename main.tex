@@ -47,7 +47,6 @@ Anmerkung: Hier kommt hin, was halt in eine Einleitung soll:
     \end{itemize}
     \item was soll die in dieser Arbeit umgesetzte Variante (gut) können?
 \end{itemize}
-in \cite{fpSchool} stehen sachen drin
 \end{itshape}
 
 \section{Definitionen}
@@ -63,7 +62,7 @@ $$T(F, C) \coloneqq C \cup \curl*{
 }$$ 
 Elemente $f\in F$ werden \emph{Funktionssymbole} genannt. Ist $\mathrm{arity}(f) = \omega$, wird $f$ als \emph{variadisches} Funktionssymbol bezeichnet. Elemente $c \in C$ werden als Konstantensymbole bezeichnet.
 Wichtig ist, dass vorerst nicht zwischen einem Konstantensymbol $c \in C$ unterschieden wird, welches bekannte Eigenschaften hat, etwa der Komplexen Zahl $c = -5i$ und einem Symbol, wessen Eigenschaften vom Kontext abhängen können, etwa dem Zeichen $c = \mathrm x$ (vorrausgesetzt $-5i,~\mathrm x \in C$). \\
- $(f, t_1, \dots, t_n) \in T$ wird auch als $f(t_1, \dots, t_n)$ geschrieben und \emph{Funktionsanwendung} von $f$ auf die \emph{Parameter} $t_1, \dots, t_n$ genannt. $t_1, \dots, t_n$ sind zudem die \emph{Kinder} ihres \emph{Vaters} $f(t_1, \dots, t_n)$. Kinder sind allgemeiner \textit{Nachkommen}. Nachkommen verhalten sich transitiv, also ein Nachkomme $z$ des Nachkommen $y$ von $x$ ist auch ein Nachkomme von $x$. Umgekehrt ist $x$ \emph{Ahne} von $y$ und $z$. \\
+ $(f, t_1, \dots, t_n) \in T$ wird auch als $f(t_1, \dots, t_n)$ geschrieben und \emph{Funktionsanwendung} von $f$ auf die \emph{Parameter} $t_1, \dots, t_n$ genannt. $t_1, \dots, t_n$ sind zudem die \emph{Kinder} ihres \emph{Vaters} $f(t_1, \dots, t_n)$. Kinder sind allgemeiner \emph{Nachkommen}. Nachkommen verhalten sich transitiv, also ein Nachkomme $z$ des Nachkommen $y$ von $x$ ist auch ein Nachkomme von $x$. Umgekehrt ist $x$ \emph{Ahne} von $y$ und $z$. \\
 Häufig werden Abschnitte der Parameter einer Funktionsanwendung beliebiger Länge der Form $t_i, \dots, t_k$ vorkommen. Kompakt wird $ts...$ für den (möglicherweise leeren) Abschnitt des Funktionsanwendungstupels geschrieben. \\$f(t_1, \dots, t_k, a, t_{k+2}, \dots, t_n)$ kann also äquivalent $f(ts..., a, rs...)$ geschrieben werden, mit $(t_1, \dots, t_k) = (ts...)$ und $(t_{k+2}, \dots, t_n) = (rs...)$.\\~\\
 
 
@@ -89,15 +88,15 @@ $$T_Y \coloneqq \{(f, y_0, \dots, y_{n-1})~|~f \in F,~\mathrm{arity}(f) \in \{n,
 ~ y_0, \dots,y_{n-1} \in Y\}$$
 \begin{equation*}
     \begin{split}
-	\mathrm{eval} &\colon (T_Y \rightarrow Y) \times (C \rightarrow Y) \times T \rightarrow Y\\
-	\mathrm{eval} &(u, v, t) = \begin{cases}
-		u(f, \mathrm{eval}(u, v, t_0), \dots, \mathrm{eval}(u, v, t_{n-1})) & t = f(t_1, \dots, t_n)\\
-		v(c)                                                                                      & t = c
+	\mathrm{eval} &\colon (T_Y \rightarrow Y) \times (C \rightarrow Y) \rightarrow T \rightarrow Y\\
+	\mathrm{eval} &(u, v)(t) = \begin{cases}
+		u(f, \mathrm{eval}(u, v)(t_0), \dots, \mathrm{eval}(u, v)(t_{n-1})) & t = f(t_1, \dots, t_n)\\
+		v(c)                                                                                            & t = c
 		\end{cases}
     \end{split}
 \end{equation*}
 
-Das Paar $(u, v) \in (T_Y \rightarrow Y) \times (C \rightarrow Y)$ wird dabei als \textit{Interpretation} von $T$ bezeichnet. Für einen Term $t \in T$ ist $\mathrm{eval}(u, v, t)$ die \textit{Auswertung} von $t$.
+Das Paar $(u, v) \in (T_Y \rightarrow Y) \times (C \rightarrow Y)$ wird dabei als \emph{Interpretation} von $T$ bezeichnet. Die Funktion $\mathrm{eval}(u, v)$ ist eine \emph{Auswertung}.
 \\~\\
 
 \textbf{Beispiel}\\
@@ -111,9 +110,9 @@ $$v = \mathrm{id}$$
 Der Term $t = +(3, \cdot(2, 4))$ kann dann ausgewertet werden zu 
 \begin{equation*}
     \begin{split}
-    \mathrm{eval}(u, v, t) &= \mathrm{eval}(u, v, +(3, \cdot(2, 4))) \\
-    &= u(+, \mathrm{eval}(u, v, 3), \mathrm{eval}(u, v, \cdot(2, 4))) \\
-    &= u(+, v(3), u(\cdot, \mathrm{eval}(u, v, 2), \mathrm{eval}(u, v, 4))) \\
+    \mathrm{eval}(u, v)(t) &= \mathrm{eval}(u, v)(+(3, \cdot(2, 4))) \\
+    &= u(+, \mathrm{eval}(u, v)(3), \mathrm{eval}(u, v)(\cdot(2, 4))) \\
+    &= u(+, v(3), u(\cdot, \mathrm{eval}(u, v)(2), \mathrm{eval}(u, v)(4))) \\
     &= u(+, v(3), u(\cdot, v(2), v(4))) \\
     &= u(+, 3, u(\cdot, 2, 4)) \\
     &= u(+, 3, 8) \\
@@ -121,11 +120,11 @@ Der Term $t = +(3, \cdot(2, 4))$ kann dann ausgewertet werden zu
     \end{split}
 \end{equation*}
 
-\subsection{Äquivalenz}
-Das Kernthema dieser Arbeit ist die Vereinfachung von Termen. Eine Vereinfachung ist allerdings nur gültig, sofern sich die Bedeutung des vereinfachten Terms gegenüber der des ursprünglichen Terms nicht geändert hat. Da ein Term in sich keine Bedeutung trägt, muss eine Vereinfachung immer in Bezug auf eine Interpretation gesehen werden. Etwa kann der Ausdruck $X A X^{-1}$ zu $A$ vereinfacht werden, wenn $X, A \in \mathbb{C} \setminus \{0\}$, allerdings ist die Vereinfachung allgemein nicht möglich, sollten die Symbole $X$ und $A$ für Matritzen stehen. \\
-Im folgenden wird von der Assoziativität oder Kommutativität bestimmter Funktionssymbole gesprochen. Diese ist immer im Kontext einer entsprechenden Interpretation zu sehen. Gleichzeitig ist aber auch klar, dass unabhängig von der Interpretation verschiedene Funktionssymbole die Rolle der Multiplikation übernehmen müssen, sollte sowohl skalare Multiplikation als auch Matrixmultiplikation im selben Term möglich sein. 
-
 \section {Erste Normalform}
+
+Das Kernthema dieser Arbeit ist die Vereinfachung von Termen. Eine Vereinfachung ist allerdings nur gültig, sofern sich die Bedeutung des vereinfachten Terms gegenüber der des ursprünglichen Terms nicht geändert hat. Da ein Term in sich keine Bedeutung trägt, muss eine Vereinfachung immer in Bezug auf eine Interpretation gesehen werden. Etwa kann der Ausdruck $X A X^{-1}$ zu $A$ vereinfacht werden, wenn $X, A \in \mathbb{C} \setminus \{0\}$, allerdings ist die Vereinfachung allgemein nicht möglich, sollten die Symbole $X$ und $A$ für Matritzen stehen. \\
+Im folgenden wird von der Assoziativität oder Kommutativität bestimmter Funktionssymbole gesprochen. Diese ist immer im Kontext einer entsprechenden Interpretation zu sehen. Gleichzeitig ist aber auch klar, dass unabhängig von der Interpretation verschiedene Funktionssymbole die Rolle der Multiplikation übernehmen müssen, sollte sowohl skalare Multiplikation als auch Matrixmultiplikation im selben Term möglich sein. \\
+
 In diesem Abschnitt werden erste Termumformungen beschrieben, die isolierte Eingenschaften einzelner Funktionen ausnutzen. Ziel ist es kommutative und assoziative Funktionsanwendungen eindeutig darzustellen.\\
 
 \subsection {Assoziative Funktionsanwendungen}
@@ -140,13 +139,14 @@ Die geschachtelte Anwendung einer assoziativen Funktion führt je nach Klammerse
 \end{equation*}
 Es gibt mehrere Optionen eine solche Schachtelung in einem Term zu normalisieren, also in eine eindeutige Form zu bringen. Die erste ist, festzulegen, dass höchstens einer der beiden Parameter der binären assoziativen Funktion wieder Ergebnis dieser Funktion sein darf. Wählt man den zweiten Parameter dafür aus, ist wird die Summe in der Normalform dargestellt als $+(a, +(b, +(c, d)))$. Diese Methode nennt sich Pivotisierung und wird in \textbf{Quellen} näher untersucht.\\
 Alternativ kann man die Summe von zwei Parametern auch als Spezialfall einer Summe von $n \in \mathbb{N}$ Parametern auffassen, dann gewohnt geschrieben als $\Sigma_{x \in \{a, b, c, d\}} x$. Dieser Weg wird im folgenden gewählt, wobei die Darstellung als Term dann $+(a, b, c, d)$ ist. Assoziative Funktionen sind in der gewählten Darstellung damit variadisch. \\
-Die Normalisierung von Funktionsanwendungen des assoziativen Funktionssymbols $f$ ersetzt dann alle Teilterme der Form $f(as..., f(bs...), cs...)$ zu $f(as..., bs..., cs...)$.
+Die Normalisierung von Funktionsanwendungen des assoziativen Funktionssymbols $f$ bedeutet dann geschachtelte Funktionsanwendungen in eine Funktionsanwendung zu übersetzen. 
+$$f(as..., f(bs...), cs...) \rightarrow f(as..., bs..., cs...)$$
 
 \subsection{Kommutative Funktionsanwendungen}
 Eine Normalform für kommutative Funktionsanwendungen erfordert eine totale Ordnung auf der Menge aller Terme $T(F, C)$. Aufbauend auf einer totalen Ordnung von $F$ sowie $C$, kann eine lexikographische Ordnung von $T$ wie folgt definiert werden. 
 \begin{itemize}
 	\item{sind $s, \tilde{s} \in T$ Konstantensymbole, so ist die Ordnung identisch zu der Ordnung in $C$}
-	\item{sind $s, a, \in T$ und $s$ ein Konstantensymbol und $a$ eine Funktionsanwendung gilt $s < a$ }
+	\item{sind $s, a, \in T$ sowie $s$ ein Konstantensymbol und $a$ eine Funktionsanwendung gilt $s < a$ }
 	\item{sind $a = f(ts...), b = g(rs...) \in T$ Funktionsanwendungen und ist $f \neq g$ gilt $a < b \iff f < g $}
 	\item{sind $a = f(t_1, \dots, t_n), b = f(r_1, \dots, r_m) \in T$ Funktionsanwendungen, und $\tilde{t_1}, \dots, \tilde{t_n}$, $\tilde{r_1}, \dots, \tilde{r_m}$ die normalisierten Parameter von $a$ und $b$, ist die Ordnung wiefolgt}
 	\begin{itemize}
@@ -169,38 +169,22 @@ Im vorigen Abschnitt wurde eine erste Normalform für Terme definiert. Alle Vere
 $$a^2 + 2 a b + b^2 \rightarrow (a + b)^2$$
 In der etablierten Schreibweise als Term dann geschrieben als:
 $$sum(pow(a, 2), product(2, a, b), pow(b, 2)) \rightarrow pow(sum(a, b), 2)$$
-Die Zeichen $a$ und $b$ stehen dabei nicht für Elemente in $C$, sondern dienen lediglich als Platzhalter für beliebige Teilterme, wobei die verschiedenen Vorkommnisse des selben Zeichens immer auch mit äquivalenten Termen assoziiert werden müssen. Ein solches Zeichen wird im folgenden \textit{Mustervariable} genannt.
+Die Zeichen $a$ und $b$ stehen dabei nicht für Elemente in $C$, sondern dienen lediglich als Platzhalter für beliebige Teilterme, wobei die verschiedenen Vorkommnisse des selben Zeichens immer auch mit gleichen Termen assoziiert werden müssen. Ein solches Zeichen wird im folgenden \emph{Mustervariable} genannt.
 
 \subsection{Muster}
 Eine Menge von Termen $T(F)$ kann durch Vereinigung von $C$ mit der Menge der Mustervariablen $X$ zu einer Menge von Mustertermen $M$ erweitert werden. 
 
 $$M(F, C) \coloneqq T(F, C \cup X)$$
 
-Ein drei-Tupel $(m, v, t) \in M \times (C \cup X \rightarrow T) \times T$ wird als \textit{Match} bezeichnet, wenn die Auswertung eines Literals mit der Interpretation $(\mathrm{id}, v)$ wieder in dem selben Literal resultiert, also $ \forall \tilde{t} \in T \colon \mathrm{eval}(\mathrm{id}, v, \tilde{t}) =\tilde{t}$. Zudem muss $m$ zu $t$ ausgewertet werden, also $\mathrm{eval}(\mathrm{id}, v, m) = t$. Anschaulich ist jede Konstante $c \in C$ Fixpunkt von $v$, wohingegen Mustervariablen $x \in X$ auf Nachkommen von $t$ abgebildet werden.
+Ein drei-Tupel $(m, v_m, t) \in M \times (C \cup X \rightarrow T) \times T$ wird als \emph{Match} bezeichnet, wenn die Auswertung eines Literals mit der Interpretation $(\mathrm{id}, v_m)$ wieder in dem selben Literal resultiert, also $ \forall \tilde{t} \in T \colon \mathrm{eval}(\mathrm{id}, v_m)(\tilde{t}) =\tilde{t}$. Zudem muss $m$ zu $t$ ausgewertet werden, also $\mathrm{eval}(\mathrm{id}, v_m)(m) = t$. Damit ist jede Konstante $c \in C$ Fixpunkt von $v$, wohingegen Mustervariablen $x \in X$ auf Nachkommen von $t$ abgebildet werden.\\
+Wichtig ist in dem Zusammenhang der Unterschied zwischen der \emph{Musterinterpretation} $(\mathrm{id}, v_m)$, welche Musterterme als Literale interpretiert und einer Interpretation der Literale selbst. Diese zweite Interpretation $(u, v)$ wird im folgenden als gegeben angenommen. Erneut bezieht sich Kommutativität von Funktionssymbolen im folgenden auf diese meist implizite Interpretation $(u, v)$.
 
-\subsection{Naiver Algorithmus}
+\subsection{Algorithmus 1}
 \begin{itshape}
-Anmerkung: den, der sich diesen Algorithmus zuerst ausgedacht hat muss ich noch rausfinden, danach wird der Unterkapitelname entsprechend angepasst.
+Anmerkung für alle Algorithmen: den, der sich den jeweiligen Alorithmus zuerst ausgedacht hat muss ich noch rausfinden, danach werden die  Unterkapitelnamen entsprechend angepasst.
 \end{itshape}
 
-\begin{algorithm}
-\caption{My algorithm}\label{euclid}
-\begin{algorithmic}[1]
-\State $\textit{stringlen} \gets \text{length of }\textit{string}$
-\State $i \gets \textit{patlen}$
-\If {$i > \textit{stringlen}$} \Return false
-\EndIf
-\State $j \gets \textit{patlen}$
-\If {$\textit{string}(i) = \textit{path}(j)$}
-\State $j \gets j-1$.
-\State $i \gets i-1$.
-\State \textbf{goto} \emph{loop}.
-\State \textbf{close};
-\EndIf
-\State $i \gets i+\max(\textit{delta}_1(\textit{string}(i)),\textit{delta}_2(j))$.
-\State \textbf{goto} \emph{top}.
-\end{algorithmic}
-\end{algorithm}
+
 
 \section{Umsetzung in C\texttt{++}}
 \begin{itshape}
