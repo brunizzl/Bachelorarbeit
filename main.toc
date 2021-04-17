@@ -9,8 +9,6 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {2.2}Funktionsauswertung}{3}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {2.3}Äquivalenz}{4}{}%
-\defcounter {refsection}{0}\relax 
 \contentsline {section}{\numberline {3}Erste Normalform}{4}{}%
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {3.1}Assoziative Funktionsanwendungen}{4}{}%
@@ -19,16 +17,20 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {3.3}Teilweise Auswertung}{6}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {4}Patternmatching}{6}{}%
+\contentsline {subsection}{\numberline {3.4}Kombination der einzelnen Vereinfachungen}{7}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {4.1}Muster}{6}{}%
+\contentsline {section}{\numberline {4}Patternmatching}{7}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {4.2}Naiver Algorithmus}{7}{}%
+\contentsline {subsection}{\numberline {4.1}Muster}{7}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {5}Umsetzung in C\texttt {++}}{7}{}%
+\contentsline {subsection}{\numberline {4.2}Perfekte Matchfunktion}{8}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {6}Vereinfachen von Arithmetischen Termen}{8}{}%
+\contentsline {section}{\numberline {5}Termersetzungssystem}{9}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {6.1}Vergleich meiner Features mit anderen Computeralgebrasystemen}{9}{}%
+\contentsline {section}{\numberline {6}Umsetzung in C\texttt {++}}{9}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {7}Zusammenfassung}{9}{}%
+\contentsline {section}{\numberline {7}Vereinfachen von Arithmetischen Termen}{9}{}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {7.1}Vergleich meiner Features mit anderen Computeralgebrasystemen}{10}{}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {8}Zusammenfassung}{11}{}%

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.2) (preloaded format=pdflatex 2021.4.10)  16 APR 2021 23:45
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.2) (preloaded format=pdflatex 2021.4.10)  17 APR 2021 20:20
 entering extended mode
 **./main.tex
 (main.tex
@@ -603,7 +603,23 @@ Package biblatex Info: ... file 'biblatex.cfg' found.
 
 (D:\Users\Admin\AppData\Local\Programs\MiKTeX\tex/latex/biblatex\biblatex.cfg
 File: biblatex.cfg 
-))
+)) (D:\Users\Admin\AppData\Local\Programs\MiKTeX\tex/latex/xcolor\xcolor.sty
+Package: xcolor 2016/05/11 v2.12 LaTeX color extensions (UK)
+
+(D:\Users\Admin\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package xcolor Info: Driver file: pdftex.def on input line 225.
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1348.
+Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1352.
+Package xcolor Info: Model `RGB' extended on input line 1364.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1366.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1367.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1368.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1369.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1370.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1371.
+)
 
 Package biblatex Warning: 'babel/polyglossia' detected but 'csquotes' missing.
 (biblatex)                Loading 'csquotes' recommended.
@@ -619,20 +635,20 @@ File: l3backend-pdftex.def 2021-02-18 L3 backend support: PDF output (pdfTeX)
 ) (main.aux)
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 26.
-LaTeX Font Info:    ... okay on input line 26.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 26.
-LaTeX Font Info:    ... okay on input line 26.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 26.
-LaTeX Font Info:    ... okay on input line 26.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 26.
-LaTeX Font Info:    ... okay on input line 26.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 26.
-LaTeX Font Info:    ... okay on input line 26.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 26.
-LaTeX Font Info:    ... okay on input line 26.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 26.
-LaTeX Font Info:    ... okay on input line 26.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 30.
+LaTeX Font Info:    ... okay on input line 30.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 30.
+LaTeX Font Info:    ... okay on input line 30.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 30.
+LaTeX Font Info:    ... okay on input line 30.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 30.
+LaTeX Font Info:    ... okay on input line 30.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 30.
+LaTeX Font Info:    ... okay on input line 30.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 30.
+LaTeX Font Info:    ... okay on input line 30.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 30.
+LaTeX Font Info:    ... okay on input line 30.
 
 (D:\Users\Admin\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mk
 ii
@@ -652,20 +668,8 @@ ii
 (D:\Users\Admin\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-b
 ase.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
-
-(D:\Users\Admin\AppData\Local\Programs\MiKTeX\tex/latex/grfext\grfext.sty
-Package: grfext 2019/12/03 v1.3 Manage graphics extensions (HO)
-
-(D:\Users\Admin\AppData\Local\Programs\MiKTeX\tex/generic/kvdefinekeys\kvdefine
-keys.sty
-Package: kvdefinekeys 2019-12-19 v1.6 Define keys (HO)
-))
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 85.
-Package grfext Info: Graphics extension search list:
-(grfext)             [.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPE
-G,.JBIG2,.JB2,.eps]
-(grfext)             \AppendGraphicsExtensions on input line 504.
 )
 Package biblatex Info: Trying to load language 'ngerman'...
 Package biblatex Info: ... file 'ngerman.lbx' found.
@@ -712,15 +716,15 @@ Package: blx-case-expl3 2020/12/31 v3.16 expl3 case changing code for biblatex
 Package biblatex Info: Trying to load bibliographic data...
 Package biblatex Info: ... file 'main.bbl' found.
  (main.bbl)
-Package biblatex Info: Reference section=0 on input line 26.
-Package biblatex Info: Reference segment=0 on input line 26.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 28.
+Package biblatex Info: Reference section=0 on input line 30.
+Package biblatex Info: Reference segment=0 on input line 30.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 32.
 
 
 (D:\Users\Admin\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 28.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 32.
 
 
 (D:\Users\Admin\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
@@ -728,7 +732,7 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 (main.toc
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <10> not available
-(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 28.
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 30.
 )
 \tf@toc=\write4
 \openout4 = `main.toc'.
@@ -736,53 +740,54 @@ LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <10> not available
  [1
 
 {C:/Users/Admin/AppData/Local/MiKTeX/pdftex/config/pdftex.map}]
-Overfull \hbox (4.83289pt too wide) in paragraph at lines 63--68
+Overfull \hbox (4.83289pt too wide) in paragraph at lines 68--73
 \OT1/cmr/m/n/10 L[]ange der Form $\OML/cmm/m/it/10 t[]; [] ; t[]$ \OT1/cmr/m/n/
 10 vor-kom-men. Kom-pakt wird $\OML/cmm/m/it/10 ts:::$ \OT1/cmr/m/n/10 f[]ur de
 n (m[]oglicherweise
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 63--68
+Underfull \hbox (badness 10000) in paragraph at lines 68--73
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 63--68
+Underfull \hbox (badness 10000) in paragraph at lines 68--73
 
  []
 
 [2
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 100--102
+Underfull \hbox (badness 10000) in paragraph at lines 108--110
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 100--102
+Underfull \hbox (badness 10000) in paragraph at lines 108--110
 
  []
 
 [3]
-Underfull \hbox (badness 10000) in paragraph at lines 129--130
+Underfull \hbox (badness 10000) in paragraph at lines 134--136
 
  []
 
-[4]
-Overfull \hbox (22.40791pt too wide) in paragraph at lines 140--144
-\OT1/cmr/m/n/10 bols $\OML/cmm/m/it/10 f$ \OT1/cmr/m/n/10 er-setzt dann al-le T
-eil-ter-me der Form $\OML/cmm/m/it/10 f\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 as:::;
- f\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 bs:::\OT1/cmr/m/n/10 )\OML/cmm/m/it/10 ; cs
-:::\OT1/cmr/m/n/10 )$ zu $\OML/cmm/m/it/10 f\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 a
-s:::; bs:::; cs:::\OT1/cmr/m/n/10 )$. 
+
+Underfull \hbox (badness 10000) in paragraph at lines 137--138
+
  []
 
-[5] [6]
+[4] [5] [6] [7]
+Underfull \hbox (badness 10000) in paragraph at lines 248--251
+
+ []
+
+[8]
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <14.4> not available
-(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 205.
- [7]
-Overfull \hbox (17.62904pt too wide) in paragraph at lines 236--237
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 291.
+ [9]
+Overfull \hbox (17.62904pt too wide) in paragraph at lines 323--324
 []\OT1/cmr/m/it/10 Vorzeichen aus un-ge-ra-den Funk-tio-nen her-aus-zie-hen ($[
 ]\OT1/cmr/m/n/10 (\OMS/cmsy/m/n/10  \OML/cmm/m/it/10 x\OT1/cmr/m/n/10 ) \OMS/cm
 sy/m/n/10 !   []\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 x\OT1/cmr/m/n/10 )$\OT1/cmr/m
@@ -790,36 +795,36 @@ sy/m/n/10 !   []\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 x\OT1/cmr/m/n/10 )$\OT1/cmr/m
  []
 
 
-Overfull \hbox (0.56801pt too wide) in paragraph at lines 237--238
+Overfull \hbox (0.56801pt too wide) in paragraph at lines 324--325
 []\OT1/cmr/m/it/10 Vorzeichen in ge-ra-den Funk-tio-nen auf plus set-zen ($[]\O
 T1/cmr/m/n/10 (\OMS/cmsy/m/n/10  \OML/cmm/m/it/10 x\OT1/cmr/m/n/10 ) \OMS/cmsy/
 m/n/10 ! []\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 x\OT1/cmr/m/n/10 )$\OT1/cmr/m/it/1
 0 ) 
  []
 
-[8]
-Overfull \hbox (3.4699pt too wide) in paragraph at lines 251--254
+
+Overfull \hbox (3.4699pt too wide) in paragraph at lines 338--341
 \OT1/cmr/m/it/10 mauch w[]ahrend des Ver-ein-fa-chungs-schrit-tes im-mer wie-de
 r wie-der-her-stel-len muss. 
  []
 
-[9] (main.aux)
 
-LaTeX Warning: There were undefined references.
+Overfull \hbox (15.12561pt too wide) in paragraph at lines 353--353
+[]\OT1/cmr/m/n/10 M.J. O'Donnell. \OT1/cmr/m/it/10 Com-pu-ting in Sys-tems De-s
+-cri-bed by Equa-ti-ons\OT1/cmr/m/n/10 . Springer-
+ []
 
-
-Package biblatex Warning: Please rerun LaTeX.
-
+[10] [11] (main.aux)
 Package logreq Info: Writing requests to 'main.run.xml'.
 \openout1 = `main.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 12474 strings out of 479334
- 220125 string characters out of 2857084
- 979819 words of memory out of 3000000
- 29756 multiletter control sequences out of 15000+200000
- 413524 words of font info for 66 fonts, out of 3000000 for 9000
+ 12924 strings out of 479334
+ 224764 string characters out of 2857084
+ 990290 words of memory out of 3000000
+ 30209 multiletter control sequences out of 15000+200000
+ 412658 words of font info for 63 fonts, out of 3000000 for 9000
  1143 hyphenation exceptions out of 8191
  81i,21n,88p,772b,2241s stack positions out of 5000i,500n,10000p,200000b,50000s
  <C:\Users\Admin\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm
@@ -827,26 +832,24 @@ Here is how much of TeX's memory you used:
 ts/cm/cmbx10.pfb><D:/Users/Admin/AppData/Local/Programs/MiKTeX/fonts/type1/publ
 ic/amsfonts/cm/cmbx12.pfb><D:/Users/Admin/AppData/Local/Programs/MiKTeX/fonts/t
 ype1/public/amsfonts/cm/cmex10.pfb><D:/Users/Admin/AppData/Local/Programs/MiKTe
-X/fonts/type1/public/amsfonts/cm/cmitt10.pfb><D:/Users/Admin/AppData/Local/Prog
-rams/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><D:/Users/Admin/AppData/L
-ocal/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><D:/Users/Admin/A
-ppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><D:/Users
-/Admin/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><
-D:/Users/Admin/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr
-17.pfb><D:/Users/Admin/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfont
-s/cm/cmr7.pfb><D:/Users/Admin/AppData/Local/Programs/MiKTeX/fonts/type1/public/
-amsfonts/cm/cmr8.pfb><D:/Users/Admin/AppData/Local/Programs/MiKTeX/fonts/type1/
-public/amsfonts/cm/cmsy10.pfb><D:/Users/Admin/AppData/Local/Programs/MiKTeX/fon
-ts/type1/public/amsfonts/cm/cmsy7.pfb><D:/Users/Admin/AppData/Local/Programs/Mi
-KTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><D:/Users/Admin/AppData/Local/Pr
-ograms/MiKTeX/fonts/type1/public/amsfonts/cm/cmti12.pfb><D:/Users/Admin/AppData
-/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb><D:/Users/Admi
-n/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt12.pfb><D:/U
-sers/Admin/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/ms
-bm10.pfb>
-Output written on main.pdf (9 pages, 227108 bytes).
+X/fonts/type1/public/amsfonts/cm/cmmi10.pfb><D:/Users/Admin/AppData/Local/Progr
+ams/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><D:/Users/Admin/AppData/Loc
+al/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><D:/Users/Admin/App
+Data/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><D:/Users/A
+dmin/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb><D:
+/Users/Admin/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.
+pfb><D:/Users/Admin/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/c
+m/cmr8.pfb><D:/Users/Admin/AppData/Local/Programs/MiKTeX/fonts/type1/public/ams
+fonts/cm/cmsy10.pfb><D:/Users/Admin/AppData/Local/Programs/MiKTeX/fonts/type1/p
+ublic/amsfonts/cm/cmsy7.pfb><D:/Users/Admin/AppData/Local/Programs/MiKTeX/fonts
+/type1/public/amsfonts/cm/cmti10.pfb><D:/Users/Admin/AppData/Local/Programs/MiK
+TeX/fonts/type1/public/amsfonts/cm/cmti12.pfb><D:/Users/Admin/AppData/Local/Pro
+grams/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb><D:/Users/Admin/AppData/
+Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt12.pfb><D:/Users/Admin
+/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
+Output written on main.pdf (11 pages, 232016 bytes).
 PDF statistics:
- 109 PDF objects out of 1000 (max. 8388607)
+ 111 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

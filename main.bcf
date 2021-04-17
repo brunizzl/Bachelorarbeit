@@ -2344,7 +2344,7 @@
     <bcf:datasource type="file" datatype="bibtex" glob="false">quellen.bib</bcf:datasource>
   </bcf:bibdata>
   <bcf:section number="0">
-    <bcf:citekey order="1">fpSchool</bcf:citekey>
+    <bcf:citekey order="1">buch1977</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="anyt">

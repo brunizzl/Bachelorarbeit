@@ -19,31 +19,30 @@
 
 \refsection{0}
   \datalist[entry]{anyt/global//global/global}
-    \entry{fpSchool}{article}{}
+    \entry{buch1977}{book}{}
       \name{author}{1}{}{%
-        {{hash=0b6e0fe49ce044a00266e82ef503c711}{%
-           family={Porkolab},
-           familyi={P\bibinitperiod},
-           given={Zoltan},
-           giveni={Z\bibinitperiod}}}%
+        {{hash=51f74e172d9b880ef1d3740e714daf74}{%
+           family={O'Donnell},
+           familyi={O\bibinitperiod},
+           given={M.J.},
+           giveni={M\bibinitperiod}}}%
       }
-      \strng{namehash}{0b6e0fe49ce044a00266e82ef503c711}
-      \strng{fullhash}{0b6e0fe49ce044a00266e82ef503c711}
-      \strng{bibnamehash}{0b6e0fe49ce044a00266e82ef503c711}
-      \strng{authorbibnamehash}{0b6e0fe49ce044a00266e82ef503c711}
-      \strng{authornamehash}{0b6e0fe49ce044a00266e82ef503c711}
-      \strng{authorfullhash}{0b6e0fe49ce044a00266e82ef503c711}
-      \field{labelalpha}{Por09}
-      \field{sortinit}{P}
-      \field{sortinithash}{ff3bcf24f47321b42cb156c2cc8a8422}
+      \list{publisher}{1}{%
+        {Springer-Verlag Berlin Heidelberg}%
+      }
+      \strng{namehash}{51f74e172d9b880ef1d3740e714daf74}
+      \strng{fullhash}{51f74e172d9b880ef1d3740e714daf74}
+      \strng{bibnamehash}{51f74e172d9b880ef1d3740e714daf74}
+      \strng{authorbibnamehash}{51f74e172d9b880ef1d3740e714daf74}
+      \strng{authornamehash}{51f74e172d9b880ef1d3740e714daf74}
+      \strng{authorfullhash}{51f74e172d9b880ef1d3740e714daf74}
+      \field{labelalpha}{ODo77}
+      \field{sortinit}{O}
+      \field{sortinithash}{2cd7140a07aea5341f9e2771efe90aae}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{journaltitle}{Central European Functional Programming School}
-      \field{month}{5}
-      \field{title}{Functional Programming with C++ Template Metaprograms}
-      \field{year}{2009}
-      \field{pages}{306\bibrangedash 353}
-      \range{pages}{48}
+      \field{title}{Computing in Systems Described by Equations}
+      \field{year}{1977}
     \endentry
   \enddatalist
 \endrefsection

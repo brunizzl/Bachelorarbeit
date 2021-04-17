@@ -13,12 +13,16 @@
 \usepackage{amsmath} %  \begin{cases}  Wert 1 & Bedingung 1 \\ Wert 2 & Bedingung 2 \\ \end{cases} 
 \usepackage{qtree}
 \usepackage{algorithm}
-\usepackage[noend]{algpseudocode}
+\usepackage{algpseudocode}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
 
 \usepackage[backend=biber, style=alphabetic]{biblatex}
 \addbibresource{quellen.bib}
 %\bibliographystyle{plain}
 %\bibliography{references}
+
+\usepackage{xcolor} %\textcolor{blue}{This is a sample text in blue.}
 
 \DeclarePairedDelimiter\paren{(}{)}
 \DeclarePairedDelimiter\curl{\{}{\}}
@@ -33,6 +37,7 @@
 %\cleardoublepage <- für andere Dokumenttypen
 
 \section{Einleitung}
+\textcolor{red} {
 \begin{itshape}
 Anmerkung: Hier kommt hin, was halt in eine Einleitung soll:
 \begin{itemize}
@@ -48,6 +53,7 @@ Anmerkung: Hier kommt hin, was halt in eine Einleitung soll:
     \item was soll die in dieser Arbeit umgesetzte Variante (gut) können?
 \end{itemize}
 \end{itshape}
+}
 
 \section{Definitionen}
 
@@ -82,8 +88,9 @@ $t = f(b, g(f(a), b)) \in T(F, C)$ ist ein Term, dargestellt in Abb. \ref{erster
 
 \subsection{Funktionsauswertung}
 Ein Funktionssymbol ist in der allgemeinen Definition eines Terms noch keine Funktion, da die Abbildungsvorschrift, sowie Definitionsmenge und Bildmenge nicht definiert sind. Eine Funktionsanwendung wird primär als Datenstruktur gesehen, etwa die des binären Funktionssymbols $pair$ auf die zwei Parameter $a$ und $b$ als ein Paar: $pair(a, b)$ oder die des variadischen Funktionssymbols $set$ als Darstellungsmöglichkeit für endliche Mengen innerhalb eines Terms.\\
-Die Erweiterung des Funktionssymbols zur Funktion, die von einem Raum $Y^n$ nach $Y$ abbildet, folgt mittels der $\mathrm{eval}$ Funktion.
+Die Erweiterung des Funktionssymbols zur Funktion, die von einem Raum $Y^n$ nach $Y$ abbildet, folgt mittels der $\mathrm{eval}$ Funktion frei nach \cite{buch1977}.
 
+\textcolor{red}{\textit{Der Name $T_Y$ ist noch work in progress.}}
 $$T_Y \coloneqq \{(f, y_0, \dots, y_{n-1})~|~f \in F,~\mathrm{arity}(f) \in \{n, \omega\},
 ~ y_0, \dots,y_{n-1} \in Y\}$$
 \begin{equation*}
@@ -96,7 +103,9 @@ $$T_Y \coloneqq \{(f, y_0, \dots, y_{n-1})~|~f \in F,~\mathrm{arity}(f) \in \{n,
     \end{split}
 \end{equation*}
 
-Das Paar $(u, v) \in (T_Y \rightarrow Y) \times (C \rightarrow Y)$ wird dabei als \emph{Interpretation} von $T$ bezeichnet. Die Funktion $\mathrm{eval}(u, v)$ ist eine \emph{Auswertung}.
+Das Paar $(u, v) \in (T_Y \rightarrow Y) \times (C \rightarrow Y)$ wird dabei als \emph{Interpretation} von $T$ bezeichnet. Die Funktion $\mathrm{eval}(u, v)$ ist eine \emph{Auswertung}. 
+
+Die Definition von $\mathrm{eval}(u, v)$ als echte Funktion ist im folgenden manchmal zu restriktiv, da die für diese Arbeit interessanten Terme auch Symbole beinhalten können, deren Wert in $Y$ nicht bekannt ist, etwa enthält der Term $+(1, a)$ ein nicht weiter spezifiziertes Symbol $a \in C$. Analog sollen an dieser Stelle auch Funktionssymbole $f \in F$ nicht ausgeschlossen werden, die keine bekannte Interpretation haben. $u$ und $v$ dürfen damit auch echte partielle Funktionen sein, womit auch $\mathrm{eval}(u, v)$ kontextabhängig als partielle Funktion angenommen wird.
 \\~\\
 
 \textbf{Beispiel}\\
@@ -137,10 +146,24 @@ Die geschachtelte Anwendung einer assoziativen Funktion führt je nach Klammerse
 	&= \dots \\
 	\end{split}
 \end{equation*}
-Es gibt mehrere Optionen eine solche Schachtelung in einem Term zu normalisieren, also in eine eindeutige Form zu bringen. Die erste ist, festzulegen, dass höchstens einer der beiden Parameter der binären assoziativen Funktion wieder Ergebnis dieser Funktion sein darf. Wählt man den zweiten Parameter dafür aus, ist wird die Summe in der Normalform dargestellt als $+(a, +(b, +(c, d)))$. Diese Methode nennt sich Pivotisierung und wird in \textbf{Quellen} näher untersucht.\\
+Es gibt mehrere Optionen eine solche Schachtelung in einem Term zu normalisieren, also in eine eindeutige Form zu bringen. Die erste ist, festzulegen, dass höchstens einer der beiden Parameter der binären assoziativen Funktion wieder Ergebnis dieser Funktion sein darf. Wählt man den zweiten Parameter dafür aus, ist wird die Summe in der Normalform dargestellt als $+(a, +(b, +(c, d)))$. Diese Methode nennt sich Pivotisierung und wird in \textcolor{red}{\textbf{Quellen}} näher untersucht.\\
 Alternativ kann man die Summe von zwei Parametern auch als Spezialfall einer Summe von $n \in \mathbb{N}$ Parametern auffassen, dann gewohnt geschrieben als $\Sigma_{x \in \{a, b, c, d\}} x$. Dieser Weg wird im folgenden gewählt, wobei die Darstellung als Term dann $+(a, b, c, d)$ ist. Assoziative Funktionen sind in der gewählten Darstellung damit variadisch. \\
 Die Normalisierung von Funktionsanwendungen des assoziativen Funktionssymbols $f$ bedeutet dann geschachtelte Funktionsanwendungen in eine Funktionsanwendung zu übersetzen. 
 $$f(as..., f(bs...), cs...) \rightarrow f(as..., bs..., cs...)$$
+Die Funktion $u \colon T_C \rightharpoonup C$ kann in den Algorithmen dieses Kapitels als Teil der partiellen Interpretation $(u, \mathrm{id})$ gesehen werden. 
+
+\begin{algorithm}
+\caption{$\mathrm{flatten} \colon T \times (T_C \rightharpoonup C) \rightarrow T$}\label{flatten}
+\begin{algorithmic}[1] %[1] -> jede zeile nummeriert
+\Require $t \in T(F, C)$, $u \in (T_C \rightharpoonup C)$
+\If {$t = f(t_1, \dots, t_n)$ mit $f$ assoziativ in $u$}
+	\While {$t = f(as..., f(bs...), cs...)$}
+		\State $t \leftarrow f(as..., bs..., cs...)$
+	\EndWhile
+\EndIf
+\State \textbf{return} $t$ 
+\end{algorithmic}
+\end{algorithm}
 
 \subsection{Kommutative Funktionsanwendungen}
 Eine Normalform für kommutative Funktionsanwendungen erfordert eine totale Ordnung auf der Menge aller Terme $T(F, C)$. Aufbauend auf einer totalen Ordnung von $F$ sowie $C$, kann eine lexikographische Ordnung von $T$ wie folgt definiert werden. 
@@ -159,10 +182,56 @@ Zur Normalisierung einer kommutativen Funktionsanwendung werden zuerst alle Para
 
 \subsection{Teilweise Auswertung}
 Mit der Darstellung assoziativer Funktionen als variadische Funktionen, ist es möglich, dass eine Funktion teilweise ausgewertet werden kann, also gilt für assoziative Funktionssymbole $f \in F$
-$$\mathrm{eval}(u, v, f(a, b)) = c \in T \implies f(xs..., a, b, ys...) = f(xs..., c, ys...)$$
+$$\mathrm{eval}(u, v)(f(a, b)) = c \in C \implies f(xs..., a, b, ys...) = f(xs..., c, ys...)$$
 Ist $f$ zudem kommutativ gilt 
-$$\mathrm{eval}(u, v, f(a, b)) = c \in T \implies f(xs..., a, ys..., b, zs...) = f(xs..., c, ys..., zs...)$$
-Eine normalisierte Funktionsanwendung ist so weit wie möglich ausgewertet. Sollte sie ganz ausgewertet werden können, ist die normalisierte Funktionsanwendung das Ergebnis der Auswertung.
+$$\mathrm{eval}(u, v)(f(a, b)) = c \in C \implies f(xs..., a, ys..., b, zs...) = f(xs..., c, ys..., zs...)$$
+Eine normalisierte Funktionsanwendung ist so weit wie möglich ausgewertet. Sollte sie ganz ausgewertet werden können, ist die normalisierte Funktionsanwendung das Ergebnis der Auswertung. \\
+Der Spezialfall ist eine assoziative Funktionsanwendung mit nur einem Parameter. Diese kann immer zu dem Parameter selbst normalisiert werden.
+
+\begin{algorithm}
+\caption{$\mathrm{combine} \colon T \times (T_C \rightharpoonup C) \rightarrow T$}\label{combine}
+\begin{algorithmic}[1] %[1] -> jede zeile nummeriert
+\Require $t \in T(F, C)$, $u \in (T_C \rightharpoonup C)$
+\If {$\mathrm{eval}(u, \mathrm{id})(t) = c \in C$}
+	\State \textbf{return} $c$ 
+\ElsIf {$t = f(t_1, \dots, t_n)$ mit $f$ assoziativ in $u$}
+	\If {$f$ kommutativ in $u$}
+		\While {$t = f(xs..., a, ys..., b, zs...) \colon u(f(a, b)) = c \in C$}
+			\State $t \leftarrow f(xs..., c, ys..., zs...)$
+		\EndWhile
+	\Else
+		\While {$t = f(xs..., a, b, ys...) \colon u(f(a, b)) = c \in C$}
+			\State $t \leftarrow f(xs..., c, ys...)$
+		\EndWhile
+	\EndIf
+	\If {$t = f(t_1)$}
+		\State \textbf{return} $t_1$ 
+	\EndIf
+\EndIf
+\State \textbf{return} $t$ 
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Kombination der einzelnen Vereinfachungen}
+Der folgende Algorithmus kombiniert die einzelnen Überlegungen dieses Kapitels. 
+
+\begin{algorithm}
+\caption{$\mathrm{normalize} \colon T \times (T_C \rightharpoonup C) \rightarrow T$}\label{normalize}
+\begin{algorithmic}[1] %[1] -> jede zeile nummeriert
+\Require $t \in T(F, C)$, $u \in (T_C \rightharpoonup C)$
+\If {$t = f(t_1, \dots, t_n)$}
+	\For {$i \in \{1, \dots, n\}$}
+		\State $t_i \leftarrow \mathrm{normalize}(t_i, u)$
+	\EndFor
+\EndIf
+\State $t \leftarrow \mathrm{flatten}(t, u)$
+\State $t \leftarrow \mathrm{combine}(t, u)$
+\If {$t = f(t_1, \dots, t_n)$ mit $f$ kommutativ in $u$}
+	\State sortiere $t_1, \dots, t_n$ lexikographisch
+\EndIf
+\State \textbf{return} $t$ 
+\end{algorithmic}
+\end{algorithm}
 
 \section{Patternmatching}
 Im vorigen Abschnitt wurde eine erste Normalform für Terme definiert. Alle Vereinfachungen, die dort behandelt wurden, sind recht einfach und direkt zu implementieren, da nur auf lokale Eigenschaften des zu vereinfachenden Terms Rücksicht genommen werden muss. In diesem Abschnitt wird beschrieben, wie ein Term auch zuverlässig auf komplexere Muster geprüft werden kann, so dass nach Implementierung der Mustererkennung selbst jede einzelne Vereinfachungsregel durch zwei Muster beschrieben werden kann: ein Muster gibt an, welche Struktur im zu vereinfachenden Term gesucht wird, ein zweites Muster gibt an, zu was diese Struktur transformiert wird. Ein Beispiel für ein solches Musterpaar ist etwa die Anwendung der ersten binomischen Formel:
@@ -176,33 +245,67 @@ Eine Menge von Termen $T(F)$ kann durch Vereinigung von $C$ mit der Menge der Mu
 
 $$M(F, C) \coloneqq T(F, C \cup X)$$
 
-Ein drei-Tupel $(m, v_m, t) \in M \times (C \cup X \rightarrow T) \times T$ wird als \emph{Match} bezeichnet, wenn die Auswertung eines Literals mit der Interpretation $(\mathrm{id}, v_m)$ wieder in dem selben Literal resultiert, also $ \forall \tilde{t} \in T \colon \mathrm{eval}(\mathrm{id}, v_m)(\tilde{t}) =\tilde{t}$. Zudem muss $m$ zu $t$ ausgewertet werden, also $\mathrm{eval}(\mathrm{id}, v_m)(m) = t$. Damit ist jede Konstante $c \in C$ Fixpunkt von $v$, wohingegen Mustervariablen $x \in X$ auf Nachkommen von $t$ abgebildet werden.\\
-Wichtig ist in dem Zusammenhang der Unterschied zwischen der \emph{Musterinterpretation} $(\mathrm{id}, v_m)$, welche Musterterme als Literale interpretiert und einer Interpretation der Literale selbst. Diese zweite Interpretation $(u, v)$ wird im folgenden als gegeben angenommen. Erneut bezieht sich Kommutativität von Funktionssymbolen im folgenden auf diese meist implizite Interpretation $(u, v)$.
+Eine drei-Tupel $(m, v_m, t) \in M \times (X \rightarrow T) \times T$ wird als \emph{Match} bezeichnet, wenn $\mathrm{normalize}(\mathrm{eval}(\mathrm{id}, \tilde v_m)(m))= t$ gilt, wobei $\tilde v_m(x) = v_m(x)$ für $x \in X$ und $\tilde v_m(c) = c$ für $c \in C$. Jedes Literal ist damit Fixpunkt von $\mathrm{eval}(\mathrm{id}, \tilde v_m)$, wohingegen Mustervariablen auf Nachkommen von $t$ abgebildet werden. 
+Klar ist auch, dass ein Match nur für bereits normalisierte Literale $t$ existieren kann, zudem werden Muster in Matches immer als bereits normalisiert angenommen.\\
+Wichtig ist in dem Zusammenhang der Unterschied zwischen der \emph{Musterinterpretation} $(\mathrm{id}, \tilde v_m)$, welche Musterterme als Literale interpretiert und einer Interpretation $(\hat{u}, \hat{v})$ der Literale selbst. Diese zweite Interpretation wird im folgenden als gegeben angenommen. Erneut bezieht sich Kommutativität von Funktionssymbolen dann auf diese meist implizite Interpretation $(\hat u, \hat v)$.\\
 
-\subsection{Algorithmus 1}
+Eine \emph{Matchfunktion} ist eine Funktion, die zu einem Paar $(m, t) \in M \times T$ eine Menge von Funktionen der Form $v_m \colon X \rightarrow T$ findet, so dass $(m, \tilde{v}_m, t)$ ein Match ist, mit . Sei dabei $\mathcal{P}(A)$ die Potenzmenge der Menge $A$.
+$$\mathrm{match} \colon M \times T \rightarrow \mathcal{P}(X \rightarrow T)$$
+
+Die triviale Matchfunktion, welche jedes Paar $(m, t)$ auf die leere Menge abbildet, wird hier nicht weiter betrachtet.
+
+\subsection{Perfekte Matchfunktion}
+Die Matchfunktion, die die Menge aller gültigen Funktionen $v_m$ zurückgibt, wird $\mathrm{match}^*$ oder perfekte Matchfunktion genannt.
+
+\begin{algorithm}
+\caption{$\mathrm{match}^* \colon M \times T \rightarrow \mathcal{P}(X \rightarrow T)$}\label{perfectMatch}
+\begin{algorithmic}[1] %[1] -> jede zeile nummeriert
+\Require $m \in M$, $t \in T$
+\If {$m \in X$}
+	\State \textbf{return} $\{v \in (C \cup X \rightarrow T) ~|~ v(m) = t\}$ 
+\EndIf
+\If {$m = f(m_1, \dots, m_n)$ und $t = f(t_1, \dots, t_n)$}
+	\If {$f$ kommutativ}
+		\State $V \leftarrow \emptyset$
+		\ForAll {$(\tilde m_1, \dots, \tilde m_n)$ permutation von $(m_1, \dots, m_n)$}
+			\State $V \leftarrow V \cup \bigcap_{i = 1}^n {\mathrm{match}^*(\tilde m_i, t_i)}$
+		\EndFor
+		\State \textbf{return} $V$
+	\Else
+		\State \textbf{return} $\bigcap_{i = 1}^n {\mathrm{match}^*(m_i, t_i)}$
+	\EndIf
+\EndIf
+\State \textbf{return} $\emptyset$
+\end{algorithmic}
+\end{algorithm}
+\textcolor{red}{\textit{TODO: Laufzeit von $\mathrm{match}^*$ (Spoiler: nicht so premium)}}
+
+\section{Termersetzungssystem}
+\textcolor{red}{
 \begin{itshape}
-Anmerkung für alle Algorithmen: den, der sich den jeweiligen Alorithmus zuerst ausgedacht hat muss ich noch rausfinden, danach werden die  Unterkapitelnamen entsprechend angepasst.
+Anmerkung: Dieses Kapitel wird recht kurz und ist auch als Unterkapitel von Patternmatching denkbar. 
+Während in Patternmatching (bisher) immer nur mit einem Muster und dem Gesamtterm gematcht wird, Werden hier mehrere Muster auf jeden Teilterm angewendet, bis keine Anwendung mehr möglich ist
 \end{itshape}
-
-
+}
 
 \section{Umsetzung in C\texttt{++}}
+\textcolor{red}{
 \begin{itshape}
-Anmerkung: Hier wird erläutert, wie meine konkrete Implementierung Terme speichert und verwaltet. Vielleicht werden auch ein paar grundlegene Algorithmen auf der Datenstruktur erklärt, sofern ich mein exaktes Vorgehen in keinem Paper wiederfinde.\\
-Denkbare Algorithmen zum erklären:
+Anmerkung: Hier wird erläutert, wie meine konkrete Implementierung Terme speichert und verwaltet und wie die Algorithmen konkret umgesetzt sind. Vielleicht auch noch wo anders im Text anzufinden, aber auch jeden Fall auch hier ist meine Implementierung der Lambdafunktion als Term, was die Vereinfachungsmuster noch etwas ausdrucksstärker macht. Dann gibt es noch spezielle Matchvariablen, die darauf optimiert sind bestimmte Werte zu matchen, die werde ich an dieser Stelle auch erläutern, mathematisch rigoros ist mir das glaube ich zu aufwendig.
+Mögliche Tangenten:
 \begin{itemize}
-    \item Falten eines Terms
-    \item Sortieren eines Terms / ordnen von Teiltermen
-    \item exaktes Ausrechnen von Teilbäumen ohne Variablen (und warum ich das mit dem Zusammenfassen von geschachtelten Summen und weiteren Sachen in einen Algorithmus zusammenwursten musste)
-    \item Frage: aktuell parse ich einen String zum bauen eines Terms noch in $O(n^2)$. Das ist wahrscheinlich nicht optimal. Ergo würde ich diesen Teil wenn, dann eher am Rande erwähnen. Ist es für die Arbeit wichtig, das noch zu optimieren (unter der Voraussetzung, dass die von mir gewählte Grammatik kontextfrei ist, was sie aber glaube ich ist)?
+\item {Ausflug in die Codegenerierung mit Templates für Funktionen, die genau ein Muster matchen (ist ein recht tiefes Kanienchenloch)}
+\item {Meine Idee (und Umsetzung) einer Art Aufzählung (in cpp und Co. als enum in der Sprache enthalten), die Hierarchien erlaubt und damit Basis eines (wie ich finde) relativ eleganten Typsystems für die einzelnen Arten von Termknoten darstellt}
+\item {Idee und Umsetzung eines sehr einfachen Typsystems}
+\item {Speichermanagement}
 \end{itemize}
-
-Mögliche Tangente: Meine Idee (und Umsetzung) einer Art Aufzählung (in C\texttt{++} und Co. als enum in der Sprache enthalten), die Hierarchien erlaubt und damit Basis eines (wie ich finde) relativ eleganten Typsystems für die einzelnen Arten von Termknoten darstellt. (Tangente der Tangente: Das native C\texttt{++} Typsystem mit Umsetzung von Polymorphie als Vererbung erschwert einem nicht nur das Speichern eines polymorphen Baums in einem Array, sondern verteilt auch den Code jedes Algorithmus über die verschiedenen Klassen, die die einzelnen Baumknotenarten modellieren. Deswegen habe ich mir was eignendes gebastelt)
 \end{itshape}
+}
 
 
 \section{Vereinfachen von Arithmetischen Termen}
 \begin{itshape}
+\textcolor{red} {Anmerkung zur Anmerkung: ab hier sind es nur noch Anmerkungen, da wird Farbe gespart.}
 Anmerkung: Ich habe begonnen das Termersetzungssystem zu entwickeln, um Arithmetische Ausdrücke zu vereinfachen (etwa $a + 2 a \rightarrow 3 a$). Wie genau ich das umsetze, wird in diesem Abschnitt erläutert.
 \\Während die Datenstruktur und der Matchingalgorithmus schon benutzbar sind, ist dieser Teil von mir bisher so gut wie gar nicht implementiert worden. Der grobe Plan ist aber folgender:
 \begin{enumerate}
