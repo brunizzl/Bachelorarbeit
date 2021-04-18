@@ -237,20 +237,27 @@ Der folgende Algorithmus kombiniert die einzelnen Überlegungen dieses Kapitels.
 Im vorigen Abschnitt wurde eine erste Normalform für Terme definiert. Alle Vereinfachungen, die dort behandelt wurden, sind recht einfach und direkt zu implementieren, da nur auf lokale Eigenschaften des zu vereinfachenden Terms Rücksicht genommen werden muss. In diesem Abschnitt wird beschrieben, wie ein Term auch zuverlässig auf komplexere Muster geprüft werden kann, so dass nach Implementierung der Mustererkennung selbst viele Vereinfachungsregeln durch jeweils zwei Muster beschrieben werden kann: ein Muster gibt an, welche Struktur im zu vereinfachenden Term gesucht wird, ein zweites Muster gibt an, zu was diese Struktur transformiert wird. Ein Beispiel für ein solches Musterpaar ist etwa die Anwendung der ersten binomischen Formel:
 $$a^2 + 2 a b + b^2 \rightarrow (a + b)^2$$
 In der etablierten Schreibweise als Term dann geschrieben als:
-$$sum(pow(a, 2), product(2, a, b), pow(b, 2)) \rightarrow pow(sum(a, b), 2)$$
-Die Zeichen $a$ und $b$ stehen dabei nicht für Elemente in $C$, sondern dienen lediglich als Platzhalter für beliebige Teilterme, wobei die verschiedenen Vorkommnisse des selben Zeichens immer auch mit gleichen Termen assoziiert werden müssen. Ein solches Zeichen wird im folgenden \emph{Mustervariable} genannt.
+$$+(\string^(\mathbf a, 2), \cdot(2, \mathbf a, \mathbf b), \string^(\mathbf b, 2)) \rightarrow \string^(+(\mathbf a, \mathbf b), 2)$$
+Die Zeichen $\mathbf a$ und $\mathbf b$ stehen dabei nicht für Elemente in $C$, sondern dienen lediglich als Platzhalter für beliebige Teilterme, wobei die verschiedenen Vorkommnisse des selben Zeichens immer auch mit gleichen Termen assoziiert werden müssen. Ein solches Zeichen wird im folgenden \emph{Mustervariable} genannt und zur Unterscheidung fett gedruckt.
 
 \subsection{Muster}
 Eine Menge von Termen $T(F, C)$ kann durch Vereinigung von $C$ mit der Menge der Mustervariablen $X$ zu einer Menge von Mustertermen $M$ erweitert werden. 
-
-$$M(F, C) \coloneqq T(F, C \cup X)$$
-
 Um die bisherigen Terme $t \in T$ von Mustertermen zu unterscheiden, werden erstere als \emph{Literal} bezeichnet.
-Ein drei-Tupel $(m, v_m, t) \in M \times (X \rightarrow T) \times T$ wird als \emph{Match} bezeichnet, wenn $\mathrm{normalize}(\mathrm{eval}(\mathrm{id}, \tilde v_m)(m))= t$ gilt, wobei $\tilde v_m(x) = v_m(x)$ für $x \in X$ und $\tilde v_m(c) = c$ für $c \in C$. Jedes Literal ist damit Fixpunkt von $\mathrm{eval}(\mathrm{id}, \tilde v_m)$, wohingegen Mustervariablen auf Nachkommen von $t$ abgebildet werden. 
-Klar ist auch, dass ein Match nur für bereits normalisierte Literale $t$ existieren kann, zudem werden Muster in Matches immer als bereits normalisiert angenommen.\\
+$$M(F, C) \coloneqq T(F, C \cup X)$$
+Für ein Paar $(m, t) \in M \times T$ ist eine Funktion $v_m \colon X \rightarrow T$ ein \emph{Match}, wenn folgendes gilt.
+$$\mathrm{normalize}(\mathrm{eval}(\mathrm{id}, \tilde v_m)(m))= t$$
+$$\tilde v_m(c) = \begin{cases}
+	v_m(c) & c \in X\\
+	c         & c \in C \setminus X
+\end{cases}$$
+Jedes Literal ist damit Fixpunkt von $\mathrm{eval}(\mathrm{id}, \tilde v_m)$, wohingegen Mustervariablen auf Nachkommen von $t$ abgebildet werden. 
+Klar ist auch, dass ein Match nur für bereits normalisierte Literale $t$ existieren kann, im folgenden werden zudem auch Muster als normalisiert angenommen.\\
 Wichtig ist in dem Zusammenhang der Unterschied zwischen der \emph{Musterinterpretation} $(\mathrm{id}, \tilde v_m)$, welche Musterterme als Literale interpretiert und einer Interpretation $(\hat{u}, \hat{v})$ der Literale selbst. Diese zweite Interpretation wird im folgenden als gegeben angenommen. Erneut bezieht sich Kommutativität von Funktionssymbolen dann auf diese meist implizite Interpretation $(\hat u, \hat v)$.\\
 
-Eine \emph{Matchfunktion} ist eine Funktion, die zu einem Paar $(m, t) \in M \times T$ eine Menge von Funktionen der Form $v_m \colon X \rightarrow T$ findet, so dass $(m, \tilde{v}_m, t)$ ein Match ist. Sei dabei $\mathcal{P}(A)$ die Potenzmenge der Menge $A$.
+\textbf{Bespiel}\\
+Für das Muster $m = +(2, \mathbf a, \mathbf b)$ und das Literal $t = +(2, \sin(x), \cdot(x, y, z))$ ist die Funktion $v_m$ ein Match, wenn $v_m(\mathbf a) = \sin(x)$ und $v_m(\mathbf b) = \cdot(x, y, z)$. Ebenso gültig wäre aber $v_m(\mathbf b) = \sin(x)$ und $v_m(\mathbf a) = \cdot(x, y, z)$, da die Auswertung des Musters $m$ mit der Musterinterpretation noch normalisiert wird, bevor das Ergebnis identisch zu $t$ sein muss.\\
+
+Eine \emph{Matchfunktion} ist eine Funktion, die zu einem Paar $(m, t) \in M \times T$ eine Menge von Matches findet. Sei dabei $\mathcal{P}(A)$ die Potenzmenge der Menge $A$.
 $$\mathrm{match} \colon M \times T \rightarrow \mathcal{P}(X \rightarrow T)$$
 
 Die triviale Matchfunktion, welche jedes Paar $(m, t)$ auf die leere Menge abbildet, wird hier nicht weiter betrachtet.
@@ -268,8 +275,8 @@ Die Matchfunktion, die die Menge aller gültigen Funktionen $v_m$ zurückgibt, w
 \If {$m = f(m_1, \dots, m_n)$ und $t = f(t_1, \dots, t_n)$}
 	\If {$f$ kommutativ}
 		\State $V \leftarrow \emptyset$
-		\ForAll {$(\tilde m_1, \dots, \tilde m_n)$ permutation von $(m_1, \dots, m_n)$}
-			\State $V \leftarrow V \cup \bigcap_{i = 1}^n {\mathrm{match}^*(\tilde m_i, t_i)}$
+		\ForAll {$(\tilde t_1, \dots, \tilde t_n)$ permutation von $(t_1, \dots, t_n)$}
+			\State $V \leftarrow V \cup \bigcap_{i = 1}^n {\mathrm{match}^*(m_i, \tilde t_i)}$
 		\EndFor
 		\State \textbf{return} $V$
 	\Else
