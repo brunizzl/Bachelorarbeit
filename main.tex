@@ -2,7 +2,7 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
 
-\title{Entwicklung eines Termersetzungssystems für assoziative und kommutative Ausdrücke zum vereinfachen arithmetischer Terme\\ \textit{Version 0.0.1}}
+\title{Entwicklung eines Termersetzungssystems für assoziative und kommutative Ausdrücke zum vereinfachen arithmetischer Terme\\ \textit{Version 0.0.2}}
 \author{Bruno Borchardt}
 \date{heute}
 
@@ -67,7 +67,7 @@ $$T(F, C) \coloneqq C \cup \curl*{
 ~ t_1, \dots,t_n \in T(F, C)
 }$$ 
 Elemente $f\in F$ werden \emph{Funktionssymbole} genannt. Ist $\mathrm{arity}(f) = \omega$, wird $f$ als \emph{variadisches} Funktionssymbol bezeichnet. Elemente $c \in C$ werden als Konstantensymbole bezeichnet.
-Wichtig ist, dass vorerst nicht zwischen einem Konstantensymbol $c \in C$ unterschieden wird, welches bekannte Eigenschaften hat, etwa der Komplexen Zahl $c = -5i$ und einem Symbol, wessen Eigenschaften vom Kontext abhängen können, etwa dem Zeichen $c = \mathrm x$ (vorrausgesetzt $-5i,~\mathrm x \in C$). \\
+Wichtig ist, dass vorerst nicht zwischen einem Konstantensymbol $c \in C$ unterschieden wird, welches bekannte Eigenschaften hat, etwa der Komplexen Zahl $c = -5i$ und einem Symbol, dessen Eigenschaften vom Kontext abhängen können, etwa dem Zeichen $c = \mathrm x$ (vorrausgesetzt $-5i,~\mathrm x \in C$). \\
  $(f, t_1, \dots, t_n) \in T$ wird auch als $f(t_1, \dots, t_n)$ geschrieben und \emph{Funktionsanwendung} von $f$ auf die \emph{Parameter} $t_1, \dots, t_n$ genannt. $t_1, \dots, t_n$ sind zudem die \emph{Kinder} ihres \emph{Vaters} $f(t_1, \dots, t_n)$. Kinder sind allgemeiner \emph{Nachkommen}. Nachkommen verhalten sich transitiv, also ein Nachkomme $z$ des Nachkommen $y$ von $x$ ist auch ein Nachkomme von $x$. Umgekehrt ist $x$ \emph{Ahne} von $y$ und $z$. \\
 Häufig werden Abschnitte der Parameter einer Funktionsanwendung beliebiger Länge der Form $t_i, \dots, t_k$ vorkommen. Kompakt wird $ts...$ für den (möglicherweise leeren) Abschnitt des Funktionsanwendungstupels geschrieben. \\$f(t_1, \dots, t_k, a, t_{k+2}, \dots, t_n)$ kann also äquivalent $f(ts..., a, rs...)$ geschrieben werden, mit $(t_1, \dots, t_k) = (ts...)$ und $(t_{k+2}, \dots, t_n) = (rs...)$.\\~\\
 
