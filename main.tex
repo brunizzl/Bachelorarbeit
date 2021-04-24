@@ -253,7 +253,7 @@ $$\tilde v_m(c) = \begin{cases}
 \end{cases}$$
 Jedes Literal ist damit Fixpunkt von $\mathrm{eval}(\mathrm{id}, \tilde v_m)$, wohingegen Mustervariablen auf Nachkommen von $t$ abgebildet werden. 
 Klar ist auch, dass ein Match nur für bereits normalisierte Literale $t$ existieren kann, im folgenden werden zudem auch Muster als normalisiert angenommen.\\
-Wichtig ist in dem Zusammenhang der Unterschied zwischen der \emph{Musterinterpretation} $(\mathrm{id}, \tilde v_m)$, welche Musterterme als Literale interpretiert und einer Interpretation $(\hat{u}, \hat{v})$ der Literale selbst. Diese zweite Interpretation wird im folgenden als gegeben angenommen. Erneut bezieht sich Kommutativität von Funktionssymbolen dann auf diese meist implizite Interpretation $(\hat u, \hat v)$.\\
+Wichtig ist in dem Zusammenhang der Unterschied zwischen der \emph{Musterinterpretation} $(\mathrm{id}, \tilde v_m)$, welche Musterterme als Literale interpretiert und einer Interpretation $(\hat{u}, \hat{v})$ der Literale selbst. Diese zweite Interpretation wird im folgenden als gegeben angenommen. Erneut bezieht sich Kommutativität und Assoziativität von Funktionssymbolen dann auf diese meist implizite Interpretation $(\hat u, \hat v)$.\\
 
 \textbf{Bespiel}\\
 Für das Muster $m = +(2, \mathbf a, \mathbf b)$ und das Literal $t = +(2, \sin(x), \cdot(x, y, z))$ ist die Funktion $v_m$ ein Match, wenn $v_m(\mathbf a) = \sin(x)$ und $v_m(\mathbf b) = \cdot(x, y, z)$. Ebenso gültig wäre aber $v_m(\mathbf b) = \sin(x)$ und $v_m(\mathbf a) = \cdot(x, y, z)$, da die Auswertung des Musters $m$ mit der Musterinterpretation noch normalisiert wird, bevor das Ergebnis identisch zu $t$ sein muss.\\
@@ -263,7 +263,7 @@ $$\mathrm{findMatches} \colon M \times T \rightarrow \mathcal{P}(X \rightarrow T
 $$\mathrm{findMatch} \colon M \times T \rightarrow X \rightarrow T$$
 Es wird sich herausstellen, das die $\mathrm{findMatches}$ genannte Variante elegantere Beschreibungen erlaubt, wohingegen $\mathrm{findMatch}$ in der Laufzeit besser kontrollierbar ist.
 
-\subsection{Matchalgorithmus 1}
+\subsection{Erster Matchalgorithmus}
 
 \begin{algorithm}
 \caption{$\mathrm{findMatchingPermutation} \colon M \times T \rightarrow \mathcal{P}(X \rightarrow T)$}\label{findMatchingPermutation}
@@ -287,18 +287,33 @@ Es wird sich herausstellen, das die $\mathrm{findMatches}$ genannte Variante ele
 \end{algorithmic}
 \end{algorithm}
 
-Der erste Matchalgorithmus, dargestellt als Argorithmus \ref{findMatchingPermutation}, findet bereits eine große Teilmenge aller Matches. Es gibt allerdings zwei schwerwiegende Probleme. Erstens erzeugt Zeile 7 für eine Funktionsanwendung mit $n$ Parametern alle $n!$ Permutationen dieser Parameter, wobei ein Muster sogar mehrere solche Funktionsanwendungen auch mit Abstammungsverhältnis voneinander enthalten kann. Sollte es ein Match geben, ist die Laufzeit damit in $\Omega(n!)$, wobei  $\Omega$ das Landausymbol ist, welches die tatsächliche Laufzeit asymptotisch nach unten abschätzt.
+Der erste Matchalgorithmus, dargestellt als Argorithmus \ref{findMatchingPermutation}, findet bereits eine große Teilmenge aller möglichen Matches. Es gibt allerdings zwei schwerwiegende Probleme. Erstens erzeugt Zeile 7 für eine Funktionsanwendung mit $n$ Parametern alle $n!$ Permutationen dieser Parameter, wobei ein Muster sogar mehrere solche Funktionsanwendungen auch mit gegenseitiger Abstammung enthalten kann. Sollte es ein Match geben, ist die Laufzeit damit in $\Omega(n!)$, wobei  $\Omega$ das Landau-Symbol ist, welches die tatsächliche Laufzeit asymptotisch nach unten abschätzt.
 
 Das zweite Problem  ist folgendes: Assoziative Funktionsanwendungen wurden vor der Matchsuche bereits von $\mathrm{combine}$ (Algorithmus \ref{combine}) miteinander verschmolzen, so dass ein Muster mindestens mit der äußersten Funktionsanwendung nicht nur die Terme matchen will, die in ihrer äußersten Funktionsanwendung exakt gleich viele Parameter wie das Muster haben, sondern auch die Funktionsanwendungen mit mehr Parametern (immer vorrausgesetzt die einzelnen Parameter sind matchbar). Für die Lösung dieses zweiten Problems gibt es mehrere Optionen.
 Möglich ist, im Matchalgorithmus nicht nur darauf zu achten, ob ein Funktionssymbol kommutativ ist, sondern auch auf Assoziativität entsprechend zu reagieren, also bei der Matchsuche in einer größeren Funktionsanwendung eines assoziativen Funktionssymbols im Literal testweise immer so viele Parameter zu einzelnen Funktionsanwendungen zusammenzufassen, dass die Parameteranzahl von Muster und Literal in der äußersten Funktionsanwendung gleich sind. Ein Muster mit äußerster assoziativer Funktionsanwendung bräuchte dann immer eine Version mit einer weiteren Matchvariable, die beim Matchprozess sonst übrigbleibende Parameter des Literals \glqq aufsagen\grqq{} kann. Das Muster aus Beispiel \textcolor{red}{\textbf{???}} zur Anwendung der ersten binomischen Formel müsste durch eine zweite Version mit einer Mustervariable $\mathbf{c}$ ergänzt werden.
 $$+(\string^(\mathbf a, 2), \cdot(2, \mathbf a, \mathbf b), \string^(\mathbf b, 2), \mathbf c) \rightarrow +(\string^(+(\mathbf a, \mathbf b), 2), \mathbf c)$$
-Der Vorteil dieser Umsetzung ist die einfachere mathematische Beschreibung, es wurden schließlich keine neuen Konzepte eingeführt, sondern nur der Algorithmus angepasst. Es gibt allerdings auch drei Nachteile. Zum einen muss jedes Muster mit äußerer assoziativer Funktionsanwendung jetzt mindestens zwei mal vorliegen: Ein mal mit und ein mal ohne extra Variable $\mathbf c$. Für nicht kommutative Funktionen wird die Anzahl sogar noch größer, da auch Parameter nur nicht kommutativ zusammengefasst werden können, also müssen extra Variablen sowohl vor, als auch hinter dem sonstigen Muster ergänzt werden, so dass es dann vier Musterversionen gibt, die den selben Sachverhalt beschreiben. 
+Der Vorteil dieser Umsetzung ist die einfachere mathematische Beschreibung, es wurden schließlich keine neuen Konzepte eingeführt, sondern nur der Algorithmus angepasst. Es gibt allerdings auch drei Nachteile. Zum einen muss jede Regel mit äußerer assoziativer Funktionsanwendung auf der linken Seite jetzt mindestens zwei mal vorliegen: Ein mal mit und ein mal ohne extra Variable $\mathbf c$. Für nicht kommutative Funktionen wird die Anzahl sogar noch größer, da auch Parameter nur nicht kommutativ zusammengefasst werden können, also müssen extra Variablen sowohl vor, als auch hinter dem sonstigen Muster ergänzt werden, so dass es dann vier Regeln geben muss, die den selben Sachverhalt beschreiben. 
 Ein weiterer Nachteil des Ansatzes besteht darin, dass zwar assoziative Funktionsanwendungen einfach in einem Muster beschrieben werden können, ein Term aber prinzipiell auch nicht assoziative variadische Funktionssymbole enthalten kann. Ein Muster kann also immer nur eine feste Anzahl von Parametern in einer solchen Funktionsanwendung beschreiben, was Muster praktisch nutzlos für die Manipulation solcher Strukturen macht.
 Der finale Nagel im Sarg ist die erneut größer gewordene algorithmische Komplexität des Algorithmus. Dem Autor des Musters ist zwar klar, dass die ergänzte Mustervariable nur sonst übrigbleibende Parameter aufsammeln soll, diese Intention geht aber verloren, wenn $\mathbf c$ auch nur eine normale Mustervariable ist. Vor allem die Möglichkeit einer Mustervariable öfter als ein mal vorzukommen wird für die gerade ergänzten Mustervariablen nicht benötigt, da sie sich gerade dadurch auszeichnen, dass die Teile eines Literals, die mit einer solchen Variable gematcht sind für das eigentliche Muster uninteressant sind.
-\textcolor{red}{\textit{Frage: Soll der soeben skizzierte Algorithmus auch in Pseudocode beschrieben werden?}}
+\textcolor{red}{\textit{Frage: Soll der soeben skizzierte erweiterte Algorithmus auch in Pseudocode beschrieben werden?}}
 
 \subsection{Multi-Mustervariablen}
-\textcolor{red}{TODO}
+Die in dieser Arbeit gewählte Lösung zur Beschreibung von beliebig vielen Parametern in einem Muster ist im Prinzip schon mit den ersten Definitionen eingeführt worden. Die Schreibweise $f(ts...)$ als kompakte Alternative zu $f(t_1, \dots, t_n)$ hat genau die Eigenschaften, die wir uns nach Analyse von Algorithmus \ref{findMatchingPermutation} gewünscht haben. Eine \textit{Multi-Mustervariable} der Form $\mathbf{ts...}$ kann also nicht nur genau einen Parameter in einer Funktionsanwendung matchen, sondern beliebig viele, auch null. Dafür darf jede Multi-Mustervariable auf der linken Seite einer Ersetzungsregel nur höchstens ein Mal vorkommen. Die rigorose Beschreibung des Konzeptes gestaltet sich allerdings mit der bisher eingeführten Ideen schwierig, da eine Multi-Mustervariable nur Teil einer Funktionsanwendung ist und damit auch alleine keinen vollständigen Term repräsentiert. Konnte eine Matchfunktion $v \colon X \rightarrow T$ vorher einfach auf die Menge aller Terme abbilden, wäre dies nach hinzufügen der Multi-Mustervariablen nicht mehr möglich. Entsprechend umständlicher würde auch die Beschreibung der Auswertung eines Musters werden. \\
+
+Formal wird die Multi-Mustervariable damit nicht als echtes neues Symbol in die Menge der Muster aufgenommen, sondern ist lediglich eine vereinfachende Schreibweise, die wie auch vorher immer für eine beliebige Anzahl an Teiltermen steht, in diesem Fall Mustervariablen. Ein Muster mit einer Multi-Mustervariable $\mathbf{ts...}$ repräsentiert also formal unendlich viele konkrete Muster mit konkreten Mustervariablen $\mathbf{t_i}$:
+\begin{equation*}
+    \begin{split}
+    		f(\mathbf{ts...}) = \{&f(), \\
+    		&f(\mathbf{t_1}),\\
+    		&f(\mathbf{t_1}, \mathbf{t_2}), \\
+    		&f(\mathbf{t_1}, \mathbf{t_2}, \mathbf{t_3}), \\
+    		&\dots \}    		
+    \end{split}
+\end{equation*}
+Für die folgenden Algorithmen und auch in der echten Umsetzung ist es allerdings nicht praktikabel diese Definition anzuwenden, Multi-Mustervariablen werden also formal inkorrekt als einzelne Symbole in einem tatsächlichen Muster betrachtet.
+
+Die Anwendung der ersten binomischen Formel kann jetzt in einer einzigen Regel beschrieben werden.
+$$+(\string^(\mathbf a, 2), \cdot(2, \mathbf a, \mathbf b), \string^(\mathbf b, 2), \mathbf{cs...}) \rightarrow +(\string^(+(\mathbf a, \mathbf b), 2), \mathbf{cs...})$$
 
 \section{Termersetzungssystem}
 \textcolor{red}{
@@ -317,6 +332,7 @@ Mögliche Tangenten:
 \item {Ausflug in die Codegenerierung mit Templates für Funktionen, die genau ein Muster matchen (ist ein recht tiefes Kaninchenloch)}
 \item {Meine Idee (und Umsetzung) einer Art Aufzählung (in cpp und Co. als enum in der Sprache enthalten), die Hierarchien erlaubt und damit Basis eines (wie ich finde) relativ eleganten Typsystems für die einzelnen Arten von Termknoten darstellt}
 \item {Idee und Umsetzung eines sehr einfachen Typsystems}
+\item{Möglichkeit Mustervariablen nur zu matchen, sollten Extrabedingungen erfüllt sein}
 \item {Speichermanagement}
 \end{itemize}
 \end{itshape}
@@ -325,7 +341,7 @@ Mögliche Tangenten:
 
 \section{Vereinfachen von arithmetischen Termen}
 \begin{itshape}
-\textcolor{red} {Anmerkung zur Anmerkung: ab hier sind es nur noch Anmerkungen, da wird Farbe gespart (bzw. \LaTeX{}  mag es nicht über Kapitelgrenzen hinweg zu färben).}
+\textcolor{red} {Anmerkung zur Anmerkung: ab hier sind es nur noch Anmerkungen, da wird Farbe gespart (in echt mag \LaTeX{}  es nicht über Kapitelgrenzen hinweg zu färben).}
 Anmerkung: Ich habe begonnen das Termersetzungssystem zu entwickeln, um Arithmetische Ausdrücke zu vereinfachen (etwa $a + 2 a \rightarrow 3 a$). Wie genau ich das umsetze, wird in diesem Abschnitt erläutert.
 \\Während die Datenstruktur und der Matchingalgorithmus schon benutzbar sind, ist dieser Teil von mir bisher so gut wie gar nicht implementiert worden. Der grobe Plan ist aber folgender:
 \begin{enumerate}
