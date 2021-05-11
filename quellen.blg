@@ -1,5 +1,0 @@
-[0] Config.pm:311> INFO - This is Biber 2.16
-[0] Config.pm:314> INFO - Logfile is 'quellen.blg'
-[180] biber-MSWIN64:340> INFO - === 
-[729] Utils.pm:411> ERROR - Cannot find 'quellen.bcf'!
-[729] Biber.pm:132> INFO - ERRORS: 1

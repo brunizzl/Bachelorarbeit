@@ -13,6 +13,8 @@
 \usepackage{mathtools}
 \usepackage{amssymb}
 \usepackage{amsmath} %  \begin{cases}  Wert 1 & Bedingung 1 \\ Wert 2 & Bedingung 2 \\ \end{cases} 
+\numberwithin{figure}{section} %label nr. beinhaltet section
+
 \usepackage{qtree}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
@@ -26,11 +28,29 @@
 
 \usepackage{xcolor} %\textcolor{blue}{This is a sample text in blue.}
 
-\DeclarePairedDelimiter\paren{(}{)} %\paren*{a + b}
+%\paren*{a + b} skaliert automatisch klammern um a + b
+\DeclarePairedDelimiter\paren{(}{)} 
 \DeclarePairedDelimiter\curl{\{}{\}}
 
 \setlength{\parindent}{0pt} %keine Einrückung nach absatz
 
+\usepackage{amsthm}
+\theoremstyle{definition} %keine kursiven theoreme
+
+%.........................................................................
+%................................ Macros .................................
+%.........................................................................
+
+% baut teile eines tupels: "t_1, ..., t_n"
+\newcommand{\elems}[3]{{#1}_{#2}, \dots, {#1}_{#3}}
+\newcommand{\tOneN}{\elems t 1 n}
+
+% stapelt zweiten parameter auf ersten
+\newcommand{\stapel}[2]{\mathrel{\overset{\makebox[0pt]{\mbox{\normalfont\tiny\sffamily {#2}}}}{#1}}}
+
+%.........................................................................
+%................................ Body ...................................
+%.........................................................................
 \begin{document}
 
 \maketitle
@@ -59,6 +79,33 @@ Anmerkung: Hier kommt hin, was halt in eine Einleitung soll:
 \end{itshape}
 }
 
+Die Idee Computer zu nutzen um symbolische Ausdrücke zu manipulieren ist fast so alt wie der Computer selbst.  LISP \cite{lisp} ist als eine der ersten Programmiersprachen bereits für diesen Zweck geschaffen worden. 
+
+\subsection{Zielsetzung}
+Diese Arbeit hat zwei Ziele. Zum einen soll ein System entwickelt werden, welches kompakt formulierte Ersetzungsregeln auf einen Term anwenden kann. Daran angeknüpft soll dieses System dann genutzt werden um Terme zu vereinfachen. Ein vereinfachter Term hat dabei die selbe Bedeutung wie der ursprüngliche Term,  er ist allerdings hinsichtlich einer entsprechenden Bewertungsfunktion kleiner. Ein Beispiel für eine solche Bewertungsfunktion ist die Zählung der im Term vorkommenden Symbole, wobei Mehrfachnennungen auch mehrfach gezählt werden.
+
+
+\newtheorem{b1}{Beispiel}[section]
+\begin{b1}~\\
+Mit den Vereinfachungsregeln
+\begin{alignat*}{4}
+    ~& a \cdot b + a \cdot c & &= a \cdot (b + c) &~~~& (1) \\
+    ~& \sin(a)^2 + \cos(a)^2 & &= 1               &~~~& (2) \\
+    ~& \paren{a^b}^c         & &= a^{b \cdot c}   &~~~& (3) \\
+    ~& \sqrt{a}              & &= a^{\frac 1 2}   &~~~& (4)
+\end{alignat*}
+\end{b1}
+kann folgende Transformation vorgenommen werden.
+\begin{equation*}
+    \begin{split}
+	3 \cdot \sin(x + y)^2 + 3 \cdot \sqrt{\cos(x + y)^4} 
+	&\stapel = {(1)} 3 \cdot \paren*{\sin(x + y)^2 + \sqrt{\cos(x + y)^4}} \\
+	&\stapel = {(4)} 3 \cdot \paren*{\sin(x + y)^2 + \paren*{{\cos(x + y)^4}}^{\frac 1 2}}\\
+	&\stapel = {(3)} 3 \cdot \paren*{\sin(x + y)^2 + {\cos(x + y)^2}}\\
+	&\stapel = {(2)} 3
+    \end{split}
+\end{equation*}
+
 \section{Grundlegende Definitionen}
 
 \subsection{Term}
@@ -79,18 +126,14 @@ Ein Term $t \in T(F, C)$ ist dann  {
 \begin{itemize}
 	\item{ein Konstantensymbol, also $t \in C$}
 	\item{oder eine \emph{Funktionsanwendung} des Funktionssymbols $f \in F$ mit $\mathrm{arity} f \in \{n, \omega\}$ 
-		auf die Terme ${t_1, \dots, t_n \in T(F, C)}$, geschrieben ${t = (f, t_1, \dots, t_n)}$}
+		auf die Terme ${\tOneN \in T(F, C)}$, geschrieben ${t = (f, \tOneN)}$}
 \end{itemize}}
-In Mengenschreibweise
-
+In Mengenschreibweise:
 $$T(F, C) \coloneqq C \cup \curl*{
-(f, t_1, \dots, t_n)
-~|
-~f\in F,
-~\mathrm{arity}(f) \in \{n, \omega\},
-~ t_1, \dots,t_n \in T(F, C)
+(f, \tOneN)~|
+~f\in F,~\mathrm{arity}(f) \in \{n, \omega\},~ \tOneN \in T(F, C)
 }$$ 
-Eine Funktionsanwendung wird in der Literatur oft mit dem Funktionssymbol außerhalb des Tupels geschrieben \cite{buch1977}, also $f(t_1, \dots, t_n)$ statt $(f, t_1, \dots, t_n)$. Zum deutlicheren Abheben von Funktionen die Terme transformieren zu Termen selbst, wird diese Schreibweise hier keine Verwendung finden. 
+Eine Funktionsanwendung wird in der Literatur oft mit dem Funktionssymbol außerhalb des Tupels geschrieben \cite{buch1977}, also $f(\tOneN)$ statt $(f, \tOneN)$. Zum deutlicheren Abheben von Funktionen die Terme transformieren zu Termen selbst, wird diese Schreibweise hier keine Verwendung finden. 
 
 
 \begin{figure}
@@ -99,11 +142,13 @@ Eine Funktionsanwendung wird in der Literatur oft mit dem Funktionssymbol außer
 \caption{Baumdarstellung des Terms $(\texttt{divide}, 3, (\texttt{sin}, 1))$ }
 \end{figure}
 
+\newtheorem{b2}[b1]{Beispiel}
+\begin{b2}~\\
 Als Beispiel lässt sich der Ausdruck $\frac 3 {\sin 1}$ in der formalen Schreibweise als Term mittels der Funktionssymbole $\texttt{sin}$ und $\texttt{divide}$, sowie den Konstantensymbolen $3$ und $1$ darstellen als $(\texttt{divide}, 3, (\texttt{sin}, 1))$. Ein Term kann dabei auch immer als Baum\footnote{In der theoretischen Informatik auch Syntaxbaum oder AST (englisch für \textit{Abstract Syntax Tree})} aufgefasst werden, etwa das aktuelle Beispiel in in Abb. \ref{ersterBeispielBaum} .
+\end{b2}
 
-Mit dem Kontext der Baumdarstellung lassen sich nun die folgenden Begriffe auf Terme übertragen. In der Funktionsanwendung $t = (f, t_1, \dots, t_n)$ sind $t_1, \dots, t_n$ die \emph{Kinder} ihres \emph{Vaters} $t$. Kinder sind allgemeiner \emph{Nachkommen}. Nachkommen verhalten sich transitiv, also ein Nachkomme $z$ des Nachkommen $y$ von $x$ ist auch ein Nachkomme von $x$. Umgekehrt ist $x$ \emph{Ahne} von $y$ und $z$. \\
+Mit dem Kontext der Baumdarstellung lassen sich nun die folgenden Begriffe auf Terme übertragen. In der Funktionsanwendung $t = (f, \tOneN)$ sind $\tOneN$ die \emph{Kinder} ihres \emph{Vaters} $t$. Kinder sind allgemeiner \emph{Nachkommen}. Nachkommen verhalten sich transitiv, also ein Nachkomme $z$ des Nachkommen $y$ von $x$ ist auch ein Nachkomme von $x$. Umgekehrt ist $x$ \emph{Ahne} von $y$ und $z$. \\
 
-Häufig werden Abschnitte der Parameter einer Funktionsanwendung beliebiger Länge der Form $t_i, \dots, t_k$ vorkommen. Kompakt wird $ts...$ für den (möglicherweise leeren) Abschnitt des Funktionsanwendungstupels geschrieben. Das $s$ in $ts...$ ist dann nicht als einzelnes Symbol zu lesen, sondern als Suffix um $t$ in den Plural zu setzen. \\$f(t_1, \dots, t_k, a, t_{k+2}, \dots, t_n)$ kann also äquivalent $f(ts..., a, rs...)$ geschrieben werden, mit $(t_1, \dots, t_k) = (ts...)$ und $(t_{k+2}, \dots, t_n) = (rs...)$.\\~\\
 
 \subsection{Funktionsauswertung}
 Die Erweiterung des Funktionssymbols zur Funktion, die von einem Raum $Y^n$ nach $Y$ abbildet, folgt mittels der $\mathrm{eval}$ Funktion frei nach \cite{buch1977}.
@@ -112,8 +157,8 @@ Die Erweiterung des Funktionssymbols zur Funktion, die von einem Raum $Y^n$ nach
     \begin{split}
 	\mathrm{eval} &\colon \paren*{F \rightarrow \bigcup_{n \in \mathbb{N}} Y^n \rightarrow Y} \times (C \rightarrow Y) \rightarrow T \rightarrow Y\\
 	\mathrm{eval} &(u, v)~t = \begin{cases}
-		u~f~(\mathrm{eval}(u, v)~t_1, \dots, \mathrm{eval}(u, v)~t_n) & t = (f, t_1, \dots, t_n)\\
-		v~t                                                                                            & t \in C\\
+		u~f~(\elems {\mathrm{eval}(u, v)~t} 1 n) & t = (f, \tOneN)\\
+		v~t                                      & t \in C\\
 		\end{cases}
     \end{split}
 \end{equation*}
@@ -121,14 +166,15 @@ Gilt $\mathrm{arity} f = n \in N$ für ein $f \in F$, ist zudem die Funktion $u~
 Die Funktion $u$ wird als \emph{Interpretation} der Funktionssymbole $F$, die Funktion $v$ als Interpretation der Konstantensymbole $C$ und das Paar $(u, v)$ als Interpretation der Terme $T(F, C)$ bezeichnet. Die Funktion $\mathrm{eval}(u, v) \colon T \rightarrow Y$ ist eine \emph{Auswertung} nach $Y$. 
 \\~\\
 
-\textbf{Beispiel}\\
+\newtheorem{b3}[b1]{Beispiel}
+\begin{b3}~\\
 Sei $F = \{\texttt{sum}, \texttt{prod}, \texttt{neg} \}$ und $C = \mathbb{N}$ mit $\mathrm{arity}~ \texttt{sum} = \mathrm{arity}~ \texttt{prod} = \omega$ und $\mathrm{arity}~ \texttt{neg} = 1$.
 Die Interpretation $(u, v)$ kann so gewählt werden, dass jeder Term in $T$ zu einer ganzen Zahl auswertbar ist.
 
 \begin{equation*}
     \begin{split}
-    u~\texttt{sum}  ~(y_1, \dots, y_n) &= \Sigma_{k = 1}^n y_k\\
-    u~\texttt{prod}~(y_1, \dots, y_n) &=      \Pi_{k = 1}^n y_k\\
+    u~\texttt{sum}  ~(\elems y 1 n) &= \Sigma_{k = 1}^n y_k\\
+    u~\texttt{prod} ~(\elems y 1 n) &=    \Pi_{k = 1}^n y_k\\
     u~\texttt{neg}~y &= -y\\
     &\\
     v~y &= y
@@ -148,14 +194,20 @@ Der Term $t = (\texttt{sum}, 3, (\texttt{prod}, 2, 4), (\texttt{neg}, 1))$ kann 
     &= 10 \\
     \end{split}
 \end{equation*}
+\end{b3}
 
-Eine direkt aus der Struktur des Terms folgende Interpretation $u_c$ für Funktionssymbole ist die des \emph{Konstruktors}. Als Konstruktor eines Typen $A$ wird eine Funktion bezeichnet, die nach $A$ abbildet. Mit $f \in F$ und $\mathrm{arity} f = n \in \mathbb N$ 
-gilt $$u_c~f \colon T^n \rightarrow T, ~(t_1, \dots, t_n) \mapsto (f, t_1, \dots, t_n)$$
+\newtheorem{defKonstruktor}[b1]{Definition}
+\begin{defKonstruktor}~\\
+Eine direkt aus der Struktur des Terms folgende Interpretation $u_c$ für Funktionssymbole ist die des \emph{Konstruktors}. Als Konstruktor eines Typen $A$ wird eine Funktion bezeichnet, die nach $A$ abbildet \cite{haskellConstructor}. Mit $f \in F$ und $\mathrm{arity} f = n \in \mathbb N$ 
+gilt $$u_c~f \colon T^n \rightarrow T, ~(\tOneN) \mapsto (f, \tOneN)$$
 Mit einem beliebigen $v \colon C \rightarrow C'$ ändert die Auswertung $\mathrm{eval}(u_c, v) \colon T(F, C) \rightarrow T(F, C')$ damit nur die Konstantensymbole eines Terms, lässt aber die sonstige Struktur unverändert. Insbesondere ist $\mathrm{eval}(u_c, v) \colon T \rightarrow T$ mit $v~y = y$ die Identität.
 
 Die Interpretation $u_c$ reicht für bestimmte Funktionssymbole aus, etwa kann so das Funktionssymbol $\texttt{pair}$ ein Paar als Term darstellen.
 $$u_c~\texttt{pair} \colon T^2 \rightarrow T, ~(a, b) \mapsto (\texttt{pair}, a, b)$$
 Äquivalent ist die Darstellung endlicher Mengen und Vektoren mit variadischen Funktionssymbolen \texttt{set} und \texttt{vec} möglich.
+
+\end{defKonstruktor}
+
 
 
 \section {Erste Normalform}
@@ -164,6 +216,8 @@ Das Kernthema dieser Arbeit ist die Vereinfachung von Termen. Eine Vereinfachung
 Im folgenden wird von der Assoziativität oder Kommutativität bestimmter Funktionssymbole gesprochen. Diese ist immer im Kontext einer entsprechenden Interpretation zu sehen. Gleichzeitig ist aber auch klar, dass unabhängig von der Interpretation verschiedene Funktionssymbole die Rolle der Multiplikation übernehmen müssen, sollte sowohl skalare Multiplikation als auch Matrixmultiplikation im selben Term möglich sein. \\
 
 In diesem Abschnitt werden erste Termumformungen beschrieben, die isolierte Eingenschaften einzelner Funktionen ausnutzen. Ziel ist es kommutative und assoziative Funktionsanwendungen eindeutig darzustellen.\\
+
+Häufig werden Abschnitte der Parameter einer Funktionsanwendung beliebiger Länge der Form $\elems t i k$ vorkommen. Kompakt wird $ts...$ für den (möglicherweise leeren) Abschnitt des Funktionsanwendungstupels geschrieben. Das $s$ in $ts...$ ist dann nicht als einzelnes Symbol zu lesen, sondern als Suffix um $t$ in den Plural zu setzen. \\$f(\elems t 1 k, a, \elems t {k+2} n)$ kann also äquivalent $f(ts..., a, rs...)$ geschrieben werden, mit $(\elems t 1 k) = (ts...)$ und $(\elems t {k+2} n) = (rs...)$.\\
 
 \subsection {Assoziative Funktionsanwendungen}
 Die geschachtelte Anwendung einer assoziativen Funktion führt je nach Klammersetzung zu verschiedenen mathematisch equivalenten Termen. Als Beispiel dient hier die Addition, dargestellt als Anwendung des Funktionssymbols $+$. Die folgenden Ausdrücke sind paarweise verschiedene Terme, jedoch alle mathematisch äquivalent.
