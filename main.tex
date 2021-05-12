@@ -60,7 +60,7 @@
 \clearpage
 %\cleardoublepage <- für andere Dokumenttypen
 
-\section{Einleitung}
+\section{Einleitung} \label{secEinleitung}
 \textcolor{red} {
 \begin{itshape}
 Anmerkung: Hier kommt hin, was halt in eine Einleitung soll:
@@ -85,8 +85,8 @@ Die Idee Computer zu nutzen um symbolische Ausdrücke zu manipulieren ist fast s
 Diese Arbeit hat zwei Ziele. Zum einen soll ein System entwickelt werden, welches kompakt formulierte Ersetzungsregeln auf einen Term anwenden kann. Daran angeknüpft soll dieses System dann genutzt werden um Terme zu vereinfachen. Ein vereinfachter Term hat dabei die selbe Bedeutung wie der ursprüngliche Term,  er ist allerdings hinsichtlich einer entsprechenden Bewertungsfunktion kleiner. Ein Beispiel für eine solche Bewertungsfunktion ist die Zählung der im Term vorkommenden Symbole, wobei Mehrfachnennungen auch mehrfach gezählt werden.
 
 
-\newtheorem{b1}{Beispiel}[section]
-\begin{b1}~\\
+\newtheorem{b_}{Beispiel}[section]
+\begin{b_}~\\
 Mit den Vereinfachungsregeln
 \begin{alignat*}{4}
     ~& a \cdot b + a \cdot c & &= a \cdot (b + c) &~~~& (1) \\
@@ -94,7 +94,6 @@ Mit den Vereinfachungsregeln
     ~& \paren{a^b}^c         & &= a^{b \cdot c}   &~~~& (3) \\
     ~& \sqrt{a}              & &= a^{\frac 1 2}   &~~~& (4)
 \end{alignat*}
-\end{b1}
 kann folgende Transformation vorgenommen werden.
 \begin{equation*}
     \begin{split}
@@ -105,8 +104,10 @@ kann folgende Transformation vorgenommen werden.
 	&\stapel = {(2)} 3
     \end{split}
 \end{equation*}
+Hervorzuheben ist dabei, dass Variablennamen wie $a$ oder $b$ in den Vereinfachungsregeln eine andere Bedeutung haben, als die Variablen $x$ und $y$ im zu vereinfachenden Term. Erstere sind Platzhalter für die Ersetzungsregel, stehen damit also representativ für einen Term, während zweitere nur eine Bedeutung außerhalb des Ersetzungssystems haben. Formalisiert wird dieser Unterschied in Kapitel \ref{secPattermatching}.
+\end{b_}
 
-\section{Grundlegende Definitionen}
+\section{Grundlegende Definitionen} \label{secGrundlegendeDefinitionen}
 
 \subsection{Term}
 Eine Menge von Termen $T$ ist in dieser Arbeit immer  in Abhängigkeit der Mengen $F$ und $C$, sowie der \emph{Stelligkeitsfunktion} $\mathrm{arity} \colon F \rightarrow \mathbb{N} \cup \{\omega\}$ definiert. $F$ enthält die sogenannten \emph{Funktionssymbole}. Beispiele für mögliche Elemente in $F$ sind \texttt{sin} und \texttt{sqrt}, zudem auch Operatoren wie die Division, etwa geschrieben als \texttt{divide}. Die Stelligkeitsfunktion gibt für jedes Funktionssymbol an, wie viele Parameter erwartet werden. Eine mögliche Stelligkeit der genannten Beispielsymbole ist die folgende.
@@ -142,10 +143,10 @@ Eine Funktionsanwendung wird in der Literatur oft mit dem Funktionssymbol außer
 \caption{Baumdarstellung des Terms $(\texttt{divide}, 3, (\texttt{sin}, 1))$ }
 \end{figure}
 
-\newtheorem{b2}[b1]{Beispiel}
-\begin{b2}~\\
+\newtheorem{bBaum}[b_]{Beispiel}
+\begin{bBaum}~\\
 Als Beispiel lässt sich der Ausdruck $\frac 3 {\sin 1}$ in der formalen Schreibweise als Term mittels der Funktionssymbole $\texttt{sin}$ und $\texttt{divide}$, sowie den Konstantensymbolen $3$ und $1$ darstellen als $(\texttt{divide}, 3, (\texttt{sin}, 1))$. Ein Term kann dabei auch immer als Baum\footnote{In der theoretischen Informatik auch Syntaxbaum oder AST (englisch für \textit{Abstract Syntax Tree})} aufgefasst werden, etwa das aktuelle Beispiel in in Abb. \ref{ersterBeispielBaum} .
-\end{b2}
+\end{bBaum}
 
 Mit dem Kontext der Baumdarstellung lassen sich nun die folgenden Begriffe auf Terme übertragen. In der Funktionsanwendung $t = (f, \tOneN)$ sind $\tOneN$ die \emph{Kinder} ihres \emph{Vaters} $t$. Kinder sind allgemeiner \emph{Nachkommen}. Nachkommen verhalten sich transitiv, also ein Nachkomme $z$ des Nachkommen $y$ von $x$ ist auch ein Nachkomme von $x$. Umgekehrt ist $x$ \emph{Ahne} von $y$ und $z$. \\
 
@@ -166,8 +167,8 @@ Gilt $\mathrm{arity} f = n \in N$ für ein $f \in F$, ist zudem die Funktion $u~
 Die Funktion $u$ wird als \emph{Interpretation} der Funktionssymbole $F$, die Funktion $v$ als Interpretation der Konstantensymbole $C$ und das Paar $(u, v)$ als Interpretation der Terme $T(F, C)$ bezeichnet. Die Funktion $\mathrm{eval}(u, v) \colon T \rightarrow Y$ ist eine \emph{Auswertung} nach $Y$. 
 \\~\\
 
-\newtheorem{b3}[b1]{Beispiel}
-\begin{b3}~\\
+\newtheorem{bEval}[b_]{Beispiel}
+\begin{bEval}~\\
 Sei $F = \{\texttt{sum}, \texttt{prod}, \texttt{neg} \}$ und $C = \mathbb{N}$ mit $\mathrm{arity}~ \texttt{sum} = \mathrm{arity}~ \texttt{prod} = \omega$ und $\mathrm{arity}~ \texttt{neg} = 1$.
 Die Interpretation $(u, v)$ kann so gewählt werden, dass jeder Term in $T$ zu einer ganzen Zahl auswertbar ist.
 
@@ -194,9 +195,9 @@ Der Term $t = (\texttt{sum}, 3, (\texttt{prod}, 2, 4), (\texttt{neg}, 1))$ kann 
     &= 10 \\
     \end{split}
 \end{equation*}
-\end{b3}
+\end{bEval}
 
-\newtheorem{defKonstruktor}[b1]{Definition}
+\newtheorem{defKonstruktor}[b_]{Definition}
 \begin{defKonstruktor}~\\
 Eine direkt aus der Struktur des Terms folgende Interpretation $u_c$ für Funktionssymbole ist die des \emph{Konstruktors}. Als Konstruktor eines Typen $A$ wird eine Funktion bezeichnet, die nach $A$ abbildet \cite{haskellConstructor}. Mit $f \in F$ und $\mathrm{arity} f = n \in \mathbb N$ 
 gilt $$u_c~f \colon T^n \rightarrow T, ~(\tOneN) \mapsto (f, \tOneN)$$
@@ -208,8 +209,24 @@ $$u_c~\texttt{pair} \colon T^2 \rightarrow T, ~(a, b) \mapsto (\texttt{pair}, a,
 \end{defKonstruktor}
 
 
+\subsection{Muster}
 
-\section {Erste Normalform}
+Bisher wurden die Objekte beschrieben, die in dieser Arbeit transformiert werden sollen. Die Transformationsregeln selbst lassen sich allerdings auch als Paare von bestimmten Termen darstellen. Zur Abgrenzung beider Konzepte werden die zu transformierenden Terme $t\in T(F, C)$ von hier an \emph{Literal} genannt, Terme die  Teil einer Regeldefinition sind werden \emph{Muster} genannt. Die Menge der Muster $M(F, C)$ ist dabei eine Obermenge der Literale, da sie deren Konstantensymbole um die Menge der \emph{Mustervariablen} $X$ erweitert. Konkrete Elemente $\mathbf x \in X$ werden im folgenden $\mathbf{fett}$ geschrieben.
+$$M(F, C) \coloneqq T(F, C \cup X)$$
+
+Eine \emph{Umformungsregel} für Literale $t \in T(F, C)$ hat also die Form $(l, r) \in M(F, C)^2$. Die linke Seite $l$ steht für das Muster, dass im Literal durch einen Ausdruck der Form der rechten Seite $r$ ersetzt werden soll. Für die bessere Lesbarkeit wird statt $(l, r)$ auch $l = r$ geschrieben.
+
+\newtheorem{bMuster}[b_]{Beispiel}
+\begin{bMuster}
+Die Regel, die die Summe zweier identischer Terme $a$ als Produkt von $2$ und $a$ transformiert wird geschrieben als
+$$(\texttt{sum}, \textbf a, \textbf a) = (\texttt{prod}, 2, \textbf a)$$
+Wird die Regel jetzt auf das Literal 
+$t = (\texttt{sum}, (\texttt{sin}, 3), (\texttt{sin}, 3))$ angewandt, kann man $t$ zu $t' = (\texttt{prod}, 2, (\texttt{sin}, 3))$ transformieren.
+\end{bMuster}
+
+
+
+\section {Erste Normalform} \label{secErsteNormalform}
 
 Das Kernthema dieser Arbeit ist die Vereinfachung von Termen. Eine Vereinfachung ist allerdings nur gültig, sofern sich die Bedeutung des vereinfachten Terms gegenüber der des ursprünglichen Terms nicht geändert hat. Da ein Term in sich keine Bedeutung trägt, muss eine Vereinfachung immer in Bezug auf eine Interpretation gesehen werden. Etwa kann der Ausdruck $X A X^{-1}$ zu $A$ vereinfacht werden, wenn $X, A \in \mathbb{C} \setminus \{0\}$, allerdings ist die Vereinfachung allgemein nicht möglich, sollten die Symbole $X$ und $A$ für Matritzen stehen. \\
 Im folgenden wird von der Assoziativität oder Kommutativität bestimmter Funktionssymbole gesprochen. Diese ist immer im Kontext einer entsprechenden Interpretation zu sehen. Gleichzeitig ist aber auch klar, dass unabhängig von der Interpretation verschiedene Funktionssymbole die Rolle der Multiplikation übernehmen müssen, sollte sowohl skalare Multiplikation als auch Matrixmultiplikation im selben Term möglich sein. \\
@@ -315,7 +332,7 @@ Der Spezialfall ist eine assoziative Funktionsanwendung mit nur einem Parameter.
 \end{algorithm}
 Algorithmus \ref{normalize} kombiniert die einzelnen Überlegungen dieses Kapitels: Zuerst werden alle Parameter einer Funktionsanwendung normalisiert, dann die Funktionsanwendung selbst.
 
-\section{Patternmatching}
+\section{Patternmatching} \label{secPattermatching}
 Im vorigen Abschnitt wurde eine erste Normalform für Terme definiert. Alle Vereinfachungen, die dort behandelt wurden, sind recht einfach und direkt zu implementieren, da nur auf lokale Eigenschaften des zu vereinfachenden Terms Rücksicht genommen werden muss. In diesem Abschnitt wird beschrieben, wie ein Term auch zuverlässig auf komplexere Muster geprüft werden kann, so dass nach Implementierung der Mustererkennung selbst viele Vereinfachungsregeln durch jeweils zwei Muster beschrieben werden kann: ein Muster gibt an, welche Struktur im zu vereinfachenden Term gesucht wird, ein zweites Muster gibt an, zu was diese Struktur transformiert wird. Ein Beispiel für ein solches Musterpaar ist etwa die Anwendung der ersten binomischen Formel:
 $$a^2 + 2 a b + b^2 \rightarrow (a + b)^2$$
 In der etablierten Schreibweise als Term dann geschrieben als:
