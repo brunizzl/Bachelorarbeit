@@ -215,18 +215,38 @@ $$u_c~\texttt{pair} \colon T^2 \rightarrow T, ~(a, b) \mapsto (\texttt{pair}, a,
 
 \subsection{Muster} \label{subsecMuster}
 
-Bisher wurden die Objekte beschrieben, die in dieser Arbeit transformiert werden sollen. Die Transformationsregeln selbst lassen sich allerdings auch als Paare von bestimmten Termen darstellen. Zur Abgrenzung beider Konzepte werden die zu transformierenden Terme $t\in T(F, C)$ von hier an \emph{Literal} genannt, Terme die  Teil einer Regeldefinition sind werden \emph{Muster} genannt. Die Menge der Muster $M(F, C)$ ist dabei eine Obermenge der Literale, da sie deren Konstantensymbole um die Menge der \emph{Mustervariablen} $X$ erweitert. Konkrete Elemente $\mathbf x \in X$ werden im folgenden $\mathbf{fett}$ geschrieben.
+Bisher wurden die Objekte beschrieben, die in dieser Arbeit transformiert werden sollen. Die Transformationsregeln selbst lassen sich allerdings auch als Paare von bestimmten Termen darstellen. Zur Abgrenzung beider Konzepte werden die zu transformierenden Terme $t\in T(F, C)$ von hier an \emph{Literal} genannt, Terme die  Teil einer Regeldefinition sind werden \emph{Muster} genannt. Die Menge der Muster $M(F, C)$ ist dabei eine Obermenge der Literale, da sie deren Konstantensymbole um die Menge der \emph{Mustervariablen} $X$ erweitert\footnote{Die Ergänzung der Funktionssymbole um Mustervariablen ist genau so möglich, wird aber vor allem um die Notation verdaubar zu halten in den folgenden Kapiteln außen vor gelassen.}. Konkrete Elemente $\mathbf x \in X$ werden im folgenden $\mathbf{fett}$ geschrieben.
 $$M(F, C) \coloneqq T(F, C \cup X)$$
 
-Eine \emph{Umformungsregel} für Literale $t \in T(F, C)$ hat also die Form $(l, r) \in M(F, C)^2$. Die linke Seite $l$ steht für das Muster, dass im Literal durch einen Ausdruck der Form der rechten Seite $r$ ersetzt werden soll. Für die bessere Lesbarkeit wird statt $(l, r)$ auch $l = r$ geschrieben.
+Eine \emph{Umformungsregel} für Literale $t \in T(F, C)$ hat die Form $(l, r) \in M(F, C)^2$. Die linke Seite $l$ steht für das Muster, dass im Literal durch einen Ausdruck der Form der rechten Seite $r$ ersetzt werden soll. Für die bessere Lesbarkeit wird statt $(l, r)$ auch $l = r$ geschrieben.
 
-\newtheorem{bMuster}[bsp]{Beispiel}
-\begin{bMuster}
+\newtheorem{bMuster}[bsp]{Beispiel} 
+\begin{bMuster} \label{bMuster}
 Die Regel, die die Summe zweier identischer Terme $a$ als Produkt von $2$ und $a$ transformiert wird geschrieben als
 $$(\texttt{sum}, \textbf a, \textbf a) = (\texttt{prod}, 2, \textbf a)$$
 Wird die Regel jetzt auf das Literal 
-$t = (\texttt{sum}, (\texttt{sin}, 3), (\texttt{sin}, 3))$ angewandt, kann man $t$ zu $t' = (\texttt{prod}, 2, (\texttt{sin}, 3))$ transformieren.
+$t = (\texttt{sum}, (\texttt{sin}, 3), (\texttt{sin}, 3))$ angewandt, kann man $t$ zu $t' = (\texttt{prod}, 2, (\texttt{sin}, 3))$ transformieren. 
+Hervorzuheben ist dabei, dass die Mustervariable $\textbf a$ selbst nicht mehr im Ergebnisterm vorkommt. Sie wurde stattdessen durch den Teilterm ersetzt, der im Ursprungsliteral an der Stelle von $\textbf a$ stand, nämlich $(\texttt{sin}, 3)$.
 \end{bMuster}
+
+\newtheorem{defMatch}[bsp]{Definition}
+\begin{defMatch}
+Für ein Paar $(m, t) \in M(F, C) \times T(F, C)$ ist eine Funktion $v_m \colon X \rightarrow T(F, C)$ ein \emph{Match}, wenn folgendes gilt:
+$$\mathrm{eval}(u_c, \tilde v_m)~ m = t$$
+$$\tilde v_m~ c = \begin{cases}
+	v_m~ c & c \in X\\
+	c      & c \in C \setminus X
+\end{cases}$$
+$v_m$ muss die Mustervariablen in $m$ so durch Literale ersetzen, dass ein Term identisch zu $t$ entsteht. 
+Im vorangegandenden Beispiel \ref{bMuster} gilt damit $v_m~ \textbf a = (\texttt{sin}, 3)$.
+
+Im folgenden wird der Begriff des Matches noch etwas weiter gefasst. Es werden nach wie vor die Mustervariablen durch Literale ersetzt, allerdings muss nicht das Ergebnis der Ersetzung selbst, sondern nur eine normalisierte Form des Ergebnisses mit dem Literal $t$ übereinstimmen:
+$$\mathrm{normalize}~(\mathrm{eval}(u_c, \tilde v_m)~ m) = t$$
+Die Funktion $\mathrm{normalize} \colon T(F, C) \rightarrow T(F, C)$ projiziert einen Term auf seine normalisierte Form. Welche Uneindeutigkeiten $\mathrm{normalize}$ beseitigt soll hier nicht festgelegt werden. Klar ist aber, dass je nach Wahl der Projektion zwar ein einzelnes Muster sehr mächtig werden kann, also ein Match mit sehr vielen Termen möglich ist, das finden des Matches dann im allgemeinen Fall allerdings immer schwieriger wird.
+\end{defMatch}
+
+
+
 
 
 
@@ -240,12 +260,13 @@ In diesem Abschnitt werden erste Termumformungen beschrieben, die isolierte Eing
 Häufig werden Abschnitte der Parameter einer Funktionsanwendung beliebiger Länge der Form $\elems t i k$ vorkommen. Kompakt wird $ts...$ für den (möglicherweise leeren) Abschnitt des Funktionsanwendungstupels geschrieben. Das $s$ in $ts...$ ist dann nicht als einzelnes Symbol zu lesen, sondern als Suffix um $t$ in den Plural zu setzen. \\$f(\elems t 1 k, a, \elems t {k+2} n)$ kann also äquivalent $f(ts..., a, rs...)$ geschrieben werden, mit $(\elems t 1 k) = (ts...)$ und $(\elems t {k+2} n) = (rs...)$.\\
 
 \subsection {Assoziative Funktionsanwendungen}
-Die geschachtelte Anwendung einer assoziativen Funktion führt je nach Klammersetzung zu verschiedenen mathematisch equivalenten Termen. Als Beispiel dient hier die Addition, dargestellt als Anwendung des Funktionssymbols $+$. Die folgenden Ausdrücke sind paarweise verschiedene Terme, jedoch alle mathematisch äquivalent.
+Die geschachtelte Anwendung einer assoziativen Funktion führt je nach Klammersetzung zu verschiedenen mathematisch equivalenten Termen. Als Beispiel dient hier die Addition, dargestellt als Anwendung des Funktionssymbols $\texttt{sum}$. Die folgenden Ausdrücke sind paarweise verschiedene Terme, jedoch alle mathematisch äquivalent.
 \begin{equation*}
 	\begin{split}
-	+(+(+(a, b), c), d) &= +(+(a, +(b, c)), d)\\
-	&= +(+(a, b), +(c, d))\\
-	&= +(a, +(b, +(c, d)))\\
+	   (\texttt{sum}, (\texttt{sum}, (\texttt{sum}, a, b), c), d) 
+    &= (\texttt{sum}, (\texttt{sum}, a, (\texttt{sum}, b, c)), d)\\
+	&= (\texttt{sum}, (\texttt{sum}, a, b), (\texttt{sum}, c, d))\\
+	&= (\texttt{sum}, a, (\texttt{sum}, b, (\texttt{sum}, c, d)))\\
 	&= \dots \\
 	\end{split}
 \end{equation*}
@@ -468,11 +489,20 @@ enum class Literal
 \caption{Mögliche Knotentypen in einem Literal}
 \end{listing}
 
+\subsection{Speicherverwaltung} \label{subsecSpeicherverwaltung}
+%TODO: huebsche bäume zum veranschaulichen
+
 Die Knoten eines Termbaumes sind in einem Array gespeichert, wobei dem einzelnen Arrayelement nicht zu entnehmen ist, welche Art Knoten es repräsentiert. Ein Verweis auf einen Knoten beinhaltet also nicht nur den Arrayindex, sondern auch den Knotentyp. Als Paar zusammengefasst sind beide in der Klasse \mintinline{cpp}{NodeIndex}. 
 Da die Knotentypen \mintinline{cpp}{Literal::symbol} und \mintinline{cpp}{Literal::lambda_param} durch einen vorzeichenlosen Integer bereits eindeutig dargestellt werden können, hat der Index einer \mintinline{cpp}{NodeIndex} Instanz für diese Typen nicht die Bedeutung eines Arrayindex, sondern ist direkt die komplette Beschreibung des Knoteninhaltes.
 
 \subsection{Lambdafunktionen} \label{subsecLambdafunktionen}
+%TODO
 
+\subsection{Muster} \label{subsecCppMuster}
+%TODO
+
+\subsection{Musteranwendung} \label{subsecCppMusterAnwendung}
+%TODO
 
 \section{Vereinfachen von arithmetischen Termen}
 \begin{itshape}
