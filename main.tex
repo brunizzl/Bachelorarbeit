@@ -1,4 +1,5 @@
 
+
 \documentclass{scrartcl}
 \usepackage[utf8]{inputenc}
 
@@ -402,6 +403,49 @@ In Kapitel \ref{subsecMuster} wurde die Konzepte des Musters und des Matches ein
 In diesem Kapitel wird ein Algorithmus entwickelt, der die Äquivalenzklassen der verschieden geschachtelten Funktionsanwendungen eines assoziativen Funktionssymbols mit den selben Parametern, sowie die Äquivalenzklassen der verschieden permutierten Parameter in der Funktionasanwendung eines kommutativen Funktionssymbols beim finden eines Matches berücksichtigt. Die teilweise Auswertung von $\mathrm{normalize}$ aus Kapitel \ref{subsecNormalKombinieren} wird allerdings in diesem Kapitel nicht verfolgt.
 
 \subsection{Naiver Matchalgorithmus}
+
+\begin{algorithm}
+\caption{$\mathrm{matchAlgorithmShell} \colon M \times T \rightarrow (B, X \rightharpoonup T)$}\label{matchAlgorithmShell}
+\begin{algorithmic}[1] %[1] -> jede zeile nummeriert
+\Require $m \in M$, $t \in T$
+\State \textbf{let} $v \colon X \rightharpoonup T,~ x \mapsto \bot$
+\State \textbf{return} $\mathrm{matchAlgorithm}(m, t, v)$
+\end{algorithmic}
+\end{algorithm}
+
+Dem Ergebnis eines Matchalgorithmus müssen zwei Dinge entnehmbar sein. Zum ersten muss klar sein, ob ein Match $v \colon X \rightarrow T$ gefunden wurde. Wurde ein Match gefunden, muss zudem die Abbildungsvorschrift zurückgegeben werden. Der Rückgabetyp von Algorithmus \ref{matchAlgorithmShell} ist deswegen nicht nur das finale Match, sondern auch ein Wahrheitswert $b \in B \coloneqq \{\mathrm{false}, \mathrm{true}\}$. Alternativ kann die Menge aller möglichen Matches zurückgegeben werden. Diese Idee wird im folgenden allerdings nicht weiter verfolgt, da sie mit den Anforderungen an hier behandelte Muster schnell exponentielle Laufzeiten produziert \BFred{Muss ausgeführt werden warum?}. Sind aber Mehrfachnennungen einer Mustervariable in einem Muster nicht erlaubt, haben Hoffman und O'Donnell in \cite{patternMatchingInTrees} gezeigt, dass sehr effiziente Algorithmen zum gleichzeitigen finden von Matches einer ganzen Menge von Mustern in allen Teiltermen eines Literals mit dieser Grundidee möglich sind.\\
+
+Da eine Mustervariable in dieser Arbeit mehrfach in einem Muster vorkommen darf, muss ein Algorithmus beim Suchen nach einem Match $v \colon X \rightarrow T$ zu jedem Zeitpunkt wissen, für welche $x \in X$ das Match $v~x$ bereits feststeht. $v$ ist also nicht nur Rückgabewert eines Matchalgorithmus, sondern muss mit den Funktionswerten für bereits besuchte Mustervariablen auch Eingabe in den Algorithmus sein. In Algorithmus \ref{matchAlgorithmShell} wird $v$ deswegen als partielle Funktion definiert, welche zu Beginn keine einzige Mustervariable nach $T$ abbilden kann. Der Name $\mathrm{matchAlgorithm}$ ist ein Platzhalter für die in diesem Kapitel diskutierten tatsächlichen Algorithmen. Die Signatur von $\mathrm{matchAlgorithm}$ ist damit aber immer $M \times T \times (X \rightharpoonup T) \rightarrow (B, X \rightharpoonup T)$.\\
+
+\begin{algorithm}
+\caption{$\mathrm{simpleMatchAlgorithm} \colon M \times T \times (X \rightharpoonup T) \rightarrow (B, X \rightharpoonup T)$}\label{simpleMatchAlgorithm}
+\begin{algorithmic}[1] %[1] -> jede zeile nummeriert
+\Require $m \in M$, $t \in T$, $v \colon X \rightharpoonup T$
+\If {$m \in X$}
+    \If {$v~m = \bot$}        
+        \State $(v~m) \leftarrow t$ 
+        \State \textbf{return} $(\mathrm{true}, v)$ 
+    \Else 
+        \State \textbf{return} $(v~m = t, v)$
+    \EndIf
+\ElsIf {$m \in C \setminus X$}
+        \State \textbf{return} $(m = t, v)$    
+\ElsIf {$m = f(m_1, \dots, m_n)$ und $t = f(t_1, \dots, t_n)$}
+    \ForAll {$k \in \{1, \dots, n\}$}
+        \State $(success, v) \leftarrow \mathrm{simpleMatchAlgorithm}(m_k, t_k, v)$
+        \If {$\mathrm{not}~success$}
+            \State \textbf{return} $(\mathrm{false}, v)$
+        \EndIf
+    \EndFor
+    \State \textbf{return} $(\mathrm{true}, v)$  
+\EndIf
+\State \textbf{return} $(\mathrm{false}, v)$  
+\end{algorithmic}
+\end{algorithm}
+
+
+
+Wenn das Match streng definiert ist, also als Unterschied zwischen einem Muster $m$ und einem Literal $l$ aussschließlich darin bestehen darf, dass Teilterme von $l$ in $m$ durch eine Mustervariable repräsentiert werden, ist ein einfacher Matchalgorithmus fast trivial. Auf der in Algorithmus \ref{simpleMatchAlgorithm} genutzten Grundidee Muster und Literal parallel rekursiv abzulaufen basieren aber alle späteren Algorithmen dieses Kapitels.
 
 \begin{algorithm}
 \caption{$\mathrm{findMatchingPermutation} \colon M \times T \rightarrow \mathcal{P}(X \rightarrow T)$}\label{findMatchingPermutation}
