@@ -17,10 +17,7 @@
 \numberwithin{figure}{section} %label nr. beinhaltet section
 
 \usepackage{qtree}
-\usepackage{algorithm}
-\usepackage{algpseudocode}
-\renewcommand{\algorithmicrequire}{\textbf{Input:}}
-\renewcommand{\algorithmicensure}{\textbf{Output:}}
+\usepackage[linesnumbered, german, ruled, vlined]{algorithm2e}
 
 \usepackage[backend=biber, style=alphabetic]{biblatex}
 \addbibresource{quellen.bib}
@@ -55,6 +52,11 @@
 
 %gibt text in fett und rot aus
 \newcommand{\BFred}[1]{\textbf{\textcolor{red}{#1}}}
+
+%in algorithm folgt nach "if" kein "then", nach "for" kein "do" ...
+\SetKwIF{If}{ElseIf}{Else}{if}{ }{else if}{else}{}
+\SetKwFor{For}{for}{}{}
+\SetKwFor{While}{while}{}{}
 
 %.........................................................................
 %................................ Body ...................................
@@ -308,18 +310,20 @@ Als Algorithmus sind die Überlegungen dargestellt in Algorithmus \ref{flatten}.
 Die Funktion $u_n \colon T_C \rightharpoonup C$ kann hier und in den weiteren Algorithmen dieses Kapitels als \glqq{natürliche}\grqq{} Interpretation der Menge von Funktionssymbolen gesehen werden, ähnlich $u$ in Beispiel \ref{bEval}. Prinzipiell ist für die Gültigkeit des Kapitel aber egal, in welchem Kontext die Abbildungsvorschrift von $u_n$ Sinn ergibt oder ob ein solcher Kontext überhaupt existiert. wichtig ist nur, das $u_n$ über das gesamte Kapitel hinweg eine einheitliche Abbildungsvorschrift hat.
 
 \begin{algorithm}
+\DontPrintSemicolon
 \caption{$\mathrm{flatten} \colon T \rightarrow T$}\label{flatten}
-\begin{algorithmic}[1] %[1] -> jede zeile nummeriert
-\Require $t \in T(F, C)$
-\If {$t = (f, t_1)$ mit $u_n~f$ assoziativ}
-	\State \textbf{return} $t_1$ 
-\ElsIf {$t = (f, t_1, \dots, t_n)$ mit $u_n~f$ assoziativ}
-	\While {$t = (f, as..., (f, bs...), cs...)$}
-		\State $t \leftarrow (f, as..., bs..., cs...)$
-	\EndWhile
-\EndIf
-\State \textbf{return} $t$ 
-\end{algorithmic}
+\KwData{$t \in T(F, C)$}
+\Begin{
+    \If{$t = (f, t_1)$ mit $u_n~f$ assoziativ}{
+        \Return {$t_1$}
+    }
+    \ElseIf{$t = (f, t_1, \dots, t_n)$ mit $u_n~f$ assoziativ}{
+        \While{$t = (f, as..., (f, bs...), cs...)$}{
+            $t \leftarrow (f, as..., bs..., cs...)$\;
+        }
+    }
+    \Return {$t$}
+}
 \end{algorithm}
 
 \subsection{Kommutative Funktionsanwendungen} \label{subsecNormalSortieren}
@@ -338,25 +342,28 @@ Eine Normalform für kommutative Funktionsanwendungen erfordert eine totale Ordn
 Zur Normalisierung einer kommutativen Funktionsanwendung werden zuerst alle Parameter normalisiert, dann können die Parameter nach der lexikographischen Ordnung von $T$ sortiert werden. Auf die Ausführung als einzelner Algorithmus wird an der Stelle aufgrund der Einfachheit verzichtet.
 
 \subsection{Teilweise Auswertung} \label{subsecNormalKombinieren}
+
 \begin{algorithm}
+\DontPrintSemicolon
 \caption{$\mathrm{combine} \colon T \rightarrow T$}\label{combine}
-\begin{algorithmic}[1] %[1] -> jede zeile nummeriert
-\Require $t \in T(F, C)$
-\If {$\mathrm{eval}(u_n, \mathrm{id})~t = c \in C$}
-	\State \textbf{return} $c$ 
-\ElsIf {$t = (f, t_1, \dots, t_n)$ und $u_n~f$ assoziativ}
-	\If {$f~u_n$ kommutativ}
-		\While {$t = (f, xs..., a, ys..., b, zs...) $ und $ u_n~f~(a, b) = c \in C$}
-			\State $t \leftarrow (f, xs..., c, ys..., zs...)$
-		\EndWhile
-	\Else
-		\While {$t = (f, xs..., a, b, ys...) $ und $ u_n~f~(a, b) = c \in C$}
-			\State $t \leftarrow (f, xs..., c, ys...)$
-		\EndWhile
-	\EndIf
-\EndIf
-\State \textbf{return} $t$ 
-\end{algorithmic}
+\KwData{$t \in T(F, C)$}
+\Begin{
+    \If{$\mathrm{eval}(u_n, \mathrm{id})~t = c \in C$}{
+        \Return {$c$}
+    }
+    \ElseIf{$t = (f, t_1, \dots, t_n)$ und $u_n~f$ assoziativ}{
+        \If{$f~u_n$ kommutativ}{
+            \While{$t = (f, xs..., a, ys..., b, zs...) $ und $ u_n~f~(a, b) = c \in C$}{
+                $t \leftarrow (f, xs..., c, ys..., zs...)$\;
+            }
+        }
+        \Else{
+            \While{$t = (f, xs..., a, b, ys...) $ und $ u_n~f~(a, b) = c \in C$}{
+                $t \leftarrow (f, xs..., c, ys...)$\;
+            }
+        }
+    }
+}
 \end{algorithm}
 
 Mit der Darstellung einer assoziativen Funktion mit einem variadischen Funktionssymbol $f \in F$, kann eine Funktionsanwendung von $f$ in bestimmen Fällen teilweise ausgewertet werden. Als Beispiel kann die Summe der Symbole $1$, $3$ und $\texttt{x}$ geschrieben als $(\texttt{sum}, 1, 3, \texttt{x})$ zur Summe $(\texttt{sum}, 4, \texttt{x})$ transformiert werden. 
@@ -372,21 +379,22 @@ Als Algorithmus dargestellt sind die Überlegungen in Algorithmus \ref{combine}.
 \subsection{Kombination der einzelnen Vereinfachungen}
 
 \begin{algorithm}
+\DontPrintSemicolon
 \caption{$\mathrm{normalize} \colon T \rightarrow T$}\label{normalize}
-\begin{algorithmic}[1] %[1] -> jede zeile nummeriert
-\Require $t \in T(F, C)$
-\If {$t = (f, t_1, \dots, t_n)$}
-	\For {$i \in \{1, \dots, n\}$}
-		\State $t_i \leftarrow \mathrm{normalize}~t_i$
-	\EndFor
-\EndIf
-\State $t \leftarrow \mathrm{flatten}~t$
-\State $t \leftarrow \mathrm{combine}~t$
-\If {$t = (f, t_1, \dots, t_n)$ mit $u_n~f$ kommutativ}
-	\State sortiere $t_1, \dots, t_n$ lexikographisch
-\EndIf
-\State \textbf{return} $t$ 
-\end{algorithmic}
+\KwData{$t \in T(F, C)$}
+\Begin{
+    \If {$t = (f, t_1, \dots, t_n)$}{
+    	\For {$i \in \{1, \dots, n\}$}{
+    		$t_i \leftarrow \mathrm{normalize}~t_i$\;
+    	}
+    }
+    $t \leftarrow \mathrm{flatten}~t$\;
+    $t \leftarrow \mathrm{combine}~t$\;
+    \If {$t = (f, t_1, \dots, t_n)$ mit $u_n~f$ kommutativ}{
+    	sortiere $t_1, \dots, t_n$ lexikographisch\;
+    }
+    \Return $t$ 
+}
 \end{algorithm}
 Algorithmus \ref{normalize} kombiniert die einzelnen Überlegungen dieses Kapitels: Zuerst werden alle Parameter einer Funktionsanwendung normalisiert, dann die Funktionsanwendung selbst. 
 
@@ -402,72 +410,57 @@ In Kapitel \ref{subsecMuster} wurde die Konzepte des Musters und des Matches ein
 
 In diesem Kapitel wird ein Algorithmus entwickelt, der die Äquivalenzklassen der verschieden geschachtelten Funktionsanwendungen eines assoziativen Funktionssymbols mit den selben Parametern, sowie die Äquivalenzklassen der verschieden permutierten Parameter in der Funktionasanwendung eines kommutativen Funktionssymbols beim finden eines Matches berücksichtigt. Die teilweise Auswertung von $\mathrm{normalize}$ aus Kapitel \ref{subsecNormalKombinieren} wird allerdings in diesem Kapitel nicht verfolgt.
 
-\subsection{Naiver Matchalgorithmus}
+\subsection{Grundstruktur} \label{subsecPatternmatchingGrundstruktur}
 
 \begin{algorithm}
+\DontPrintSemicolon
 \caption{$\mathrm{matchAlgorithmShell} \colon M \times T \rightarrow (B, X \rightharpoonup T)$}\label{matchAlgorithmShell}
-\begin{algorithmic}[1] %[1] -> jede zeile nummeriert
-\Require $m \in M$, $t \in T$
-\State \textbf{let} $v \colon X \rightharpoonup T,~ x \mapsto \bot$
-\State \textbf{return} $\mathrm{matchAlgorithm}(m, t, v)$
-\end{algorithmic}
+\KwData{$m \in M$, $t \in T$}
+\Begin{
+    \textbf{let} $v \colon X \rightharpoonup T,~ x \mapsto \bot$\;
+    \Return {$\mathrm{matchAlgorithm}(m, t, v)$}
+}
 \end{algorithm}
 
 Dem Ergebnis eines Matchalgorithmus müssen zwei Dinge entnehmbar sein. Zum ersten muss klar sein, ob ein Match $v \colon X \rightarrow T$ gefunden wurde. Wurde ein Match gefunden, muss zudem die Abbildungsvorschrift zurückgegeben werden. Der Rückgabetyp von Algorithmus \ref{matchAlgorithmShell} ist deswegen nicht nur das finale Match, sondern auch ein Wahrheitswert $b \in B \coloneqq \{\mathrm{false}, \mathrm{true}\}$. Alternativ kann die Menge aller möglichen Matches zurückgegeben werden. Diese Idee wird im folgenden allerdings nicht weiter verfolgt, da sie mit den Anforderungen an hier behandelte Muster schnell exponentielle Laufzeiten produziert \BFred{Muss ausgeführt werden warum?}. Sind aber Mehrfachnennungen einer Mustervariable in einem Muster nicht erlaubt, haben Hoffman und O'Donnell in \cite{patternMatchingInTrees} gezeigt, dass sehr effiziente Algorithmen zum gleichzeitigen finden von Matches einer ganzen Menge von Mustern in allen Teiltermen eines Literals mit dieser Grundidee möglich sind.\\
 
-Da eine Mustervariable in dieser Arbeit mehrfach in einem Muster vorkommen darf, muss ein Algorithmus beim Suchen nach einem Match $v \colon X \rightarrow T$ zu jedem Zeitpunkt wissen, für welche $x \in X$ das Match $v~x$ bereits feststeht. $v$ ist also nicht nur Rückgabewert eines Matchalgorithmus, sondern muss mit den Funktionswerten für bereits besuchte Mustervariablen auch Eingabe in den Algorithmus sein. In Algorithmus \ref{matchAlgorithmShell} wird $v$ deswegen als partielle Funktion definiert, welche zu Beginn keine einzige Mustervariable nach $T$ abbilden kann. Der Name $\mathrm{matchAlgorithm}$ ist ein Platzhalter für die in diesem Kapitel diskutierten tatsächlichen Algorithmen. Die Signatur von $\mathrm{matchAlgorithm}$ ist damit aber immer $M \times T \times (X \rightharpoonup T) \rightarrow (B, X \rightharpoonup T)$.\\
+Da eine Mustervariable in dieser Arbeit mehrfach in einem Muster vorkommen darf, muss ein Algorithmus beim Suchen nach einem Match $v \colon X \rightarrow T$ zu jedem Zeitpunkt wissen, für welche $x \in X$ das Match $v~x$ bereits feststeht. $v$ ist also nicht nur Rückgabewert eines Matchalgorithmus, sondern muss mit den Funktionswerten für bereits besuchte Mustervariablen auch Eingabe in den Algorithmus sein. In Algorithmus \ref{matchAlgorithmShell} wird $v$ deswegen als partielle Funktion definiert, welche zu Beginn keine einzige Mustervariable nach $T$ abbilden kann. Der Name $\mathrm{matchAlgorithm}$ ist ein Platzhalter für die in diesem Kapitel diskutierten tatsächlichen Algorithmen. Die Signatur von $\mathrm{matchAlgorithm}$ ist damit aber immer $M \times T \times (X \rightharpoonup T) \rightarrow (B, X \rightharpoonup T)$. \\
 
 \begin{algorithm}
+\DontPrintSemicolon
 \caption{$\mathrm{simpleMatchAlgorithm} \colon M \times T \times (X \rightharpoonup T) \rightarrow (B, X \rightharpoonup T)$}\label{simpleMatchAlgorithm}
-\begin{algorithmic}[1] %[1] -> jede zeile nummeriert
-\Require $m \in M$, $t \in T$, $v \colon X \rightharpoonup T$
-\If {$m \in X$}
-    \If {$v~m = \bot$}        
-        \State $(v~m) \leftarrow t$ 
-        \State \textbf{return} $(\mathrm{true}, v)$ 
-    \Else 
-        \State \textbf{return} $(v~m = t, v)$
-    \EndIf
-\ElsIf {$m \in C \setminus X$}
-        \State \textbf{return} $(m = t, v)$    
-\ElsIf {$m = f(m_1, \dots, m_n)$ und $t = f(t_1, \dots, t_n)$}
-    \ForAll {$k \in \{1, \dots, n\}$}
-        \State $(success, v) \leftarrow \mathrm{simpleMatchAlgorithm}(m_k, t_k, v)$
-        \If {$\mathrm{not}~success$}
-            \State \textbf{return} $(\mathrm{false}, v)$
-        \EndIf
-    \EndFor
-    \State \textbf{return} $(\mathrm{true}, v)$  
-\EndIf
-\State \textbf{return} $(\mathrm{false}, v)$  
-\end{algorithmic}
+\KwData {$m \in M$, $t \in T$, $v \colon X \rightharpoonup T$}
+\Begin{
+    \If {$m \in X$ \textbf{and} $v~m = \bot$}{
+        $(v~m) \leftarrow t$\;
+        \Return {$(\mathrm{true}, v)$}
+    }
+    \ElseIf {$m \in X$ \textbf{and} $v~m \neq \bot$}{
+        \Return {$(v~m = t, v)$}
+    }
+    \ElseIf {$m \in C \setminus X$} {
+        \Return {$(m = t, v)$}
+    }
+    \ElseIf {$m = f(m_1, \dots, m_n)$ \textbf{and} $t = f(t_1, \dots, t_n)$}{
+        \For {$k \in \{1, \dots, n\}$}{
+            $(s_k, v) \leftarrow \mathrm{simpleMatchAlgorithm}(m_k, t_k, v)$\;
+            \If {$\mathrm{not}~s_k$}{
+                \Return {$(\mathrm{false}, v)$}
+            }
+        }
+        \Return {$(\mathrm{true}, v)$}  
+    }
+    \Else {
+        \Return {$(\mathrm{false}, v)$}  
+    }
+}
 \end{algorithm}
 
 
+Die erste Möglichkeit $\mathrm{matchAlgorithm}$, genutzt in Algorithmus \ref{matchAlgorithmShell}, zu definieren ist Algorithmus \ref{simpleMatchAlgorithm} $\mathrm{simpleMatchAlgorithm}$.
+Wenn das Match streng definiert ist, also der Unterschied zwischen einem Muster $m$ und einem Literal $l$ aussschließlich darin bestehen darf, dass Teilterme von $l$ in $m$ durch eine Mustervariable repräsentiert werden, ist ein einfacher Matchalgorithmus fast trivial. Auf der selben Grundidee basieren aber alle späteren Algorithmen dieses Kapitels. Diese ist, dass mit einer parralelen Tiefensuche in Muster und Literal nach einem Unterschied zwischen beiden gesucht wird. Mustervariablen funktionieren dabei als Wildcard, wenn eine identische Mustervariable in der Tiefensuche vorher noch nicht gefunden wurde. Andernfalls vergleichen sie identisch zu dem Teilbaum, der mit dem ersten Vorkommen der Mustervariable verglichen wurde. Die Aufgabe diese vorher begegneten Teilbäume zu speichern übernimmt $v$, was erklärt, warum $v$ auch als Parameter für Algorithmus \ref{simpleMatchAlgorithm} $\mathrm{simpleMatchAlgorithm}$ notwendig ist. Ist das gesamte Muster abgelaufen worden ohne einen Unterschied zum Literal zu finden ist $v$ gleichzeitig das resultierende Match.\\
 
-Wenn das Match streng definiert ist, also als Unterschied zwischen einem Muster $m$ und einem Literal $l$ aussschließlich darin bestehen darf, dass Teilterme von $l$ in $m$ durch eine Mustervariable repräsentiert werden, ist ein einfacher Matchalgorithmus fast trivial. Auf der in Algorithmus \ref{simpleMatchAlgorithm} genutzten Grundidee Muster und Literal parallel rekursiv abzulaufen basieren aber alle späteren Algorithmen dieses Kapitels.
-
-\begin{algorithm}
-\caption{$\mathrm{findMatchingPermutation} \colon M \times T \rightarrow \mathcal{P}(X \rightarrow T)$}\label{findMatchingPermutation}
-\begin{algorithmic}[1] %[1] -> jede zeile nummeriert
-\Require $m \in M$, $t \in T$
-\If {$m \in X$}
-	\State \textbf{return} $\{v \in (X \rightarrow T) ~|~ v(m) = t\}$ 
-\EndIf
-\If {$m = f(m_1, \dots, m_n)$ und $t = f(t_1, \dots, t_n)$}
-	\If {$f~u$ kommutativ}
-		\State $V \leftarrow \emptyset$
-		\ForAll {$(\tilde t_1, \dots, \tilde t_n)$ permutation von $(t_1, \dots, t_n)$}
-			\State $V \leftarrow V \cup \bigcap_{i = 1}^n {\mathrm{findMatchingPermutation}(m_i, \tilde t_i)}$
-		\EndFor
-		\State \textbf{return} $V$
-	\Else
-		\State \textbf{return} $\bigcap_{i = 1}^n {\mathrm{findMatchingPermutation}(m_i, t_i)}$
-	\EndIf
-\EndIf
-\State \textbf{return} $\emptyset$
-\end{algorithmic}
-\end{algorithm}
+\BFred{TODO: motivation für multi ohne findmatchingpermutation}
 
 Der erste Matchalgorithmus, dargestellt als Argorithmus \ref{findMatchingPermutation}, findet bereits eine große Teilmenge aller möglichen Matches. Es gibt allerdings zwei schwerwiegende Probleme. Erstens erzeugt Zeile 7 für eine Funktionsanwendung mit $n$ Parametern alle $n!$ Permutationen dieser Parameter, wobei ein Muster sogar mehrere solche Funktionsanwendungen auch mit gegenseitiger Abstammung enthalten kann. Sollte es ein Match geben, ist die Laufzeit damit in $\Omega(n!)$, wobei  $\Omega$ das Landau-Symbol ist, welches die tatsächliche Laufzeit asymptotisch nach unten abschätzt.
 
