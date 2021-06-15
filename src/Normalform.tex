@@ -27,8 +27,8 @@ Die geschachtelte Anwendung einer assoziativen Funktion führt je nach Klammerse
 	&= \dots \\
 	\end{split}
 \end{equation*}
-Es gibt mehrere Optionen eine solche Schachtelung in einem Term zu normalisieren, also in eine eindeutige Form zu bringen. Die erste ist, festzulegen, dass in der normalisierten Form höchstens einer der beiden Parameter einer binären assoziativen Funktion wieder Anwendung des selben Funktionssymbols sein darf. Wählt man den zweiten Parameter dafür aus, wird die Summe in der Normalform dargestellt als $(\texttt{sum}, a, (\texttt{sum}, b, (\texttt{sum}, c, d)))$. Diese Methode nennt sich Pivotisierung und wird in \textcolor{red}{\textbf{Quellen}} näher untersucht.\\
-Alternativ kann man die Summe von zwei Parametern auch als Spezialfall einer Summe von $n \in \mathbb{N}$ Parametern auffassen, gewohnt geschrieben als $\Sigma_{x \in \{a, b, c, d\}} x$. Dieser Weg wird im folgenden gewählt, wobei die Darstellung als Term dann $(\texttt{sum}, a, b, c, d)$ ist. Assoziative Funktionen sind in der gewählten Darstellung damit variadisch. \\
+Es gibt mehrere Optionen eine solche Schachtelung in einem Term zu normalisieren, also in eine eindeutige Form zu bringen. Die erste ist, festzulegen, dass in der normalisierten Form höchstens einer der beiden Parameter einer binären assoziativen Funktion wieder Anwendung des selben Funktionssymbols sein darf. Wählt man den zweiten Parameter dafür aus, wird die Summe in der Normalform dargestellt als $(\texttt{sum}, a, (\texttt{sum}, b, (\texttt{sum}, c, d)))$. Ein Problem der Methode ist, dass nicht immer alle Parameter eines assoziativen Funktionssymbols direkt vorliegen.\\
+Alternativ kann man die Summe von zwei Parametern auch als Spezialfall einer Summe von $n \in \mathbb{N}$ Parametern auffassen, gewohnt geschrieben als $\Sigma_{x \in \{a, b, c, d\}} x$. Dieser Weg wird im folgenden gewählt, wobei die Darstellung als Term dann $(\texttt{sum}, a, b, c, d)$ ist. Assoziative Funktionen sind in der gewählten Darstellung damit variadisch. Eker (\cite{BipartiteGraphMatching}), Benanav (\cite{NPHardMatching}) und Kounalis (\cite{ACPatternCompiler}) wählen unter anderen ebendfalls diese Darstellung. 
 Die Normalisierung von Funktionsanwendungen des assoziativen Funktionssymbols $f$ bedeutet dann geschachtelte Funktionsanwendungen in eine einzelne Funktionsanwendung zu übersetzen. 
 $$(f, as..., f(bs...), cs...) \mapsto (f, as..., bs..., cs...)$$
 Der Spezialfall ist eine assoziative Funktionsanwendung mit nur einem Parameter. Diese kann immer zu dem Parameter selbst normalisiert werden. 
@@ -99,7 +99,7 @@ Ist $u_n~f$ zudem kommutativ, müssen $a$ und $b$ nicht notwendigerweise direkt 
 $$\mathrm{eval}(u_n, \mathrm{id})~(f, a, b) = c \in C \implies (f, xs..., a, ys..., b, zs...) \rightarrow (f, xs..., c, ys..., zs...)$$
 
 Eine normalisierte Funktionsanwendung enthält keine zwei auf diese Art ersetzbare Parameter $a$ und $b$ mehr. Weiter ist jede Funktionsanwendung, die als ganzes zu einer Konstante $c \in C$ auswertbar ist, ausgewertet.\\
-Als Algorithmus dargestellt sind die Überlegungen in Algorithmus \ref{combine}.
+Als Algorithmus dargestellt sind die Überlegungen in Algorithmus \ref{combine}. Die Verfahren zur Normalisierung assoziativer und kommutativer Funktionssymbole werden auch von Eker \cite{BipartiteGraphMatching} beschrieben.
 
 \subsection{Kombination der einzelnen Vereinfachungen}
 
@@ -120,7 +120,7 @@ $t \leftarrow \mathrm{combine}~t$\;
 }
 \Return $t$ 
 \end{algorithm}
-Algorithmus \ref{normalize} kombiniert die einzelnen Überlegungen dieses Kapitels: Zuerst werden alle Parameter einer Funktionsanwendung normalisiert, dann die Funktionsanwendung selbst. 
+Algorithmus \ref{normalize} kombiniert die einzelnen Überlegungen dieses Kapitels: Zuerst werden alle Parameter einer Funktionsanwendung normalisiert, dann die Funktionsanwendung selbst.
 
 
 
