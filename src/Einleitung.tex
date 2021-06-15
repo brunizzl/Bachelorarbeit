@@ -1,0 +1,62 @@
+
+
+\section{Einleitung} \label{secEinleitung}
+\textcolor{red} {
+\begin{itshape}
+Anmerkung: Hier kommt hin, was halt in eine Einleitung soll:
+\begin{itemize}
+    \item was ist ein Termersetzungssystem?
+    \item Einsatz von Termersetzungssystemen
+    \begin{itemize}
+        \item Beweisprüfer /Beweisassistenten
+        \item Arithmetikausdrücke vereinfachen
+        \item Optimierender Compiler
+        \item Interpreter funktionaler Sprachen
+        \item bestimmt noch mehr
+    \end{itemize}
+\end{itemize}
+\end{itshape}
+}
+
+Die Idee Computer zu nutzen um symbolische Ausdrücke zu manipulieren ist fast so alt wie der Computer selbst.  LISP ist als eine der ersten höheren Programmiersprachen bereits für diesen Zweck geschaffen worden \cite{lisp}. 
+
+\subsection{Zielsetzung}
+Ziel der Arbeit ist Design und Umsetzung eines Termersetzungssystems zur Vereinfachung algebraischer Ausdrücke. Der Kern des Termersetzungssystems ist ein Algorithmus zur Erkennung eines bestimmten Musters in einem Term. 
+Der Algorithmus soll ein Muster dabei möglichst nicht nur erkennen, wenn der Term die exakt identische Struktur aufweist. Bestimmte Äquivalenzklassen, wie etwa alle Permutationen der Parameter in einer kommutativen Funktion sollen bereits auf der Mustererkennungsebende berücksichtig werden. Die Formulierung einer Menge von Ersetzungsregeln für das Termersetzungssystem muss also möglichst kompakt möglich sein. 
+Damit ist das Ziel die Mustererkennung möglichst schnell durchführen zu können beim Treffen von Designentscheidungen in der Musterstruktur nicht ausschlaggebend. \\
+Das Leistungsvermögen des entwickelten Termersetzungssystems wird in einer Anwendung zur Vereinfachung algebraischer Ausdrücke über den Komplexen Zahlen getestet. 
+
+\newtheorem{bsp}{Beispiel}[section]
+\begin{bsp}~\\
+Es werden vier Vereinfachungsregeln definiert:
+\begin{alignat*}{4}
+    ~& a \cdot b + a \cdot c & &= a \cdot (b + c) &~~~& (1) \\
+    ~& \sqrt{a}              & &= a^{\frac 1 2}   &~~~& (2) \\
+    ~& \paren{a^b}^c         & &= a^{b \cdot c}   &~~~& (3) \\
+    ~& \sin(a)^2 + \cos(a)^2 & &= 1               &~~~& (4)
+\end{alignat*}
+Der folgende Ausdruck kann durch Ersetzung der Struktur der linken Seite einer Verienfachungsregel durch die Struktur der rechten Seite vereinfacht werden. Desweiteren werden Ausdrücke ohne Unbekannte ausgewertet.
+\begin{equation*}
+    \begin{split}
+	3 \cdot \sin(x + y)^2 + 3 \cdot \sqrt{\cos(x + y)^4}
+	&\stapel = {(1)} 3 \cdot \paren*{\sin(x + y)^2 + \sqrt{\cos(x + y)^4}} \\
+	&\stapel = {(2)} 3 \cdot \paren*{\sin(x + y)^2 + \paren*{{\cos(x + y)^4}}^{\frac 1 2}}\\
+	&\stapel = {(3)} 3 \cdot \paren*{\sin(x + y)^2 + {\cos(x + y)^{4 \cdot \frac 1 2}}}\\
+	& =              3 \cdot \paren*{\sin(x + y)^2 + {\cos(x + y)^2}}\\
+	&\stapel = {(4)} 3 \cdot 1\\
+    & = 3
+    \end{split}
+\end{equation*}
+Hervorzuheben ist dabei, dass Variablennamen wie $a$ oder $b$ in den Vereinfachungsregeln eine andere Bedeutung haben, als die Variablen $x$ und $y$ im zu vereinfachenden Ausdruck. Erstere sind Platzhalter in der Ersetzungsregel, stehen damit also representativ für einen Teil des Ausdrucks, der transformiert wird, während zweitere ihre Bedeutung außerhalb des Ersetzungssystems haben. Formalisiert wird dieser Unterschied in Abschnitt \ref{subsecMuster}. Als Beispiel wird das Variablensymbol $b$ der Ersetzungsregel $(1)$ in der Anwendung der Regel mit den Ausdruck $\sin(x + y)^2$ assoziiert. 
+\BFred{Ist es legitim diesen Detailgrad bereits in der Einleitung zu diskutieren?}
+\end{bsp}
+
+\subsection{Aufbau der Arbeit}
+In Abschnitt \ref{secGrundlegendeDefinitionen} werden die Begriffe eingeführt, die zur Beschreibung eines zu transformierenden Ausdrucks, aber auch zur Beschreibung der Transformation selbst notwendig sind. Mit den dann etablierten Begriffen werden die Algorithmen zur Mustererkennung in Abschnitt \ref{secPattermatching} erläutert.  
+Der theoretische Teil wird mit der Beschreibung des gesamten Termersetzungssystems in Abschnitt \ref{secTermersetzungssystem} abgeschlossen.
+Die tatsächliche Umsetzung und ihre Abweichungen von vorhergehenden Ideen ist in den Abschnitten \BFred{TODO} und \ref{secKernUmsetzungInCpp} behandelt. 
+Zum Schluss 
+
+
+
+

@@ -1,0 +1,657 @@
+
+
+\documentclass{scrartcl}
+\usepackage[utf8]{inputenc}
+
+\title{Entwicklung eines Termersetzungssystems für assoziative und kommutative Ausdrücke\\ \textit{Version 0.0.4}}
+\author{Bruno Borchardt}
+\date{\today}
+
+\usepackage{csquotes}
+\usepackage[ngerman]{babel}
+
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{amsmath} %  \begin{cases}  Wert 1 & Bedingung 1 \\ Wert 2 & Bedingung 2 \\ \end{cases} 
+\numberwithin{figure}{section} %label nr. beinhaltet section
+
+\usepackage{qtree}
+\usepackage[linesnumbered, german, ruled, vlined]{algorithm2e}
+
+\usepackage[backend=biber, style=alphabetic]{biblatex}
+\addbibresource{quellen.bib}
+%\bibliographystyle{plain}
+%\bibliography{references}
+
+\usepackage{xcolor} %\textcolor{blue}{This is a sample text in blue.}
+
+\usepackage{minted}
+\renewcommand{\listingscaption}{Quelltext}
+\usemintedstyle{friendly}
+
+%\paren*{a + b} skaliert automatisch klammern um a + b
+\DeclarePairedDelimiter\paren{(}{)} 
+\DeclarePairedDelimiter\curl{\{}{\}}
+
+\setlength{\parindent}{0pt} %keine Einrückung nach absatz
+
+\usepackage{amsthm}
+\theoremstyle{definition} %keine kursiven theoreme
+
+%.........................................................................
+%................................ Macros .................................
+%.........................................................................
+
+% baut teile eines tupels: "t_1, ..., t_n"
+\newcommand{\elems}[3]{{#1}_{#2}, \dots, {#1}_{#3}}
+\newcommand{\tOneN}{\elems t 1 n}
+
+% stapelt zweiten parameter auf ersten
+\newcommand{\stapel}[2]{\mathrel{\overset{\makebox[0pt]{\mbox{\normalfont\tiny\sffamily {#2}}}}{#1}}}
+
+%gibt text in fett und rot aus
+\newcommand{\BFred}[1]{\textbf{\textcolor{red}{#1}}}
+
+%in algorithm folgt nach "if" kein "then", nach "for" kein "do" ...
+\SetKwIF{If}{ElseIf}{Else}{if}{ }{else if}{else}{}
+\SetKwFor{For}{for}{}{}
+\SetKwFor{While}{while}{}{}
+
+%.........................................................................
+%................................ Body ...................................
+%.........................................................................
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\clearpage
+%\cleardoublepage <- für andere Dokumenttypen
+
+%.........................................................................
+%................................ Einleitung .............................
+%.........................................................................
+\section{Einleitung} \label{secEinleitung}
+\textcolor{red} {
+\begin{itshape}
+Anmerkung: Hier kommt hin, was halt in eine Einleitung soll:
+\begin{itemize}
+    \item was ist ein Termersetzungssystem?
+    \item Einsatz von Termersetzungssystemen
+    \begin{itemize}
+        \item Beweisprüfer /Beweisassistenten
+        \item Arithmetikausdrücke vereinfachen
+        \item Optimierender Compiler
+        \item Interpreter funktionaler Sprachen
+        \item bestimmt noch mehr
+    \end{itemize}
+\end{itemize}
+\end{itshape}
+}
+
+Die Idee Computer zu nutzen um symbolische Ausdrücke zu manipulieren ist fast so alt wie der Computer selbst.  LISP ist als eine der ersten höheren Programmiersprachen bereits für diesen Zweck geschaffen worden \cite{lisp}. 
+
+\subsection{Zielsetzung}
+Ziel der Arbeit ist Design und Umsetzung eines Termersetzungssystems zur Vereinfachung algebraischer Ausdrücke. Der Kern des Termersetzungssystems ist ein Algorithmus zur Erkennung eines bestimmten Musters in einem Term. 
+Der Algorithmus soll ein Muster dabei möglichst nicht nur erkennen, wenn der Term die exakt identische Struktur aufweist. Bestimmte Äquivalenzklassen, wie etwa alle Permutationen der Parameter in einer kommutativen Funktion sollen bereits auf der Mustererkennungsebende berücksichtig werden. Die Formulierung einer Menge von Ersetzungsregeln für das Termersetzungssystem muss also möglichst kompakt möglich sein. 
+Damit ist das Ziel die Mustererkennung möglichst schnell durchführen zu können beim Treffen von Designentscheidungen in der Musterstruktur nicht ausschlaggebend. \\
+Das Leistungsvermögen des entwickelten Termersetzungssystems wird in einer Anwendung zur Vereinfachung algebraischer Ausdrücke über den Komplexen Zahlen getestet. 
+
+\newtheorem{bsp}{Beispiel}[section]
+\begin{bsp}~\\
+Es werden vier Vereinfachungsregeln definiert:
+\begin{alignat*}{4}
+    ~& a \cdot b + a \cdot c & &= a \cdot (b + c) &~~~& (1) \\
+    ~& \sqrt{a}              & &= a^{\frac 1 2}   &~~~& (2) \\
+    ~& \paren{a^b}^c         & &= a^{b \cdot c}   &~~~& (3) \\
+    ~& \sin(a)^2 + \cos(a)^2 & &= 1               &~~~& (4)
+\end{alignat*}
+Der folgende Ausdruck kann durch Ersetzung der Struktur der linken Seite einer Verienfachungsregel durch die Struktur der rechten Seite vereinfacht werden. Desweiteren werden Ausdrücke ohne Unbekannte ausgewertet.
+\begin{equation*}
+    \begin{split}
+	3 \cdot \sin(x + y)^2 + 3 \cdot \sqrt{\cos(x + y)^4}
+	&\stapel = {(1)} 3 \cdot \paren*{\sin(x + y)^2 + \sqrt{\cos(x + y)^4}} \\
+	&\stapel = {(2)} 3 \cdot \paren*{\sin(x + y)^2 + \paren*{{\cos(x + y)^4}}^{\frac 1 2}}\\
+	&\stapel = {(3)} 3 \cdot \paren*{\sin(x + y)^2 + {\cos(x + y)^{4 \cdot \frac 1 2}}}\\
+	& =              3 \cdot \paren*{\sin(x + y)^2 + {\cos(x + y)^2}}\\
+	&\stapel = {(4)} 3 \cdot 1\\
+    & = 3
+    \end{split}
+\end{equation*}
+Hervorzuheben ist dabei, dass Variablennamen wie $a$ oder $b$ in den Vereinfachungsregeln eine andere Bedeutung haben, als die Variablen $x$ und $y$ im zu vereinfachenden Ausdruck. Erstere sind Platzhalter in der Ersetzungsregel, stehen damit also representativ für einen Teil des Ausdrucks, der transformiert wird, während zweitere ihre Bedeutung außerhalb des Ersetzungssystems haben. Formalisiert wird dieser Unterschied in Abschnitt \ref{subsecMuster}. Als Beispiel wird das Variablensymbol $b$ der Ersetzungsregel $(1)$ in der Anwendung der Regel mit den Ausdruck $\sin(x + y)^2$ assoziiert. 
+\BFred{Ist es legitim diesen Detailgrad bereits in der Einleitung zu diskutieren?}
+\end{bsp}
+
+\subsection{Aufbau der Arbeit}
+In Abschnitt \ref{secGrundlegendeDefinitionen} werden die Begriffe eingeführt, die zur Beschreibung eines zu transformierenden Ausdrucks, aber auch zur Beschreibung der Transformation selbst notwendig sind. Mit den dann etablierten Begriffen werden die Algorithmen zur Mustererkennung in Abschnitt \ref{secPattermatching} erläutert.  
+Der theoretische Teil wird mit der Beschreibung des gesamten Termersetzungssystems in Abschnitt \ref{secTermersetzungssystem} abgeschlossen.
+Die tatsächliche Umsetzung und ihre Abweichungen von vorhergehenden Ideen ist in den Abschnitten \BFred{TODO} und \ref{secKernUmsetzungInCpp} behandelt. 
+Zum Schluss 
+
+
+%.........................................................................
+%................................ Definitionen ...........................
+%.........................................................................
+\section{Grundlegende Definitionen} \label{secGrundlegendeDefinitionen}
+
+\subsection{Term}
+Eine Menge von Termen $T$ ist in dieser Arbeit immer  in Abhängigkeit der Mengen $F$ und $C$, sowie der \emph{Stelligkeitsfunktion} $\mathrm{arity} \colon F \rightarrow \mathbb{N} \cup \{\omega\}$ definiert, ähnlich der Notation von Benanav et. al. in \cite{NPHardMatching}. $F$ enthält die sogenannten \emph{Funktionssymbole}. Beispiele für mögliche Elemente in $F$ sind \texttt{sin} und \texttt{sqrt}, zudem auch Operatoren wie die Division, etwa geschrieben als \texttt{divide}. Die Stelligkeitsfunktion $\mathrm{arity}$ gibt für jedes Funktionssymbol an, wie viele Parameter erwartet werden. Eine mögliche Stelligkeit der genannten Beispielsymbole ist die folgende.
+
+$$\mathrm{arity} f = \begin{cases}
+2 & f  = \texttt{divide}\\
+1 & f \in \{\texttt{sin}, \texttt{sqrt}\}\\
+\end{cases}$$
+
+Kann eine Funktionssymbol $f$ beliebig viele Parameter entgegennehmen, wird gesagt, dass $f$ \emph{variadische} Stelligkeit hat oder \emph{variadisch} ist. Die Stelligkeitsfunktion bildet $f$ dann auf $\omega$ ab. 
+
+Die Menge $C$ enthält die \emph{Konstantensymbole}. Mit den genannten Beispielen für Funktionssymbole, ergibt etwa $C = \mathbb R$ Sinn. Wichtig ist allerdings, dass im folgenden nicht vorausgesetzt wird, dass zwangsweise jedem Konstantensymbol ein eindeutiger numerischer Wert zugeordnet werden kann\footnote{Die Symbole unbekannten Wertes werden häufig von den Konstantensymbolen getrennt und Variablensymbole genannt. Diese Unterscheidung wird hier nicht getroffen, primär um die Definitionen einfach zu halten.}.
+
+
+
+Ein Term $t \in T(F, C)$ ist dann  {
+\begin{itemize}
+	\item{ein Konstantensymbol, also $t \in C$}
+	\item{oder eine \emph{Funktionsanwendung} des Funktionssymbols $f \in F$ mit $\mathrm{arity} f \in \{n, \omega\}$ 
+		auf die Terme ${\tOneN \in T(F, C)}$, geschrieben ${t = (f, \tOneN)}$}
+\end{itemize}}
+In Mengenschreibweise:
+$$T(F, C) \coloneqq C \cup \curl*{
+(f, \tOneN)~|
+~f\in F,~\mathrm{arity}(f) \in \{n, \omega\},~ \tOneN \in T(F, C)
+}$$ 
+Eine Funktionsanwendung wird in der Literatur oft mit dem Funktionssymbol außerhalb des Tupels geschrieben (\cite{buch1977}, \cite{NPHardMatching}), also $f(\tOneN)$ statt $(f, \tOneN)$. Zum deutlicheren Abheben von Funktionen die Terme transformieren zu Termen selbst, wird diese Schreibweise hier keine Verwendung finden. 
+
+
+\begin{figure}
+\Tree [.\texttt{divide} 3 [.\texttt{sin} 1 ] ]
+\label{ersterBeispielBaum}
+\caption{Baumdarstellung des Terms $(\texttt{divide}, 3, (\texttt{sin}, 1))$ }
+\end{figure}
+
+\newtheorem{bBaum}[bsp]{Beispiel}
+\begin{bBaum}~\\
+Als Beispiel lässt sich der Ausdruck $\frac 3 {\sin 1}$ in der formalen Schreibweise als Term mittels der Funktionssymbole $\texttt{sin}$ und $\texttt{divide}$, sowie den Konstantensymbolen $3$ und $1$ darstellen als $(\texttt{divide}, 3, (\texttt{sin}, 1))$. Ein Term kann dabei auch immer als Baum\footnote{In der theoretischen Informatik auch Syntaxbaum oder AST (englisch für \textit{Abstract Syntax Tree})} aufgefasst werden, etwa das aktuelle Beispiel in in Abb. \ref{ersterBeispielBaum} .
+\end{bBaum}
+
+Mit dem Kontext der Baumdarstellung lassen sich nun die folgenden Begriffe auf Terme übertragen. In der Funktionsanwendung $t = (f, \tOneN)$ sind $\tOneN$ die \emph{Kinder} ihres \emph{Vaters} $t$. Kinder sind allgemeiner \emph{Nachkommen}. Nachkommen verhalten sich transitiv, also ein Nachkomme $z$ des Nachkommen $y$ von $x$ ist auch ein Nachkomme von $x$. Umgekehrt ist $x$ \emph{Ahne} von $y$ und $z$. \\
+
+
+\subsection{Funktionsauswertung}
+Die Erweiterung des Funktionssymbols zur Funktion, die von einem Raum $Y^n$ nach $Y$ abbildet, folgt mittels der $\mathrm{eval}$ Funktion frei nach \cite{buch1977}.
+
+\begin{equation*}
+    \begin{split}
+	\mathrm{eval} &\colon \paren*{F \rightarrow \bigcup_{n \in \mathbb{N}} Y^n \rightarrow Y} \times (C \rightarrow Y) \rightarrow T \rightarrow Y\\
+	\mathrm{eval} &(u, v)~t = \begin{cases}
+		u~f~(\elems {\mathrm{eval}(u, v)~t} 1 n) & t = (f, \tOneN)\\
+		v~t                                      & t \in C\\
+		\end{cases}
+    \end{split}
+\end{equation*}
+Gilt $\mathrm{arity} f = n \in N$ für ein $f \in F$, ist zudem die Funktion $u~f \colon Y^n \rightarrow Y$ in ihrer Definitionsmenge auf Dimension $n$ eingeschränkt. 
+Die Funktion $u$ wird als \emph{Interpretation} der Funktionssymbole $F$, die Funktion $v$ als Interpretation der Konstantensymbole $C$ und das Paar $(u, v)$ als Interpretation der Terme $T(F, C)$ bezeichnet. Die Funktion $\mathrm{eval}(u, v) \colon T \rightarrow Y$ ist eine \emph{Auswertung} nach $Y$. 
+\\~\\
+
+\newtheorem{bEval}[bsp]{Beispiel}
+\begin{bEval} \label{bEval}
+Sei $F = \{\texttt{sum}, \texttt{prod}, \texttt{neg} \}$ und $C = \mathbb{N}$ mit $\mathrm{arity}~ \texttt{sum} = \mathrm{arity}~ \texttt{prod} = \omega$ und $\mathrm{arity}~ \texttt{neg} = 1$.
+Die Interpretation $(u, v)$ kann so gewählt werden, dass jeder Term in $T$ zu einer ganzen Zahl $n \in \mathbb{Z}$ auswertbar ist.
+
+\begin{equation*}
+    \begin{split}
+    u~\texttt{sum}  ~(\elems y 1 n) &= \Sigma_{k = 1}^n y_k\\
+    u~\texttt{prod} ~(\elems y 1 n) &=    \Pi_{k = 1}^n y_k\\
+    u~\texttt{neg}~y &= -y\\
+    &\\
+    v~y &= y
+    \end{split}
+\end{equation*}
+
+Hervorzuheben ist dabei, dass $u~\texttt{neg} \colon \mathbb Z \rightarrow \mathbb Z$ nur eine ganze Zahl als Parameter erwartet, während $u~\texttt{sum}$ und $u~\texttt{prod}$ Tupel ganzer Zahlen beliebiger Länge abbilden können.
+Der Term $t = (\texttt{sum}, 3, (\texttt{prod}, 2, 4), (\texttt{neg}, 1))$ kann dann ausgewertet werden zu 
+\begin{equation*}
+    \begin{split}
+    \mathrm{eval}(u, v)~t &= \mathrm{eval}(u, v) (\texttt{sum}, 3, (\texttt{prod}, 2, 4), (\texttt{neg}, 1)) \\
+    &= u~\texttt{sum}~(\mathrm{eval}(u, v)~3, \mathrm{eval}(u, v)(\texttt{prod}, 2, 4),  \mathrm{eval}(u, v) (\texttt{neg}, 1)) \\
+    &= u~\texttt{sum}~(v~3, u~\texttt{prod}~(\mathrm{eval}(u, v)~2, \mathrm{eval}(u, v)~4), u~\texttt{neg}~ (v~1)) \\
+    &= u~\texttt{sum}~(3, u~\texttt{prod}~(v~2, v~4), u~\texttt{neg}~ 1) \\
+    &= u~\texttt{sum}~(3, u~\texttt{prod}~(2, 4), -1) \\
+    &= u~\texttt{sum}~( 3, 8, -1) \\
+    &= 10 \\
+    \end{split}
+\end{equation*}
+\end{bEval}
+
+\newtheorem{defKonstruktor}[bsp]{Definition}
+\begin{defKonstruktor}~\\
+Eine direkt aus der Struktur des Terms folgende Interpretation $u_c$ für Funktionssymbole ist die des \emph{Konstruktors}. Als Konstruktor eines Typen $A$ wird eine Funktion bezeichnet, die nach $A$ abbildet \cite{haskellConstructor}. Mit $f \in F$ und $\mathrm{arity} f = n \in \mathbb N$ 
+gilt $$u_c~f \colon T^n \rightarrow T, ~(\tOneN) \mapsto (f, \tOneN)$$
+Mit einem beliebigen $v \colon C \rightarrow C'$ ändert die Auswertung $\mathrm{eval}(u_c, v) \colon T(F, C) \rightarrow T(F, C')$ damit nur die Konstantensymbole eines Terms, lässt aber die sonstige Struktur unverändert. Insbesondere ist $\mathrm{eval}(u_c, v) \colon T \rightarrow T$ mit $v~y = y$ die Identität.
+
+Die Interpretation $u_c$ reicht für bestimmte Funktionssymbole aus, etwa kann so das Funktionssymbol $\texttt{pair}$ ein Paar als Term darstellen.
+$$u_c~\texttt{pair} \colon T^2 \rightarrow T, ~(a, b) \mapsto (\texttt{pair}, a, b)$$
+Äquivalent ist die Darstellung endlicher Mengen und Tupel mit variadischen Funktionssymbolen \texttt{set}\footnote{Da eine Menge ihren Elementen keine Reihenfolge gibt, muss $u_c~\texttt{set}$ im Unterschied zu $u_c~\texttt{tup}$ prinzipiell nicht die ursprüngliche Parameterreihenfolge erhalten. In Kapitel \ref{subsecNormalSortieren} wird eine Größenrelation zur möglichen Umordung diskutiert.} und \texttt{tup} möglich.
+\end{defKonstruktor}
+
+
+\subsection{Muster} \label{subsecMuster}
+
+Bisher wurden die Objekte beschrieben, die in dieser Arbeit transformiert werden sollen. Die Transformationsregeln selbst lassen sich allerdings auch als Paare von bestimmten Termen darstellen. Zur Abgrenzung beider Konzepte werden die zu transformierenden Terme $t\in T(F, C)$ von hier an \emph{Literal} genannt, Terme die  Teil einer Regeldefinition sind werden \emph{Muster} genannt. Die Menge der Muster $M(F, C)$ ist dabei eine Obermenge der Literale, da sie deren Konstantensymbole um die Menge der \emph{Mustervariablen} $X$ erweitert\footnote{Die Ergänzung der Funktionssymbole um Mustervariablen ist genau so möglich, wird aber vor allem um die Notation verdaubar zu halten in den folgenden Kapiteln außen vor gelassen.}. Konkrete Elemente $\mathbf x \in X$ werden im folgenden \textbf{fett} geschrieben.
+$$M(F, C) \coloneqq T(F, C \cup X)$$
+
+Eine \emph{Ersetzungsregel} für Literale $t \in T(F, C)$ hat die Form $(l, r) \in M(F, C)^2$. Die linke Seite $l$ steht für das Muster, dass im Literal durch einen Ausdruck der Form der rechten Seite $r$ ersetzt werden soll. Für die bessere Lesbarkeit wird statt $(l, r)$ auch $l = r$ geschrieben.
+
+\newtheorem{bMuster}[bsp]{Beispiel} 
+\begin{bMuster} \label{bMuster}
+Die Regel, die die Summe zweier identischer Terme $a$ als Produkt von $2$ und $a$ transformiert wird geschrieben als
+$$(\texttt{sum}, \mathbf a, \mathbf a) = (\texttt{prod}, 2, \mathbf a)$$
+Wird die Regel jetzt auf das Literal 
+$t = (\texttt{sum}, (\texttt{sin}, 3), (\texttt{sin}, 3))$ angewandt, kann man $t$ zu $t' = (\texttt{prod}, 2, (\texttt{sin}, 3))$ transformieren. 
+Hervorzuheben ist dabei, dass die Mustervariable $\mathbf a$ selbst nicht mehr im Ergebnisterm vorkommt. Sie wurde stattdessen durch den Teilterm ersetzt, der im Ursprungsliteral an der Stelle von $\mathbf a$ stand, nämlich $(\texttt{sin}, 3)$.
+\end{bMuster}
+
+\newtheorem{defMatch}[bsp]{Definition}
+\begin{defMatch}
+Für ein Paar $(m, t) \in M(F, C) \times T(F, C)$ ist eine Funktion $v_m \colon X \rightarrow T(F, C)$ ein \emph{Match}, wenn folgendes gilt:
+$$\mathrm{eval}(u_c, \tilde v_m)~ m = t$$
+$$\tilde v_m~ c = \begin{cases}
+	v_m~ c & c \in X\\
+	c      & c \in C \setminus X
+\end{cases}$$
+$v_m$ muss die Mustervariablen in $m$ so durch Literale ersetzen, dass ein Term identisch zu $t$ entsteht. 
+Im vorangegandenden Beispiel \ref{bMuster} gilt damit $v_m~ \mathbf a = (\texttt{sin}, 3)$.
+
+Im folgenden wird der Begriff des Matches noch etwas weiter gefasst. Es werden nach wie vor die Mustervariablen durch Literale ersetzt, allerdings muss nicht direkt das Ergebnis der Ersetzung, sondern nur eine normalisierte Form des Ergebnisses mit dem Literal $t$ übereinstimmen:
+$$\mathrm{normalize}~(\mathrm{eval}(u_c, \tilde v_m)~ m) = t$$
+Die Funktion $\mathrm{normalize} \colon T(F, C) \rightarrow T(F, C)$ projiziert einen Term auf seine normalisierte Form. Welche Uneindeutigkeiten $\mathrm{normalize}$ beseitigt soll hier nicht festgelegt werden. Klar ist aber, dass je nach Wahl der Projektion zwar ein einzelnes Muster sehr mächtig werden kann, also ein Match mit sehr vielen Termen möglich ist, das finden des Matches dann im allgemeinen Fall allerdings immer schwieriger wird.
+\end{defMatch}
+
+Ein \emph{Matchalgorithmus} ist eine Vorgehensweise für ein gegebendes Paar $(m, t) \in M(F, C) \times T(F, C)$ ein gültiges Match zu finden. Perfekt wird ein solcher Algorithmus dann genannt, wenn jedes mögliche Match gefunden werden kann.
+
+
+%.........................................................................
+%................................ Normalform .............................
+%.........................................................................
+
+\section {Erste Normalform} \label{secErsteNormalform}
+
+Das Kernthema dieser Arbeit ist die Vereinfachung von Termen. Eine Vereinfachung ist allerdings nur gültig, sofern sich die Bedeutung des vereinfachten Terms gegenüber der des ursprünglichen Terms nicht geändert hat. Da ein Term in sich keine Bedeutung trägt, muss eine Vereinfachung immer in Bezug auf eine Interpretation $(u, v)$ gesehen werden. Etwa kann der Ausdruck $X A X^{-1}$ zu $A$ vereinfacht werden, wenn $X, A \in \mathbb{C} \setminus \{0\}$, allerdings ist die Vereinfachung allgemein nicht möglich, sollten die Symbole $X$ und $A$ für Matritzen stehen. \\
+Im folgenden wird von der Assoziativität oder Kommutativität bestimmter Funktionssymbole gesprochen. Diese ist immer im Kontext der Interpretation $(u, v)$ zu sehen. Gleichzeitig ist aber auch klar, dass unabhängig von der Interpretation verschiedene Funktionssymbole die Rolle der Multiplikation übernehmen müssen, sollte sowohl skalare Multiplikation als auch Matrixmultiplikation im selben Term möglich sein. $X A X^{-1}$ als Matrixmultiplikation könnte der Term $(\texttt{prod'}, X, A, (\texttt{pow}, X, -1))$ darstellen. Sind $A$ und $X$ Skalare, wäre der Ausdruck als $(\texttt{prod}, X, A, (\texttt{pow}, X, -1))$ schreibbar. Das Funktionssymbol $\texttt{prod'}$ steht dann für ein nicht kommutatives Produkt, während die Reihenfolge der Parameter in einer Funktionsanwendung von $\texttt{prod}$ keine Rolle spielt.\\
+
+In diesem Abschnitt werden einfache Termumformungen beschrieben, die isolierte Eingenschaften einzelner Funktionen ausnutzen. Ziel ist es Äquivalenzklassen für die Erkennung von Mustern zu schaffen, die über die Austauschbarkeit jeder Mustervariable mit einem beliebigen Literal hinausgehen. Als Beispiel dient die Regel der Fakorisierung, normal geschrieben $a \cdot b + a \cdot c = a \cdot (b + c)$. In der in Unterabschnitt \ref{subsecMuster} etablierten Musterschreibweise, mit Mustervariablen \textbf{fett} geschrieben, wird daraus:
+$$(\texttt{sum}, (\texttt{prod}, \mathbf a, \mathbf b), (\texttt{prod}, \mathbf a, \mathbf c)) = (\texttt{prod}, \mathbf a, (\texttt{sum}, \mathbf b, \mathbf c))$$
+Ziel ist die Regel auf das Literal $(\texttt{sum}, (\texttt{prod}, x, y), (\texttt{prod}, w, x, z))$ anwendbar zu machen, bzw eine Regel schreiben zu können, die eine ähnliche Struktur hat und anwendbar ist. 
+Würde das Literal geschrieben sein als $(\texttt{sum}, (\texttt{prod}, x, y), (\texttt{prod}, x, (\texttt{prod}, w, z)))$, gäbe es ein Match $v_m$ der linken Regelseite mit dem Literal, mit $v_m~\mathbf a = x$, $v_m~\mathbf b = y$ und $v_m~\mathbf c = (\texttt{prod}, w, z)$. Ergebnis dieses Kapitels wird eine in Abschnitt \ref{subsecMuster} genutzte Projektion ${\mathrm{normalize} \colon T \rightarrow T}$ sein, welche die Beispielregel in leicht abgewandelter auf das Beispielliteral in seiner ursprünglichen Form anwendbar macht.\\
+
+Weiteres Ziel dieses Kapitels ist, dass möglichst viele Literale mit identischer Auswertung auch als normalisierter Term identisch sind. So soll etwa die Normalisierung von $t_1 = (\texttt{sum}, a, b, c)$ identisch zur Normalisierung von $t_2 = (\texttt{sum}, b, a, c)$ identisch zur Normalisierung von $t_3 = (\texttt{sum}, (\texttt{sum}, b, a), c)$ sein. Je mehr Literale identischen Wertes auch zu identischen Termen normalisiert werden, desto besser können Muster erkannt werden, in denen die selbe Mustervariable mehrfach vorkommt. Interessant ist dabei, dass der selbe Effekt auch erreicht werden würde, wenn man eine Menge von Ersetzungsregeln um entsprechende normalisierende Ersetzungsregeln ergänzt. Wo die Grenze in der Arbeitsteilung von einer fest implementierten $\mathrm{normalize}$ Funktion zu den Regeln in einem Termersetzungssystem liegt, ist prinzipiell fast beliebig und in erster Linie eine Frage des Aufwandes, sowohl in Programmierung als auch Laufzeit. Etwa würde eine Darstellung natürlicher Zahlen ähnlich der Church-Numerale, wie sie in der Fachliteratur, etwa bei Baader und Nipkow \cite{baader_nipkow_1998}, üblich ist, erlauben, Rechenoperationen auf den natürlichen Zahlen komplett mit einer endlichen Menge von Mustern auszuwerten. Nachteile dieser Vorgehensweise wären allerdings eine langsamere Auswertung, mehr Speicherbedarf und nur sehr schwierig zu lesende Ergebnisse. Andersherum wäre etwa die Anwendung der ersten binomischen Formel prinzipiell auch in der $\mathrm{normalize}$ Funktion möglich, allerdings steht der Aufwand manuell  auf das Muster zu testen nur möglicherweise minimalen Geschwindigkeitsvorteilen gegenüber. Die Transformationen, die in diesem Kapitel der $\mathrm{normalize}$ Funktion zugewiesen werden, sollen also idealerweise nicht einfacher mit Mustern implementierbar sein.\\
+
+In diesem Kapitel werden häufig Abschnitte der Parameter einer Funktionsanwendung beliebiger Länge der Form $\elems t i k$ vorkommen. Kompakt wird $ts...$ für den (möglicher\-weise leeren) Abschnitt des Funktionsanwendungstupels geschrieben. Das $s$ in $ts...$ ist dann nicht als einzelnes Symbol zu lesen, sondern als Suffix um $t$ in den Plural zu setzen. \\$(f, \elems t 1 k, a, \elems t {k+2} n)$ kann also äquivalent $(f, ts..., a, rs...)$ geschrieben werden, mit $(\elems t 1 k) = (ts...)$ und $(\elems t {k+2} n) = (rs...)$.\\
+
+\subsection {Assoziative Funktionsanwendungen}
+Die geschachtelte Anwendung einer assoziativen Funktion führt je nach Klammersetzung zu verschiedenen mathematisch equivalenten Termen. Als Beispiel dient hier die Addition, dargestellt als Anwendung des Funktionssymbols $\texttt{sum}$. Die folgenden Ausdrücke sind paarweise verschiedene Terme, jedoch in ihrer Interpretation als Summe von $a$, $b$, $c$ und $d$ alle mathematisch äquivalent.
+\begin{equation*}
+	\begin{split}
+	   (\texttt{sum}, (\texttt{sum}, (\texttt{sum}, a, b), c), d) 
+    &= (\texttt{sum}, (\texttt{sum}, a, (\texttt{sum}, b, c)), d)\\
+	&= (\texttt{sum}, (\texttt{sum}, a, b), (\texttt{sum}, c, d))\\
+	&= (\texttt{sum}, a, (\texttt{sum}, b, (\texttt{sum}, c, d)))\\
+	&= \dots \\
+	\end{split}
+\end{equation*}
+Es gibt mehrere Optionen eine solche Schachtelung in einem Term zu normalisieren, also in eine eindeutige Form zu bringen. Die erste ist, festzulegen, dass in der normalisierten Form höchstens einer der beiden Parameter einer binären assoziativen Funktion wieder Anwendung des selben Funktionssymbols sein darf. Wählt man den zweiten Parameter dafür aus, wird die Summe in der Normalform dargestellt als $(\texttt{sum}, a, (\texttt{sum}, b, (\texttt{sum}, c, d)))$. Diese Methode nennt sich Pivotisierung und wird in \textcolor{red}{\textbf{Quellen}} näher untersucht.\\
+Alternativ kann man die Summe von zwei Parametern auch als Spezialfall einer Summe von $n \in \mathbb{N}$ Parametern auffassen, gewohnt geschrieben als $\Sigma_{x \in \{a, b, c, d\}} x$. Dieser Weg wird im folgenden gewählt, wobei die Darstellung als Term dann $(\texttt{sum}, a, b, c, d)$ ist. Assoziative Funktionen sind in der gewählten Darstellung damit variadisch. \\
+Die Normalisierung von Funktionsanwendungen des assoziativen Funktionssymbols $f$ bedeutet dann geschachtelte Funktionsanwendungen in eine einzelne Funktionsanwendung zu übersetzen. 
+$$(f, as..., f(bs...), cs...) \mapsto (f, as..., bs..., cs...)$$
+Der Spezialfall ist eine assoziative Funktionsanwendung mit nur einem Parameter. Diese kann immer zu dem Parameter selbst normalisiert werden. 
+
+Als Algorithmus sind die Überlegungen dargestellt in Algorithmus \ref{flatten}.
+Die Funktion $u_n \colon T_C \rightharpoonup C$ kann hier und in den weiteren Algorithmen dieses Kapitels als \glqq{natürliche}\grqq{} Interpretation der Menge von Funktionssymbolen gesehen werden, ähnlich $u$ in Beispiel \ref{bEval}. Prinzipiell ist für die Gültigkeit des Kapitel aber egal, in welchem Kontext die Abbildungsvorschrift von $u_n$ Sinn ergibt oder ob ein solcher Kontext überhaupt existiert. wichtig ist nur, das $u_n$ über das gesamte Kapitel hinweg eine einheitliche Abbildungsvorschrift hat.
+
+\begin{algorithm}
+\DontPrintSemicolon
+\caption{$\mathrm{flatten} \colon T \rightarrow T$}\label{flatten}
+\KwIn{$t \in T(F, C)$}
+
+\If{$t = (f, t_1)$ mit $u_n~f$ assoziativ}{
+    \Return {$t_1$}
+}
+\ElseIf{$t = (f, t_1, \dots, t_n)$ mit $u_n~f$ assoziativ}{
+    \While{$t = (f, as..., (f, bs...), cs...)$}{
+        $t \leftarrow (f, as..., bs..., cs...)$\;
+    }
+}
+\Return {$t$}
+\end{algorithm}
+
+\subsection{Kommutative Funktionsanwendungen} \label{subsecNormalSortieren}
+Eine Normalform für kommutative Funktionsanwendungen erfordert eine totale Ordnung auf der Menge aller Terme $T(F, C)$. Aufbauend auf einer totalen Ordnung von $F$ sowie $C$, kann eine lexikographische Ordnung von $T$ wie folgt definiert werden. 
+\begin{itemize}
+	\item{sind $c, \tilde{c} \in T$ Konstantensymbole, so ist die Ordnung identisch zu der Ordnung in $C$}
+	\item{sind $c, a, \in T$ sowie $c$ ein Konstantensymbol und $a$ eine Funktionsanwendung gilt $c < a$ }
+	\item{sind $a = f(ts...), b = g(rs...) \in T$ Funktionsanwendungen und ist $f \neq g$ gilt $a < b \iff f < g $}
+	\item{sind $a = f(t_1, \dots, t_n), b = f(r_1, \dots, r_m) \in T$ Funktionsanwendungen, und $\tilde{t_1}, \dots, \tilde{t_n}$, $\tilde{r_1}, \dots, \tilde{r_m}$ die normalisierten Parameter von $a$ und $b$, ist die Ordnung wie folgt}
+	\begin{itemize}
+		\item{wenn $\exists k \leq \min{(n, m)} \colon \forall i < k ~ \tilde{t_i} = \tilde{r_i} ,~ \tilde{t_k} \neq \tilde{r_k} $ gilt ${a < b \iff \tilde{t_k} < \tilde{r_k}}$}
+		\item{ist $n < m$ und $\forall i < n\colon \tilde{t_i} = \tilde{r_i}$ gilt $a < b$}
+		\item{ist $n = m$ und $\forall i \leq n\colon \tilde{t_i} = \tilde{r_i}$ gilt $a = b$}
+	\end{itemize}
+\end{itemize}
+Zur Normalisierung einer kommutativen Funktionsanwendung werden zuerst alle Parameter normalisiert, dann können die Parameter nach der lexikographischen Ordnung von $T$ sortiert werden. Auf die Ausführung als einzelner Algorithmus wird an der Stelle aufgrund der Einfachheit verzichtet.
+
+\subsection{Teilweise Auswertung} \label{subsecNormalKombinieren}
+
+\begin{algorithm}
+\DontPrintSemicolon
+\caption{$\mathrm{combine} \colon T \rightarrow T$}\label{combine}
+\KwIn{$t \in T(F, C)$}
+
+\If{$\mathrm{eval}(u_n, \mathrm{id})~t = c \in C$}{
+    \Return {$c$}
+}
+\ElseIf{$t = (f, t_1, \dots, t_n)$ und $u_n~f$ assoziativ}{
+    \If{$f~u_n$ kommutativ}{
+        \While{$t = (f, xs..., a, ys..., b, zs...) $ und $ u_n~f~(a, b) = c \in C$}{
+            $t \leftarrow (f, xs..., c, ys..., zs...)$\;
+        }
+    }
+    \Else{
+        \While{$t = (f, xs..., a, b, ys...) $ und $ u_n~f~(a, b) = c \in C$}{
+            $t \leftarrow (f, xs..., c, ys...)$\;
+        }
+    }
+}
+\end{algorithm}
+
+Mit der Darstellung einer assoziativen Funktion mit einem variadischen Funktionssymbol $f \in F$, kann eine Funktionsanwendung von $f$ in bestimmen Fällen teilweise ausgewertet werden. Als Beispiel kann die Summe der Symbole $1$, $3$ und $\texttt{x}$ geschrieben als $(\texttt{sum}, 1, 3, \texttt{x})$ zur Summe $(\texttt{sum}, 4, \texttt{x})$ transformiert werden. 
+Gilt allgemein für ein Funktionssymbol $f \in F$, dass $u_n~f$ assoziativ ist, reicht es aus zwei aufeinanderoldenge Parameter $a$ und $b$ in einer Funktionsanwendung von $f$ zu finden, mit denen die Funktionsanwendung $(f, a, b)$ auswertbar wäre. $a$ und $b$ können dann entsprechend ersetzt werden.
+$$\mathrm{eval}(u_n, \mathrm{id})~(f, a, b) = c \in C \implies (f, xs..., a, b, ys...) \rightarrow (f, xs..., c, ys...)$$
+
+Ist $u_n~f$ zudem kommutativ, müssen $a$ und $b$ nicht notwendigerweise direkt aufeinander folgen:
+$$\mathrm{eval}(u_n, \mathrm{id})~(f, a, b) = c \in C \implies (f, xs..., a, ys..., b, zs...) \rightarrow (f, xs..., c, ys..., zs...)$$
+
+Eine normalisierte Funktionsanwendung enthält keine zwei auf diese Art ersetzbare Parameter $a$ und $b$ mehr. Weiter ist jede Funktionsanwendung, die als ganzes zu einer Konstante $c \in C$ auswertbar ist, ausgewertet.\\
+Als Algorithmus dargestellt sind die Überlegungen in Algorithmus \ref{combine}.
+
+\subsection{Kombination der einzelnen Vereinfachungen}
+
+\begin{algorithm}
+\DontPrintSemicolon
+\caption{$\mathrm{normalize} \colon T \rightarrow T$}\label{normalize}
+\KwIn{$t \in T(F, C)$}
+
+\If {$t = (f, t_1, \dots, t_n)$}{
+	\For {$i \in \{1, \dots, n\}$}{
+		$t_i \leftarrow \mathrm{normalize}~t_i$\;
+	}
+}
+$t \leftarrow \mathrm{flatten}~t$\;
+$t \leftarrow \mathrm{combine}~t$\;
+\If {$t = (f, t_1, \dots, t_n)$ mit $u_n~f$ kommutativ}{
+	sortiere $t_1, \dots, t_n$ lexikographisch\;
+}
+\Return $t$ 
+\end{algorithm}
+Algorithmus \ref{normalize} kombiniert die einzelnen Überlegungen dieses Kapitels: Zuerst werden alle Parameter einer Funktionsanwendung normalisiert, dann die Funktionsanwendung selbst. 
+
+
+
+%.........................................................................
+%................................ Patternmatching ........................
+%.........................................................................
+
+\section{Patternmatching} \label{secPattermatching}
+
+In Kapitel \ref{subsecMuster} wurde die Konzepte des Musters und des Matches eingeführt, zweiteres insbesondere in einer weiterfassenden Form, was auch erlaubt Muster mit strukturell nicht exakt identischen Literalen zu assoziieren, sofern die Unterschiede mit der Projektion $\mathrm{normalize} \colon T \rightarrow T$ beseitigt werden können. Die in Kapitel \ref{secErsteNormalform} beschriebene Funktion $\mathrm{normalize}$ ist als solche Projektion nutzbar. \BFred{soll ich eigentlich irgendwo noch einmal explizit motivieren, warum normalize eine Projektion ist / sein sollte?} 
+
+In diesem Kapitel wird ein Algorithmus entwickelt, der die Äquivalenzklassen der verschieden geschachtelten Funktionsanwendungen eines assoziativen Funktionssymbols mit den selben Parametern, sowie die Äquivalenzklassen der verschieden permutierten Parameter in der Funktionasanwendung eines kommutativen Funktionssymbols beim finden eines Matches berücksichtigt. Die teilweise Auswertung von $\mathrm{normalize}$ aus Kapitel \ref{subsecNormalKombinieren} wird allerdings in diesem Kapitel nicht verfolgt.
+
+\subsection{Grundstruktur} \label{subsecPatternmatchingGrundstruktur}
+
+
+Dem Ergebnis eines Matchalgorithmus müssen zwei Dinge entnehmbar sein. Zum ersten muss klar sein, ob ein Match $v_m \colon X \rightarrow T$ gefunden wurde. Wurde ein Match gefunden, muss zudem dessen Abbildungsvorschrift zurückgegeben werden. Der Rückgabetyp von Algorithmus \ref{simpleMatchAlgorithmShell} ist deswegen nicht nur das finale Match, sondern auch ein Wahrheitswert $b \in B \coloneqq \{\mathrm{false}, \mathrm{true}\}$. Alternativ kann die Menge aller möglichen Matches zurückgegeben werden. Diese Idee wird im folgenden allerdings nicht weiter verfolgt, da sie mit den Anforderungen an hier behandelte Muster auch im besten Fall schnell exponentielle Laufzeiten produziert. Sind aber Mehrfachnennungen einer Mustervariable in einem Muster nicht erlaubt, haben Hoffman und O'Donnell in \cite{patternMatchingInTrees} gezeigt, dass sehr effiziente Algorithmen zum gleichzeitigen finden von Matches einer ganzen Menge von Mustern in allen Teiltermen eines Literals mit dieser Grundidee möglich sind.\\
+
+Da eine Mustervariable in dieser Arbeit mehrfach in einem Muster vorkommen darf, muss ein Algorithmus beim Suchen nach einem Match $v_m \colon X \rightarrow T$ zu jedem Zeitpunkt wissen, für welche $x \in X$ das Match $v_m~x$ bereits feststeht. $v_m$ ist also nicht nur Rückgabewert eines Matchalgorithmus, sondern muss mit den Funktionswerten für bereits besuchte Mustervariablen auch Eingabe in den Algorithmus sein. In Algorithmus \ref{simpleMatchAlgorithmShell} wird $v_m$ deswegen als partielle Funktion definiert, welche zu Beginn keine einzige Mustervariable nach $T$ abbilden kann. \\
+
+\begin{algorithm}
+\DontPrintSemicolon
+\caption{$\mathrm{simpleMatchAlgorithmShell} \colon M \times T \rightarrow (B, X \rightharpoonup T)$}\label{simpleMatchAlgorithmShell}
+\KwIn{$m \in M$, $t \in T$}
+
+\textbf{let} $v_m \colon X \rightharpoonup T,~ x \mapsto \bot$\;
+\Return {$\mathrm{simpleMatchAlgorithm}(m, t, v_m)$}
+\end{algorithm}
+
+\begin{algorithm}
+\DontPrintSemicolon
+\caption{$\mathrm{simpleMatchAlgorithm} \colon M \times T \times (X \rightharpoonup T) \rightarrow (B, X \rightharpoonup T)$}\label{simpleMatchAlgorithm}
+\KwIn {$m \in M$, $t \in T$, $v_m \colon X \rightharpoonup T$}
+
+\If {$m \in X$ \textbf{and} $v_m~m = \bot$}{
+    $(v_m~m) \leftarrow t$\;
+    \Return {$(\mathrm{true}, v_m)$}
+}
+\ElseIf {$m \in X$ \textbf{and} $v_m~m \neq \bot$}{
+    \Return {$(v_m~m = t, v_m)$}
+}
+\ElseIf {$m \in C \setminus X$} {
+    \Return {$(m = t, v_m)$}
+}
+\ElseIf {$m = f(m_1, \dots, m_n)$ \textbf{and} $t = f(t_1, \dots, t_n)$}{
+    \For {$k \in \{1, \dots, n\}$}{
+        $(s_k, v_m) \leftarrow \mathrm{simpleMatchAlgorithm}(m_k, t_k, v_m)$\;
+        \If {$\mathrm{not}~s_k$}{
+            \Return {$(\mathrm{false}, v_m)$}
+        }
+    }
+    \Return {$(\mathrm{true}, v_m)$}  
+}
+\Else {
+    \Return {$(\mathrm{false}, v_m)$}  
+}    
+\end{algorithm}
+
+
+Wenn das Match streng definiert ist, also der Unterschied zwischen einem Muster $m$ und einem Literal $l$ für die Existenz eines Matches $v_m$ aussschließlich darin bestehen darf, dass Teilterme von $l$ in $m$ durch eine Mustervariable repräsentiert werden, ist ein einfacher Matchalgorithmus fast trivial. Auf der Grundidee von $\mathrm{simpleMatchAlgorithm}$ basieren allerdings auch die späteren Algorithmen dieses Kapitels. Diese ist, dass mit einer parralelen Tiefensuche in Muster und Literal nach einem Unterschied zwischen beiden gesucht wird. Mustervariablen funktionieren dabei als Wildcard, wenn eine identische Mustervariable in der Tiefensuche vorher noch nicht gefunden wurde. Andernfalls vergleichen sie identisch zu dem Teilbaum, der mit dem ersten Vorkommen der Mustervariable verglichen wurde. Die Aufgabe diese vorher begegneten Teilbäume zu speichern übernimmt $v_m$, was erklärt, warum $v_m$ auch als Parameter für Algorithmus \ref{simpleMatchAlgorithm} notwendig ist. Ist das gesamte Muster abgelaufen worden ohne einen strukturellen Unterschied zum Literal zu finden ist $v_m$ das resultierende Match.\\
+
+\BFred{TODO: motivation für multi ohne findmatchingpermutation}
+
+Der erste Matchalgorithmus, dargestellt als Argorithmus \ref{findMatchingPermutation}, findet bereits eine große Teilmenge aller möglichen Matches. Es gibt allerdings zwei schwerwiegende Probleme. Erstens erzeugt Zeile 7 für eine Funktionsanwendung mit $n$ Parametern alle $n!$ Permutationen dieser Parameter, wobei ein Muster sogar mehrere solche Funktionsanwendungen auch mit gegenseitiger Abstammung enthalten kann. Sollte es ein Match geben, ist die Laufzeit damit in $\Omega(n!)$, wobei  $\Omega$ das Landau-Symbol ist, welches die tatsächliche Laufzeit asymptotisch nach unten abschätzt.
+
+Das zweite Problem  ist folgendes: Assoziative Funktionsanwendungen wurden vor der Matchsuche bereits von $\mathrm{combine}$ (Algorithmus \ref{combine}) miteinander verschmolzen, so dass ein Muster mindestens mit der äußersten Funktionsanwendung nicht nur die Terme matchen will, die in ihrer äußersten Funktionsanwendung exakt gleich viele Parameter wie das Muster haben, sondern auch die Funktionsanwendungen mit mehr Parametern (immer vorausgesetzt die einzelnen Parameter des Musters sind matchbar). Für die Lösung dieses zweiten Problems gibt es mehrere Optionen.
+Möglich ist, im Matchalgorithmus nicht nur darauf zu achten, ob ein Funktionssymbol kommutativ ist, sondern auch auf Assoziativität entsprechend zu reagieren, also bei der Matchsuche in einer größeren Funktionsanwendung eines assoziativen Funktionssymbols im Literal testweise immer so viele Parameter zu einzelnen Funktionsanwendungen zusammenzufassen, dass die Parameteranzahl von Muster und Literal in der äußersten Funktionsanwendung gleich sind. Ein Muster mit äußerster assoziativer Funktionsanwendung bräuchte dann immer eine Version mit einer weiteren Matchvariable, die beim Matchprozess sonst übrigbleibende Parameter des Literals \glqq aufsagen\grqq{} kann. Das Muster aus Beispiel \textcolor{red}{\textbf{???}} zur Anwendung der ersten binomischen Formel müsste durch eine zweite Version mit einer Mustervariable $\mathbf{c}$ ergänzt werden.
+$$+(\string^(\mathbf a, 2), \cdot(2, \mathbf a, \mathbf b), \string^(\mathbf b, 2), \mathbf c) \rightarrow +(\string^(+(\mathbf a, \mathbf b), 2), \mathbf c)$$
+Der Vorteil dieser Umsetzung ist die einfachere mathematische Beschreibung, es wurden schließlich keine neuen Konzepte eingeführt, sondern nur der Algorithmus angepasst. Es gibt allerdings auch drei Nachteile. Zum einen muss jede Regel mit äußerer assoziativer Funktionsanwendung auf der linken Seite jetzt mindestens zwei mal vorliegen: Ein mal mit und ein mal ohne extra Variable $\mathbf c$. Für nicht kommutative Funktionen wird die Anzahl sogar noch größer, da auch Parameter nur nicht kommutativ zusammengefasst werden können, also müssen extra Variablen sowohl vor, als auch hinter dem sonstigen Muster ergänzt werden, so dass es dann vier Regeln geben muss, die den selben Sachverhalt beschreiben. 
+Ein weiterer Nachteil des Ansatzes besteht darin, dass zwar assoziative Funktionsanwendungen einfach in einem Muster beschrieben werden können, ein Term aber prinzipiell auch nicht assoziative variadische Funktionssymbole enthalten kann. Ein Muster kann also immer nur eine feste Anzahl von Parametern in einer solchen Funktionsanwendung beschreiben, was Muster praktisch nutzlos für die Manipulation solcher Strukturen macht.
+Der finale Nagel im Sarg ist die erneut größer gewordene algorithmische Komplexität des Algorithmus. Dem Autor des Musters ist zwar klar, dass die ergänzte Mustervariable nur sonst übrigbleibende Parameter aufsammeln soll, diese Intention geht aber verloren, wenn $\mathbf c$ auch nur eine normale Mustervariable ist. Vor allem die Möglichkeit einer Mustervariable öfter als ein mal vorzukommen wird für die gerade ergänzten Mustervariablen nicht benötigt, da sie sich gerade dadurch auszeichnen, dass die Teile eines Literals, die mit einer solchen Variable gematcht sind für das eigentliche Muster uninteressant sind.
+\textcolor{red}{\textit{Frage: Soll der soeben skizzierte erweiterte Algorithmus auch in Pseudocode beschrieben werden?}}
+
+\subsection{Multi-Mustervariablen}
+Die in dieser Arbeit gewählte Lösung zur Beschreibung von beliebig vielen Parametern in einem Muster ist im Prinzip schon mit den ersten Definitionen eingeführt worden. Die Schreibweise $f(ts...)$ als kompakte Alternative zu $f(t_1, \dots, t_n)$ hat genau die Eigenschaften, die wir uns nach Analyse von Algorithmus \ref{findMatchingPermutation} gewünscht haben. Eine \textit{Multi-Mustervariable} der Form $\mathbf{ts...}$ kann also nicht nur genau einen Parameter in einer Funktionsanwendung matchen, sondern beliebig viele, auch null. Dafür darf jede Multi-Mustervariable auf der linken Seite einer Ersetzungsregel nur höchstens ein Mal vorkommen. Die rigorose Beschreibung des Konzeptes gestaltet sich allerdings mit der bisher eingeführten Ideen schwierig, da eine Multi-Mustervariable nur Teil einer Funktionsanwendung ist und damit auch alleine keinen vollständigen Term repräsentiert. Konnte eine Matchfunktion $v \colon X \rightarrow T$ vorher einfach auf die Menge aller Terme abbilden, wäre dies nach hinzufügen der Multi-Mustervariablen nicht mehr möglich. Entsprechend umständlicher würde auch die Beschreibung der Auswertung eines Musters werden. \\
+
+Formal wird die Multi-Mustervariable damit nicht als echtes neues Symbol in die Menge der Muster aufgenommen, sondern ist lediglich eine vereinfachende Schreibweise, die wie auch vorher immer für eine beliebige Anzahl an Teiltermen steht, in diesem Fall Mustervariablen. Ein Muster mit einer Multi-Mustervariable $\mathbf{ts...}$ repräsentiert also formal unendlich viele konkrete Muster mit konkreten Mustervariablen $\mathbf{t_i}$:
+\begin{equation*}
+    \begin{split}
+    		f(\mathbf{ts...}) = \{&f(), \\
+    		&f(\mathbf{t_1}),\\
+    		&f(\mathbf{t_1}, \mathbf{t_2}), \\
+    		&f(\mathbf{t_1}, \mathbf{t_2}, \mathbf{t_3}), \\
+    		&\dots \}    		
+    \end{split}
+\end{equation*}
+Für die folgenden Algorithmen und auch in der echten Umsetzung ist es allerdings nicht praktikabel diese Definition anzuwenden, Multi-Mustervariablen werden also formal inkorrekt als einzelne Symbole in einem tatsächlichen Muster betrachtet.
+
+Die Anwendung der ersten binomischen Formel kann jetzt in einer einzigen Regel beschrieben werden.
+$$+(\string^(\mathbf a, 2), \cdot(2, \mathbf a, \mathbf b), \string^(\mathbf b, 2), \mathbf{cs...}) \rightarrow +(\string^(+(\mathbf a, \mathbf b), 2), \mathbf{cs...})$$
+
+%.........................................................................
+%................................ Termersetzungssystem ...................
+%.........................................................................
+
+\section{Termersetzungssystem} \label{secTermersetzungssystem}
+\textcolor{red} {
+\begin{itshape}
+Anmerkung: Dieses Kapitel wird recht kurz und ist auch als Unterkapitel von Patternmatching denkbar. 
+Während in Patternmatching (bisher) immer nur mit einem Muster und dem Gesamtterm gematcht wird, Werden hier mehrere Muster auf jeden Teilterm angewendet, bis keine Anwendung mehr möglich ist
+\end{itshape}
+}
+
+%.........................................................................
+%................................ C++ Hilfskram ..........................
+%.........................................................................
+
+\section{Sekundäre Konzepte mit Relevanz für die Umsetzung} \label{secHilfUmsetzungInCpp}
+
+\subsection{Speicher} \label{subsecCppSpeicher}
+
+\subsection{SumEnum} \label{subsecCppSumEnum}
+
+\subsection{Lambdafunktionen} \label{subsecLambdafunktionen}
+Muster sind dafür gebaut bestimmte Formen von Termen zu erkennen. Der Term, der aus einer Musteranwendung resultieren soll, ist allerdings nicht immer nur ein fester Ausdruck, dessen einzige Freiheitsgerade durch einfaches Ersetzen der im Match der linken Seite gebundenen Mustervariablen durch die entsprechenden Literale beschrieben werden kann. Ist eine umfassendere Transformation notwendig, wäre es mit der etablierten Musterersetzung möglich Helferfunktionen zu definieren. Von Vorteil ist die Nutzung der Musterersetzung allerdings nur dann, wenn auch in der Helferfunktion eine umfassende Fallunterscheidung gemacht werden muss. Die Vergrößerung der Menge der zu matchenden Muster hat allerdings nicht nur eine an die Geschwindigkeit der Mustererkennung gekoppelte Auswertungsgeschwindigkeit,  sondern gibt dem Funktionssymbol der Helferfunktion auch für die gesamte Regelmenge eine Bedeutung. 
+Generische Namen wie \texttt{helper} für diese Art von Funktionssymbol sind fehleranfällig, da eine als Ersetzungsregel definierte Helferfunktion für die gesamte Regelmenge sichtbar ist. Die deutliche Abgrenzung der Namen von Helferfunktionen untereinander führt zu sehr verboser Namensgebung.
+Das Konstrukt der seperat definierten Helferfunktion auch führ sehr einfache Abbildungsvorschriften wird deswegen als unelegant und fehleranfällig bewertet. 
+Im Kontrast ist die rechte Seite einer Ersetzungsregel dann einfach zu lesen, wenn die genutzten Funktionssymbole eine bereits bekannte Bedeutung haben. Für Funktionssymbole wie \texttt{sum}, \texttt{prod} oder \texttt{pow} ist diese Bedeutung eingebaut, die Auswerungsregeln sind über die $\mathrm{eval}$ Funktion direkt implementiert. Die diskutierten Helferfunktionen ebendfalls auf diese Art einzubauen ist allerdings nicht praktikabel. Zum einen ist die Anforderung der begrenzten Sichtbarkeit dann noch weniger erfüllt: Ein Helfer wäre nicht nur für eine, sondern sogar alle Regelmengen sichtbar. Zum anderen ist die Implementierung eines Helfers über $\mathrm{eval}$ vergleichsweise sehr aufwendig und bietet neben logischen Fehlern im Helfer auch die Möglichkeit Fehler beim Umgang mit der unterliegenden Datenstruktur zu machen. Ziel ist also ein Konstrukt, was es erlaubt einfache Funktionen als Teil eines Musters zu definieren und über $\mathrm{eval}$ statt der Musterersetzung auswerten zu lassen. 
+Ein Konzept was diese Anforderungen erfüllt ist die Lambdafunktion. Im Kontext eines Terms ist eine Lambdafunktion primär ein Funktionsymbol, welches nur durch seine Stelligkeit und Abbildungsvorschrift identifiziert ist. Die Abbildungsvorschrift selbst ist ein Term, welcher neben sonst erlaubten Konstantensymbolen noch vom Lambda gebundene Variablen enthalten kann. Gleichzeitig ist ein Lambda allerdings auch ein gültiges Konstantensymbol, kann also selbst Parameter einer Funktionsanwendung sein.
+
+
+\newtheorem{dLambda}[bsp]{Definition}
+\begin{dLambda}
+Eine besondere Klasse von Funktionssymbolen und Konstantensymbolen ist die der Lambdas. Die Notation wird eingeleutet durch ein kleines Lambda, gefolgt von der Nennung der gebundenen Variablen. Der Term, der die Abbildungsvorschrift beschreibt folgt als letztes und ist durch ein Punkt von den Variablenbindungen getrennt. Auswertung der Funktionsanwendung eines Lambdas ist $\beta$-Reduktion. \BFred{Ich vermute sachen wie $\beta$-Reduktion oder DeBrujin sollten mit Quellen verknüpft sein?}
+$$
+\lambda \textit{Variablenname(n)}~.\textit{Abbildungsvorschrift}
+$$
+Als Beispiel bindet das Funktionssymbol $f = \lambda x y.(\texttt{pow}, x, y)$ die Variablen $x$ und $y$. Die Abbildungsvorschrift von $f$ ist $(x, y) \mapsto (\texttt{pow}, x, y)$, alternativ könnte man also schreiben $f = \texttt{pow}$. Wichtig ist, dass die hier definierten Lambdas in Abweichung vom Lambdakalkül auch mehrere Parameter direkt abbilden können. Während die Schreibweise eines einzelnen kleinen Lambdas gefolgt von mehreren Variablennamen in der Literatur also nur eine Kurzschreibweise für ein Lambda, welches den ersten Variablennamen bindet und auf ein Lambda, welches den zweiten Variablennamen bindet, abbildet, ist, werden hier tatsächlich mehrere Variablennamen von nur einem Lambda gebunden. Definiert man also $g = \lambda x.\lambda y.(\texttt{pow}, x, y)$ ist $f \neq g$, denn eine korrekte Funktionsanwendung von $f$ ist $(f, 1, 2)$, während $((g, 1), 2)$ eine korrekte Funktionsanwendung von $g$ ist\footnote{Sind Lambdas als Konstantensymbole erlaubt, muss dementsprechend die Definition eines Funktionssymbols entsprechend erweitert werden um die Funktionsanwendung einer Funktionsanwendung zu erlauben.}. \\
+Intern werden für die Unterscheidung der in Lamdas gebundenen Variablen keine Zeichenketten, sondern DeBrujin Indizes verwendet. Mit DeBrujin Index als Index ergänzt ist $f = \lambda x_0 y_1.(\texttt{pow}, x_0, y_1)$ und $g = \lambda x_0.\lambda y_1.(\texttt{pow}, x_0, y_1)$ sowie $(g, 1) = \lambda y_0.(\texttt{pow}, 1, y_0)$.
+
+Das Beispiel $g$ zeigt die definierende Eigenschaft der DeBrujin Indizes. Durch die Indexverschiebung der gebundenenen Variablen in einer geschachtelten Lambdadefinition um die Anzahl der bereits vorher gebundenen Variablen wird jede Variable eindeutig einer Lambdafunktion zugeordnet. Wird eine Funktionsanwendung eines Lambdas $f$ der Stelligkeit $n$ ausgewertet und befindet sich eine Variable mit DeBrujin Index $i > n$ in der Abbildungvorschrift von $f$, so wird die Variable nicht durch einen Parameter von der Funktionasanwendung von $f$ ersetzt, sondern nur $n$ von $i$ subtrahiert.
+\end{dLambda}
+
+Mit Lambdas als Konstantensymbolen ist es erlaubt, als Parameter der Funktionsanwendung eines Lambdas $a$ ein Lambda $p$ zu übergeben. Es gibt zwei Möglichkeiten die DeBrujin Indizes der von $p$ gebundenen Variablen nach Ersetzung anzupassen. 
+Eine Möglichkeit ist, bei der Ersetzung der gebundenen Variablen während der Auswertung eines Lambdas immer die aktuelle Verschiebung mitzuschreiben und bei Ersetzung einer gebundenen Variable durch ein Lambda diese Verschiebung zu allen gebundenen Variablen im resultierenden Lambda dazuzuaddieren. Problem dieses Ansatzes ist zum einen, dass dann nicht nur getestet werden muss ob ein Parameter ein Lambda ist, sondern auch ob ein Parameter ein Lambda enthält. Diese Operation ist in ihrer Komplexität linear in der Anzahl der Funktionsanwendungen und Konstantensymbole des Parameters und deswegen unerwünscht. \\
+Die implementierte Lösung des Problems unterscheidet stattdessen zwischen zwei Arten von Lambdas: Ein \emph{transparentes} Lambda ist ausschließlich in der Abbildungvorschrift eines weiteren Lambdas erlaubt. Es verhält sich wie erklärt, kann also auch Variablen enthalten, die vom umgebenden Lambda gebunden sind und hat dementsprechend auch die Indizes der selbst gebundenen Variablen um die Anzahl der weiter außen gebundenen Variablen verschoben. Ein Lambda, welches nicht Teil der Abbildungsvorschrit eines anderen Lamdas ist, ist nicht transparent. Hat es eine Stelligkeit von $n$, bindet also $n$ Variablen, haben diese die DeBrujin Indizes in $\{0, 1, \dots, n-1\}$. Die Funktionsanwendung eines Lambdas wird ausschließlich dann ausgewertet, wenn sie selbst nicht Teil einer Lambdadefinition ist, damit also auch nicht transparent ist. 
+Enthält das Ergebnis einer solchen Funktionsauswertung transparente Lambdas, werden diese untransparent, wenn sie ihrerseits nach der Auswertung nicht mehr Teil einer Lambdadefinition sind. 
+Ist ein Lambda $p$ Parameter der Funktionsanwendung eines Lambdas $a$, wird $p$ mit der Auswertung der Anwendung von $a$ an die entsprechenden Stellen der Abbildungsvorschrift von $a$ plaziert. Auch wenn diese entsprechenden Stellen innerhalb geschachtelter Lambdas liegen, wird keine Indexverschiebung der von $p$ gebundenen Variablen vorgenommen. $p$ hat sich vor der Auswertung von $a$ allerdings nicht innerhalb eines Lambdas befunden, sonst wäre auch $a$ innerhalb dieses selben Lambdas gewesen, hätte also nicht ausgewertet werden dürfen. Weder $p$, noch $a$ können damit transparent sein. Das nicht transparente Lambda $p$ darf innerhalb der Abbildungsvorschrift eines Lambdas $f$ liegen. Wird eine Funktionsanwendung von $f$ ausgewertet, Wird in $p$ aber nicht nach von $f$ gebundenen Variablen gesucht. In diesem Kontext ist auch die Benennung der Eigenschaft der Tranzparenz zu verstehen: Die Auswertung der Funktionsanwendung eines Lambdas probiert nur in transparenten Teilen der Abbildungvorschrift die gebundenen Variablen zu ersetzten.\\
+Diese Verwaltungsstrategie hat den Vorteil, dass die Auswertung der Funktionsanwendung eines Lambdas die Parameter nicht verändern muss, in der Komplexität also auch nicht von der Größe der Parameter abhängt. Der Nachteil ist, dass Lambdas selber nicht normalisiert werden. Das ist allerdings für den geplanten Verwendungszweck ohnehin nicht erforderlich, da Lambdas nicht Teil des Ergebnisses einer Termtransformation sein sollen, sondern lediglich die Transformation selbst vereinfachen. \BFred{TODO: fasse Relation von a, f und p in Bilder}
+
+
+
+%.........................................................................
+%................................ C++ Kern ...............................
+%.........................................................................
+
+\section{Umsetzung in C\texttt{++}} \label{secKernUmsetzungInCpp}
+\textcolor{red} {
+\begin{itshape}
+Anmerkung: Hier wird erläutert, wie meine konkrete Implementierung Terme speichert und verwaltet und wie die Algorithmen konkret umgesetzt sind. Vielleicht auch noch wo anders im Text anzufinden, aber auch jeden Fall auch hier ist meine Implementierung der Lambdafunktion als Term, was die Vereinfachungsmuster noch etwas ausdrucksstärker macht. Dann gibt es noch spezielle Matchvariablen, die darauf optimiert sind bestimmte Werte zu matchen, die werde ich an dieser Stelle auch erläutern, mathematisch rigoros ist mir das glaube ich zu aufwendig.
+Mögliche Tangenten:
+\begin{itemize}
+\item {Ausflug in die Codegenerierung mit Templates für Funktionen, die genau ein Muster matchen (ist ein recht tiefes Kaninchenloch)}
+\item {Meine Idee (und Umsetzung) einer Art Aufzählung (in cpp und Co. als enum in der Sprache enthalten), die Hierarchien erlaubt und damit Basis eines (wie ich finde) relativ eleganten Typsystems für die einzelnen Arten von Termknoten darstellt}
+\item {Idee und Umsetzung eines sehr einfachen Typsystems}
+\item{Möglichkeit Mustervariablen nur zu matchen, sollten Extrabedingungen erfüllt sein}
+\item {Speichermanagement}
+\end{itemize}
+\end{itshape}
+}
+
+Die C\texttt{++} Implementierung ist nicht nur nicht generisch in ihren Mengen $F$ und $C$, sondern unterscheidt zudem auf der Typebene nicht zwischen den beiden. Konkret ist ein Literal ein Baum, welcher als innere Knoten Funktionsanwendungen und Lambdafunktionen und als äußere Knoten Komplexe Zahlen, durch Strings identifizierte Symbole und Platzhalter für Lambda Parameter enthalten kann. 
+
+Die Einzelnen Knoten haben dabei folgende Eigenschaften:
+\begin{itemize}
+\item \mintinline{cpp}{Literal::symbol} stellt ein beliebiges, dem System möglicherweise unbekanntes Symbol da. Für den Nutzer ist ein Symbol durch einen String identifiziert, welcher lateinische Großbuchstaben und Kleinbuchstaben, Dezimalziffern und Unterstriche enthalten kann, wobei das erste Zeichen keine Ziffer sein darf. Intern sind die tatsächlichen Zeichenketten nur in einer zentralen Tabelle zu finden, im einzelnen Term ist ein String durch seinen Index in dieser Tabelle beschrieben. Nachteil dieser Vorgehensweise ist, dass ohne viel organisatorischen Mehraufwand nie in der Programmlaufzeit ein Eintrag in der zentralen Namenstabelle gelöscht werden darf, da nicht klar ist, ob es noch Symbole mit diesem Namen gibt. Das ist in der Praxis allerdings kein Problem, da Symbolnamen nicht mutierbar sind, also jedes tatsächlich genutzte Symbol auch nur genau einen Eintrag produziert.
+\item \mintinline{cpp}{Literal::complex} repräsentiert eine Instanz von \mintinline{cpp}{std::complex<double>}, also ein Paar aus zwei 64-bit Fließkommazahlen, welche eine Komplexe Zahl in karthesischen Koordinaten annähren. Für ein Computeralgebrasystem ist die Nutzung von Fließkommazahlen problematisch, da (sofern nicht anders gewünscht) nur exakte Transformationen durchgeführt werden sollen. Der haupsächliche Grund in der Nutzung liegt darin, dass grundlegende Operationen und einige Funktionen wie Sinus und Cosinus bereits in der Standardbibliothek definiert sind. 
+\item \mintinline{cpp}{Literal::lambda} repräsentiert eine anonyme Funktion, also eine Funktion, die nur über ihre Abbildungsvorschrift definiert ist. Als Parameteranzahl erlaubt ist dabei eine natürliche Zahl $n \in [1, 2^{16} - 1]$. Speichern tut ein Lambda damit primär seine Parameteranzahl und einen Verweis auf den Term, der die Abbildungsvorschrift darstellt.
+\item \mintinline{cpp}{Literal::lambda_param} ist der Platzhalter, der in der Definition der Abbildungsvorschrift eines Lambdas für einen bestimmten Parameter steht. Identifiziert wird der einzelne Parameter dabei durch einen Index.
+\item \mintinline{cpp}{Literal::f_app} Entspricht der Funktionsanwendung aus vorrangegangenden Abschnitten, ist also ein Tupel aus Verweisen auf weitere Knoten, wobei der erste Verweis als anzuwendene Funktion interpretiert wird, alle weiteren Verweise als Parameter.
+\end{itemize}
+
+\begin{listing}
+\small
+\begin{minted}[linenos=true]{cpp}
+enum class Literal
+{
+    symbol,
+    complex,
+    lambda,
+    lambda_param,
+    f_app,
+};
+\end{minted}
+\label{abbLiteralEnum}
+\caption{Mögliche Knotentypen in einem Literal}
+\end{listing}
+
+\subsection{Konkrete Datenstruktur} \label{subsecKonkreteDatenstruktur}
+%TODO: huebsche bäume zum veranschaulichen
+
+Problem beim Speichern eines Terms ist die möglicherweise erst zur Laufzeit bekannte Parameteranzahl der einzelnen Funktionsanwendung. Die Matchalgorithmen aus Abschnitt \ref{secPattermatching} greifen auf die einzelnen Parameter in nicht immer vorhersehbarer Reihenfolge zu, weswegen dieser Zugriff möglichst schnell erfolgen können sollte. Eine verkettete Liste macht zwar das speichern beliebig vieler Parameter trivial, erlaubt aber keinen schnellen Zugriff auf beliebige Elemente. Die C\texttt{++} Standardbibliothek enthält \mintinline{cpp}{std::vector} zur Lösung ähnlicher Probleme einen Datentyp zur Verwaltung von Arrays veränderbarer Größe auf dem Heap. Eine Möglichkeit wäre also eine klassische Pointerstruktur mit \mintinline{cpp}{std::vector} als Knoten zu konstruieren. Ein Nachteil dieser Lösung ist die doppelte Indirektion in der Verwaltung: Der Pointer zu einer Funktionsanwendung zeigt in dem Fall zur Verwaltungsstruktur des Vektors, welche selbst erst den Pointer auf die Parameter enthält. Ein zweiter Nachteil wäre, dass die Information über den Typ eines Terms nur indirekt über virtuelle Funktionen abgerufen werden können würde. 
+
+
+In der implementierten Variante sind die Knoten eines Termbaumes in einem Array gespeichert, wobei dem einzelnen Arrayelement nicht zu entnehmen ist, welche Art Knoten es repräsentiert. Ein Verweis auf einen Knoten beinhaltet also nicht nur den Arrayindex, sondern auch den Knotentyp. Als Paar zusammengefasst sind beide in der Klasse \mintinline{cpp}{NodeIndex}. 
+Da die Knotentypen \mintinline{cpp}{Literal::symbol} und \mintinline{cpp}{Literal::lambda_param} durch einen vorzeichenlosen Integer bereits eindeutig dargestellt werden können, hat der Index einer \mintinline{cpp}{NodeIndex} Instanz für diese Typen nicht die Bedeutung eines Arrayindex, sondern ist direkt die komplette Beschreibung des Knoteninhaltes.
+
+
+\subsection{Muster} \label{subsecCppMuster}
+%TODO
+
+\subsection{Musteranwendung} \label{subsecCppMusterAnwendung}
+%TODO
+
+%.........................................................................
+%................................ Vereinfachen C .........................
+%.........................................................................
+\section{Vereinfachen von arithmetischen Termen}
+\begin{itshape}
+\textcolor{red} {Anmerkung zur Anmerkung: ab hier sind es nur noch Anmerkungen, da wird Farbe gespart (in echt mag \LaTeX{}  es nicht über Kapitelgrenzen hinweg zu färben).}
+Anmerkung: Ich habe begonnen das Termersetzungssystem zu entwickeln, um Arithmetische Ausdrücke zu vereinfachen (etwa $a + 2 a \rightarrow 3 a$). Wie genau ich das umsetze, wird in diesem Abschnitt erläutert.
+\\Während die Datenstruktur und der Matchingalgorithmus schon benutzbar sind, ist dieser Teil von mir bisher so gut wie gar nicht implementiert worden. Der grobe Plan ist aber folgender:
+\begin{enumerate}
+    \item Funktionen höherer Ordnung anwenden:
+    \begin{itemize}
+        \item ableiten (Prototyp dafür steht schon)
+        \item vielleicht integrieren (soll für den allgemeinen Fall wohl schwer sein)
+        \item vielleicht fouriertransformieren
+        \item vielleicht laplacetransformieren
+        \item ganz ganz ganz ganz vielleicht Differentialgleichungen lösen
+    \end{itemize}
+    \item Normalform herstellen:
+    \begin{itemize}
+        \item alles ausmultiplizieren ($a\cdot (b + c) \rightarrow a\cdot b + a\cdot c$)
+        \item Vorzeichen aus ungeraden Funktionen herausziehen ($\sin(-x) \rightarrow -\sin(x)$)
+        \item Vorzeichen in geraden Funktionen auf plus setzen ($\cos(-x) \rightarrow \cos(x)$)
+        \item Überlegen, wie man das selbe für Fälle mit Summen im Argument definiert ($\cos(a - b)$ vs. $\cos(b - a)$)
+        \item bekannte Faktoren aus Potenz ziehen ($(3 x)^2 \rightarrow 9 x^2$)
+        \item \dots
+    \end{itemize}
+    \item Vereinfachen:
+    \begin{itemize}
+        \item manche Transformationen sollten immer angewendet werden (etwa $\sin^2(x) + \cos^2(x) \rightarrow 1)$
+        \item andere Transformationen nur ausprobieren und mit einer passenden Metrik gucken, wie gut ein Term nach Anwendung noch weiter vereinfacht werden kann (etwa, wenn man aus verschiedenen Optionen des Ausklammerns wählen kann)
+        \item vielleicht Linearfaktorzerlegung von Polynomen (schätze ich für den allgemeinen Fall schwierig ein, solange ich nur exakte Operationen zulasse)
+        \item vielleicht Polynomdivision (schätze ich genau so schwierig ein, zumindest wenn ich nicht vorher schon Linearfaktoren habe)
+        \item \dots
+    \end{itemize}
+\end{enumerate}
+~\\~
+Anmerkung 1: Die Normalform ist notwendig, um zu garantieren, dass mehrfaches Auftreten eines Teilbaums / Teilterms auch erkannt wird. \\
+Anmerkung 2: es kann sein, dass ich manche Eigenschaften der Normalform auch während des Vereinfachungsschrittes immer wieder wiederherstellen muss.
+
+\subsection{Vergleich meiner Features mit anderen Computeralgebrasystemen}
+Ich bin ja nicht der erste, der auf die Idee kommt, Terme zusammenzufassen. Wolphram Alpha und Maple sind zwar nicht Open Source, aber andere Optionen, wie etwa SymPy aus der Python Standardbibliothek soweit ich weiß schon. Da lässt sich bestimmt ein bisschen vergleichen, wie andere Leute die selben Probleme lösen.
+Spannend ist mit Sicherheit auch der Vergleich zu Egison.
+\end{itshape}
+
+%.........................................................................
+%................................ Zusammenfassung ........................
+%.........................................................................
+
+\section{Zusammenfassung}
+\begin{itshape}
+Was halt in eine Zusammenfassung kommt
+\end{itshape}
+
+
+\printbibliography
+
+\end{document}

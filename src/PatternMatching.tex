@@ -1,0 +1,90 @@
+
+
+\section{Patternmatching} \label{secPattermatching}
+
+In Kapitel \ref{subsecMuster} wurde die Konzepte des Musters und des Matches eingeführt, zweiteres insbesondere in einer weiterfassenden Form, was auch erlaubt Muster mit strukturell nicht exakt identischen Literalen zu assoziieren, sofern die Unterschiede mit der Projektion $\mathrm{normalize} \colon T \rightarrow T$ beseitigt werden können. Die in Kapitel \ref{secErsteNormalform} beschriebene Funktion $\mathrm{normalize}$ ist als solche Projektion nutzbar. \BFred{soll ich eigentlich irgendwo noch einmal explizit motivieren, warum normalize eine Projektion ist / sein sollte?} 
+
+In diesem Kapitel wird ein Algorithmus entwickelt, der die Äquivalenzklassen der verschieden geschachtelten Funktionsanwendungen eines assoziativen Funktionssymbols mit den selben Parametern, sowie die Äquivalenzklassen der verschieden permutierten Parameter in der Funktionasanwendung eines kommutativen Funktionssymbols beim finden eines Matches berücksichtigt. Die teilweise Auswertung von $\mathrm{normalize}$ aus Kapitel \ref{subsecNormalKombinieren} wird allerdings in diesem Kapitel nicht verfolgt.
+
+\subsection{Grundstruktur} \label{subsecPatternmatchingGrundstruktur}
+
+
+Dem Ergebnis eines Matchalgorithmus müssen zwei Dinge entnehmbar sein. Zum ersten muss klar sein, ob ein Match $v_m \colon X \rightarrow T$ gefunden wurde. Wurde ein Match gefunden, muss zudem dessen Abbildungsvorschrift zurückgegeben werden. Der Rückgabetyp von Algorithmus \ref{simpleMatchAlgorithmShell} ist deswegen nicht nur das finale Match, sondern auch ein Wahrheitswert $b \in B \coloneqq \{\mathrm{false}, \mathrm{true}\}$. Alternativ kann die Menge aller möglichen Matches zurückgegeben werden. Diese Idee wird im folgenden allerdings nicht weiter verfolgt, da sie mit den Anforderungen an hier behandelte Muster auch im besten Fall schnell exponentielle Laufzeiten produziert. Sind aber Mehrfachnennungen einer Mustervariable in einem Muster nicht erlaubt, haben Hoffman und O'Donnell in \cite{patternMatchingInTrees} gezeigt, dass sehr effiziente Algorithmen zum gleichzeitigen finden von Matches einer ganzen Menge von Mustern in allen Teiltermen eines Literals mit dieser Grundidee möglich sind.\\
+
+Da eine Mustervariable in dieser Arbeit mehrfach in einem Muster vorkommen darf, muss ein Algorithmus beim Suchen nach einem Match $v_m \colon X \rightarrow T$ zu jedem Zeitpunkt wissen, für welche $x \in X$ das Match $v_m~x$ bereits feststeht. $v_m$ ist also nicht nur Rückgabewert eines Matchalgorithmus, sondern muss mit den Funktionswerten für bereits besuchte Mustervariablen auch Eingabe in den Algorithmus sein. In Algorithmus \ref{simpleMatchAlgorithmShell} wird $v_m$ deswegen als partielle Funktion definiert, welche zu Beginn keine einzige Mustervariable nach $T$ abbilden kann. \\
+
+\begin{algorithm}
+\DontPrintSemicolon
+\caption{$\mathrm{simpleMatchAlgorithmShell} \colon M \times T \rightarrow (B, X \rightharpoonup T)$}\label{simpleMatchAlgorithmShell}
+\KwIn{$m \in M$, $t \in T$}
+
+\textbf{let} $v_m \colon X \rightharpoonup T,~ x \mapsto \bot$\;
+\Return {$\mathrm{simpleMatchAlgorithm}(m, t, v_m)$}
+\end{algorithm}
+
+\begin{algorithm}
+\DontPrintSemicolon
+\caption{$\mathrm{simpleMatchAlgorithm} \colon M \times T \times (X \rightharpoonup T) \rightarrow (B, X \rightharpoonup T)$}\label{simpleMatchAlgorithm}
+\KwIn {$m \in M$, $t \in T$, $v_m \colon X \rightharpoonup T$}
+
+\If {$m \in X$ \textbf{and} $v_m~m = \bot$}{
+    $(v_m~m) \leftarrow t$\;
+    \Return {$(\mathrm{true}, v_m)$}
+}
+\ElseIf {$m \in X$ \textbf{and} $v_m~m \neq \bot$}{
+    \Return {$(v_m~m = t, v_m)$}
+}
+\ElseIf {$m \in C \setminus X$} {
+    \Return {$(m = t, v_m)$}
+}
+\ElseIf {$m = f(m_1, \dots, m_n)$ \textbf{and} $t = f(t_1, \dots, t_n)$}{
+    \For {$k \in \{1, \dots, n\}$}{
+        $(s_k, v_m) \leftarrow \mathrm{simpleMatchAlgorithm}(m_k, t_k, v_m)$\;
+        \If {$\mathrm{not}~s_k$}{
+            \Return {$(\mathrm{false}, v_m)$}
+        }
+    }
+    \Return {$(\mathrm{true}, v_m)$}  
+}
+\Else {
+    \Return {$(\mathrm{false}, v_m)$}  
+}    
+\end{algorithm}
+
+
+Wenn das Match streng definiert ist, also der Unterschied zwischen einem Muster $m$ und einem Literal $l$ für die Existenz eines Matches $v_m$ aussschließlich darin bestehen darf, dass Teilterme von $l$ in $m$ durch eine Mustervariable repräsentiert werden, ist ein einfacher Matchalgorithmus fast trivial. Auf der Grundidee von $\mathrm{simpleMatchAlgorithm}$ basieren allerdings auch die späteren Algorithmen dieses Kapitels. Diese ist, dass mit einer parralelen Tiefensuche in Muster und Literal nach einem Unterschied zwischen beiden gesucht wird. Mustervariablen funktionieren dabei als Wildcard, wenn eine identische Mustervariable in der Tiefensuche vorher noch nicht gefunden wurde. Andernfalls vergleichen sie identisch zu dem Teilbaum, der mit dem ersten Vorkommen der Mustervariable verglichen wurde. Die Aufgabe diese vorher begegneten Teilbäume zu speichern übernimmt $v_m$, was erklärt, warum $v_m$ auch als Parameter für Algorithmus \ref{simpleMatchAlgorithm} notwendig ist. Ist das gesamte Muster abgelaufen worden ohne einen strukturellen Unterschied zum Literal zu finden ist $v_m$ das resultierende Match.\\
+
+\BFred{TODO: motivation für multi ohne findmatchingpermutation}
+
+Der erste Matchalgorithmus, dargestellt als Argorithmus \ref{findMatchingPermutation}, findet bereits eine große Teilmenge aller möglichen Matches. Es gibt allerdings zwei schwerwiegende Probleme. Erstens erzeugt Zeile 7 für eine Funktionsanwendung mit $n$ Parametern alle $n!$ Permutationen dieser Parameter, wobei ein Muster sogar mehrere solche Funktionsanwendungen auch mit gegenseitiger Abstammung enthalten kann. Sollte es ein Match geben, ist die Laufzeit damit in $\Omega(n!)$, wobei  $\Omega$ das Landau-Symbol ist, welches die tatsächliche Laufzeit asymptotisch nach unten abschätzt.
+
+Das zweite Problem  ist folgendes: Assoziative Funktionsanwendungen wurden vor der Matchsuche bereits von $\mathrm{combine}$ (Algorithmus \ref{combine}) miteinander verschmolzen, so dass ein Muster mindestens mit der äußersten Funktionsanwendung nicht nur die Terme matchen will, die in ihrer äußersten Funktionsanwendung exakt gleich viele Parameter wie das Muster haben, sondern auch die Funktionsanwendungen mit mehr Parametern (immer vorausgesetzt die einzelnen Parameter des Musters sind matchbar). Für die Lösung dieses zweiten Problems gibt es mehrere Optionen.
+Möglich ist, im Matchalgorithmus nicht nur darauf zu achten, ob ein Funktionssymbol kommutativ ist, sondern auch auf Assoziativität entsprechend zu reagieren, also bei der Matchsuche in einer größeren Funktionsanwendung eines assoziativen Funktionssymbols im Literal testweise immer so viele Parameter zu einzelnen Funktionsanwendungen zusammenzufassen, dass die Parameteranzahl von Muster und Literal in der äußersten Funktionsanwendung gleich sind. Ein Muster mit äußerster assoziativer Funktionsanwendung bräuchte dann immer eine Version mit einer weiteren Matchvariable, die beim Matchprozess sonst übrigbleibende Parameter des Literals \glqq aufsagen\grqq{} kann. Das Muster aus Beispiel \textcolor{red}{\textbf{???}} zur Anwendung der ersten binomischen Formel müsste durch eine zweite Version mit einer Mustervariable $\mathbf{c}$ ergänzt werden.
+$$+(\string^(\mathbf a, 2), \cdot(2, \mathbf a, \mathbf b), \string^(\mathbf b, 2), \mathbf c) \rightarrow +(\string^(+(\mathbf a, \mathbf b), 2), \mathbf c)$$
+Der Vorteil dieser Umsetzung ist die einfachere mathematische Beschreibung, es wurden schließlich keine neuen Konzepte eingeführt, sondern nur der Algorithmus angepasst. Es gibt allerdings auch drei Nachteile. Zum einen muss jede Regel mit äußerer assoziativer Funktionsanwendung auf der linken Seite jetzt mindestens zwei mal vorliegen: Ein mal mit und ein mal ohne extra Variable $\mathbf c$. Für nicht kommutative Funktionen wird die Anzahl sogar noch größer, da auch Parameter nur nicht kommutativ zusammengefasst werden können, also müssen extra Variablen sowohl vor, als auch hinter dem sonstigen Muster ergänzt werden, so dass es dann vier Regeln geben muss, die den selben Sachverhalt beschreiben. 
+Ein weiterer Nachteil des Ansatzes besteht darin, dass zwar assoziative Funktionsanwendungen einfach in einem Muster beschrieben werden können, ein Term aber prinzipiell auch nicht assoziative variadische Funktionssymbole enthalten kann. Ein Muster kann also immer nur eine feste Anzahl von Parametern in einer solchen Funktionsanwendung beschreiben, was Muster praktisch nutzlos für die Manipulation solcher Strukturen macht.
+Der finale Nagel im Sarg ist die erneut größer gewordene algorithmische Komplexität des Algorithmus. Dem Autor des Musters ist zwar klar, dass die ergänzte Mustervariable nur sonst übrigbleibende Parameter aufsammeln soll, diese Intention geht aber verloren, wenn $\mathbf c$ auch nur eine normale Mustervariable ist. Vor allem die Möglichkeit einer Mustervariable öfter als ein mal vorzukommen wird für die gerade ergänzten Mustervariablen nicht benötigt, da sie sich gerade dadurch auszeichnen, dass die Teile eines Literals, die mit einer solchen Variable gematcht sind für das eigentliche Muster uninteressant sind.
+\textcolor{red}{\textit{Frage: Soll der soeben skizzierte erweiterte Algorithmus auch in Pseudocode beschrieben werden?}}
+
+\subsection{Multi-Mustervariablen}
+Die in dieser Arbeit gewählte Lösung zur Beschreibung von beliebig vielen Parametern in einem Muster ist im Prinzip schon mit den ersten Definitionen eingeführt worden. Die Schreibweise $f(ts...)$ als kompakte Alternative zu $f(t_1, \dots, t_n)$ hat genau die Eigenschaften, die wir uns nach Analyse von Algorithmus \ref{findMatchingPermutation} gewünscht haben. Eine \textit{Multi-Mustervariable} der Form $\mathbf{ts...}$ kann also nicht nur genau einen Parameter in einer Funktionsanwendung matchen, sondern beliebig viele, auch null. Dafür darf jede Multi-Mustervariable auf der linken Seite einer Ersetzungsregel nur höchstens ein Mal vorkommen. Die rigorose Beschreibung des Konzeptes gestaltet sich allerdings mit der bisher eingeführten Ideen schwierig, da eine Multi-Mustervariable nur Teil einer Funktionsanwendung ist und damit auch alleine keinen vollständigen Term repräsentiert. Konnte eine Matchfunktion $v \colon X \rightarrow T$ vorher einfach auf die Menge aller Terme abbilden, wäre dies nach hinzufügen der Multi-Mustervariablen nicht mehr möglich. Entsprechend umständlicher würde auch die Beschreibung der Auswertung eines Musters werden. \\
+
+Formal wird die Multi-Mustervariable damit nicht als echtes neues Symbol in die Menge der Muster aufgenommen, sondern ist lediglich eine vereinfachende Schreibweise, die wie auch vorher immer für eine beliebige Anzahl an Teiltermen steht, in diesem Fall Mustervariablen. Ein Muster mit einer Multi-Mustervariable $\mathbf{ts...}$ repräsentiert also formal unendlich viele konkrete Muster mit konkreten Mustervariablen $\mathbf{t_i}$:
+\begin{equation*}
+    \begin{split}
+    		f(\mathbf{ts...}) = \{&f(), \\
+    		&f(\mathbf{t_1}),\\
+    		&f(\mathbf{t_1}, \mathbf{t_2}), \\
+    		&f(\mathbf{t_1}, \mathbf{t_2}, \mathbf{t_3}), \\
+    		&\dots \}    		
+    \end{split}
+\end{equation*}
+Für die folgenden Algorithmen und auch in der echten Umsetzung ist es allerdings nicht praktikabel diese Definition anzuwenden, Multi-Mustervariablen werden also formal inkorrekt als einzelne Symbole in einem tatsächlichen Muster betrachtet.
+
+Die Anwendung der ersten binomischen Formel kann jetzt in einer einzigen Regel beschrieben werden.
+$$+(\string^(\mathbf a, 2), \cdot(2, \mathbf a, \mathbf b), \string^(\mathbf b, 2), \mathbf{cs...}) \rightarrow +(\string^(+(\mathbf a, \mathbf b), 2), \mathbf{cs...})$$
+
+
+
+
+

@@ -1,0 +1,60 @@
+
+
+\section{Vereinfachen von arithmetischen Termen}
+\begin{itshape}
+\textcolor{red} {Anmerkung zur Anmerkung: ab hier sind es nur noch Anmerkungen, da wird Farbe gespart (in echt mag \LaTeX{}  es nicht über Kapitelgrenzen hinweg zu färben).}
+Anmerkung: Ich habe begonnen das Termersetzungssystem zu entwickeln, um Arithmetische Ausdrücke zu vereinfachen (etwa $a + 2 a \rightarrow 3 a$). Wie genau ich das umsetze, wird in diesem Abschnitt erläutert.
+\\Während die Datenstruktur und der Matchingalgorithmus schon benutzbar sind, ist dieser Teil von mir bisher so gut wie gar nicht implementiert worden. Der grobe Plan ist aber folgender:
+\begin{enumerate}
+    \item Funktionen höherer Ordnung anwenden:
+    \begin{itemize}
+        \item ableiten (Prototyp dafür steht schon)
+        \item vielleicht integrieren (soll für den allgemeinen Fall wohl schwer sein)
+        \item vielleicht fouriertransformieren
+        \item vielleicht laplacetransformieren
+        \item ganz ganz ganz ganz vielleicht Differentialgleichungen lösen
+    \end{itemize}
+    \item Normalform herstellen:
+    \begin{itemize}
+        \item alles ausmultiplizieren ($a\cdot (b + c) \rightarrow a\cdot b + a\cdot c$)
+        \item Vorzeichen aus ungeraden Funktionen herausziehen ($\sin(-x) \rightarrow -\sin(x)$)
+        \item Vorzeichen in geraden Funktionen auf plus setzen ($\cos(-x) \rightarrow \cos(x)$)
+        \item Überlegen, wie man das selbe für Fälle mit Summen im Argument definiert ($\cos(a - b)$ vs. $\cos(b - a)$)
+        \item bekannte Faktoren aus Potenz ziehen ($(3 x)^2 \rightarrow 9 x^2$)
+        \item \dots
+    \end{itemize}
+    \item Vereinfachen:
+    \begin{itemize}
+        \item manche Transformationen sollten immer angewendet werden (etwa $\sin^2(x) + \cos^2(x) \rightarrow 1)$
+        \item andere Transformationen nur ausprobieren und mit einer passenden Metrik gucken, wie gut ein Term nach Anwendung noch weiter vereinfacht werden kann (etwa, wenn man aus verschiedenen Optionen des Ausklammerns wählen kann)
+        \item vielleicht Linearfaktorzerlegung von Polynomen (schätze ich für den allgemeinen Fall schwierig ein, solange ich nur exakte Operationen zulasse)
+        \item vielleicht Polynomdivision (schätze ich genau so schwierig ein, zumindest wenn ich nicht vorher schon Linearfaktoren habe)
+        \item \dots
+    \end{itemize}
+\end{enumerate}
+~\\~
+Anmerkung 1: Die Normalform ist notwendig, um zu garantieren, dass mehrfaches Auftreten eines Teilbaums / Teilterms auch erkannt wird. \\
+Anmerkung 2: es kann sein, dass ich manche Eigenschaften der Normalform auch während des Vereinfachungsschrittes immer wieder wiederherstellen muss.
+
+\subsection{Vergleich meiner Features mit anderen Computeralgebrasystemen}
+Ich bin ja nicht der erste, der auf die Idee kommt, Terme zusammenzufassen. Wolphram Alpha und Maple sind zwar nicht Open Source, aber andere Optionen, wie etwa SymPy aus der Python Standardbibliothek soweit ich weiß schon. Da lässt sich bestimmt ein bisschen vergleichen, wie andere Leute die selben Probleme lösen.
+Spannend ist mit Sicherheit auch der Vergleich zu Egison.
+\end{itshape}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
