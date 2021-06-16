@@ -152,6 +152,8 @@ Für folgende Formen von Mustern $p$ und $q$ gilt $p \prec q$:
 Gilt für zwei Muster $p_1, p_2 \in M(F, C)$, dass alle Literale $t_1, t_2 \in T(F, C)$ für die es jeweilige Matchfunktionen $v_{p_1}, v_{p_2} \colon X \rightarrow T(F, C)$ gibt, $t_1 \leq t_2$ erfüllen, so ist $p_1$ \emph{stark kleiner gleich} als $p_2$, geschrieben $p_1 \preceq p_2$.
 \end{defStaerkerGeordnet}
 
+
+
 Für folgende Formen von Mustern $p$ und $q$ gilt $p \preceq q$:
 \begin{itemize}
     \item{$p \prec q$}
@@ -166,6 +168,11 @@ Für folgende Formen von Mustern $p$ und $q$ gilt $p \preceq q$:
 Beispiele für symmetrische Muster sind beide Seiten der ersten Binomischen Formel, wobei $\mathbf a$ symmetrisch zu $\mathbf b$ ist:
 $$(\texttt{sum}, (\texttt{pow}, \mathbf a, 2), (\texttt{prod}, 2, \mathbf a, \mathbf b), (\texttt{pow}, \mathbf b, 2), \mathbf c) \mapsto (\texttt{sum}, (\texttt{pow}, (\texttt{sum}, \mathbf a, \mathbf b), 2), \mathbf c)$$
 
+
+\newtheorem{lemTransitivStark}[bsp]{Lemma}
+\begin{lemTransitivStark}~\\
+Für Muster $p, q, r \in M$ mit $p \prec q \leq r$ folgt $p \prec r$ $(1)$. In die andere Richtung folgt zudem aus $p \leq q \prec r$ dass $p \prec r$.
+\end{lemTransitivStark}
 
 %.........................................................................
 %.........................................................................
