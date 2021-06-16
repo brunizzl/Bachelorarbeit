@@ -30,10 +30,6 @@
 \renewcommand{\listingscaption}{Quelltext}
 \usemintedstyle{friendly}
 
-%\paren*{a + b} skaliert automatisch klammern um a + b
-\DeclarePairedDelimiter\paren{(}{)} 
-\DeclarePairedDelimiter\curl{\{}{\}}
-
 \setlength{\parindent}{0pt} %keine Einrückung nach absatz
 
 \usepackage{amsthm}
@@ -57,6 +53,10 @@
 \SetKwIF{If}{ElseIf}{Else}{if}{ }{else if}{else}{}
 \SetKwFor{For}{for}{}{}
 \SetKwFor{While}{while}{}{}
+
+%\paren*{a + b} skaliert automatisch klammern um a + b
+\DeclarePairedDelimiter\paren{(}{)} 
+\DeclarePairedDelimiter\curl{\{}{\}}
 
 %.........................................................................
 %................................ Body ...................................

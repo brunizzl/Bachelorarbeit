@@ -108,12 +108,12 @@ $$u_c~\texttt{pair} \colon T^2 \rightarrow T, ~(a, b) \mapsto (\texttt{pair}, a,
 Bisher wurden die Objekte beschrieben, die in dieser Arbeit transformiert werden sollen. Die Transformationsregeln selbst lassen sich allerdings auch als Paare von bestimmten Termen darstellen. Zur Abgrenzung beider Konzepte werden die zu transformierenden Terme $t\in T(F, C)$ von hier an \emph{Literal} genannt, Terme die  Teil einer Regeldefinition sind werden \emph{Muster} genannt. Die Menge der Muster $M(F, C)$ ist dabei eine Obermenge der Literale, da sie deren Konstantensymbole um die Menge der \emph{Mustervariablen} $X$ erweitert\footnote{Die Ergänzung der Funktionssymbole um Mustervariablen ist genau so möglich, wird aber vor allem um die Notation verdaubar zu halten in den folgenden Kapiteln außen vor gelassen.}. Konkrete Elemente $\mathbf x \in X$ werden im folgenden \textbf{fett} geschrieben.
 $$M(F, C) \coloneqq T(F, C \cup X)$$
 
-Eine \emph{Ersetzungsregel} für Literale $t \in T(F, C)$ hat die Form $(l, r) \in M(F, C)^2$. Die linke Seite $l$ steht für das Muster, dass im Literal durch einen Ausdruck der Form der rechten Seite $r$ ersetzt werden soll. Für die bessere Lesbarkeit wird statt $(l, r)$ auch $l = r$ geschrieben.
+Eine \emph{Ersetzungsregel} für Literale $t \in T(F, C)$ hat die Form $(l, r) \in M(F, C)^2$. Die linke Seite $l$ steht für das Muster, dass im Literal durch einen Ausdruck der Form der rechten Seite $r$ ersetzt werden soll. Für die bessere Lesbarkeit wird statt $(l, r)$ auch $l \mapsto r$ geschrieben.
 
 \newtheorem{bMuster}[bsp]{Beispiel} 
 \begin{bMuster} \label{bMuster}
 Die Regel, die die Summe zweier identischer Terme $a$ als Produkt von $2$ und $a$ transformiert wird geschrieben als
-$$(\texttt{sum}, \mathbf a, \mathbf a) = (\texttt{prod}, 2, \mathbf a)$$
+$$(\texttt{sum}, \mathbf a, \mathbf a) \mapsto (\texttt{prod}, 2, \mathbf a)$$
 Wird die Regel jetzt auf das Literal 
 $t = (\texttt{sum}, (\texttt{sin}, 3), (\texttt{sin}, 3))$ angewandt, kann man $t$ zu $t' = (\texttt{prod}, 2, (\texttt{sin}, 3))$ transformieren. 
 Hervorzuheben ist dabei, dass die Mustervariable $\mathbf a$ selbst nicht mehr im Ergebnisterm vorkommt. Sie wurde stattdessen durch den Teilterm ersetzt, der im Ursprungsliteral an der Stelle von $\mathbf a$ stand, nämlich $(\texttt{sin}, 3)$.
@@ -121,20 +121,20 @@ Hervorzuheben ist dabei, dass die Mustervariable $\mathbf a$ selbst nicht mehr i
 
 \newtheorem{defMatch}[bsp]{Definition}
 \begin{defMatch}
-Für ein Paar $(m, t) \in M(F, C) \times T(F, C)$ ist eine Funktion $v_m \colon X \rightarrow T(F, C)$ ein \emph{Match}, wenn folgendes gilt:
-$$\mathrm{eval}(u_c, \tilde v_m)~ m = t$$
-$$\tilde v_m~ c = \begin{cases}
-	v_m~ c & c \in X\\
+Für ein Paar $(p, t) \in M(F, C) \times T(F, C)$ ist eine Funktion $v_p \colon X \rightarrow T(F, C)$ ein \emph{Match}, wenn folgendes gilt:
+$$\mathrm{eval}(u_c, \tilde v_p)~ p = t$$
+$$\tilde v_p~ c = \begin{cases}
+	v_p~ c & c \in X\\
 	c      & c \in C \setminus X
 \end{cases}$$
-$v_m$ muss die Mustervariablen in $m$ so durch Literale ersetzen, dass ein Term identisch zu $t$ entsteht. 
-Im vorangegandenden Beispiel \ref{bMuster} gilt damit $v_m~ \mathbf a = (\texttt{sin}, 3)$.
+$v_p$ muss die Mustervariablen in $p$ so durch Literale ersetzen, dass ein Term identisch zu $t$ entsteht. 
+Im vorangegandenden Beispiel \ref{bMuster} gilt damit $v_p~ \mathbf a = (\texttt{sin}, 3)$.
 
 Im folgenden wird der Begriff des Matches noch etwas weiter gefasst. Es werden nach wie vor die Mustervariablen durch Literale ersetzt, allerdings muss nicht direkt das Ergebnis der Ersetzung, sondern nur eine normalisierte Form des Ergebnisses mit dem Literal $t$ übereinstimmen:
-$$\mathrm{normalize}~(\mathrm{eval}(u_c, \tilde v_m)~ m) = t$$
+$$\mathrm{normalize}~(\mathrm{eval}(u_c, \tilde v_p)~ m) = t$$
 Die Funktion $\mathrm{normalize} \colon T(F, C) \rightarrow T(F, C)$ projiziert einen Term auf seine normalisierte Form. Welche Uneindeutigkeiten $\mathrm{normalize}$ beseitigt soll hier nicht festgelegt werden. Klar ist aber, dass je nach Wahl der Projektion zwar ein einzelnes Muster sehr mächtig werden kann, also ein Match mit sehr vielen Termen möglich ist, das finden des Matches dann im allgemeinen Fall allerdings immer schwieriger wird.
 \end{defMatch}
 
-Ein \emph{Matchalgorithmus} ist eine Vorgehensweise für ein gegebendes Paar $(m, t) \in M(F, C) \times T(F, C)$ ein gültiges Match zu finden. Perfekt wird ein solcher Algorithmus dann genannt, wenn jedes mögliche Match gefunden werden kann.
+Ein \emph{Matchalgorithmus} ist eine Vorgehensweise für ein gegebendes Paar $(p, t) \in M(F, C) \times T(F, C)$ ein gültiges Match zu finden. Perfekt wird ein solcher Algorithmus dann genannt, wenn jedes mögliche Match gefunden werden kann.
 
 
