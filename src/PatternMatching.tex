@@ -119,7 +119,7 @@ Die Summe der linken Seite setzt sich für die folgenden Algorithmen dieses Kapi
 %.........................................................................
 %.........................................................................
 %.........................................................................
-\subsection{Kommutative und beschränkt Assoziative Muster} \label{subsecACMuster}
+\subsection{Kommutative Muster} \label{subsecACMuster}
 
 
 Abweichend von bisherigen Algorithmen wird von hier an in der Notation nicht mehr jede in echt notwendige Information explizit übergeben. $v_p$ ist nach wie vor sowohl Teil der Parameter als auch Teil des Rückgabewertes. Datenstrukturen, die die Reihenfolge der Parameter einer kommutativen Funktionsanwendung in einem Muster zwischenspeichern werden hier allerdings absichtlich offen gehalten, um die Logik in den Vordergrund zu heben. Klar ist allerdings, dass diese in Realität parrallel zu $v_p$ gemanaged werden müssen.
@@ -166,8 +166,30 @@ Abweichend von bisherigen Algorithmen wird von hier an in der Notation nicht meh
  \If {$m > n$} {
     \Return {$\mathrm{false}$}
  }
- \While {$i < m$} {
-    \BFred{TODO}\;
+ \While {$i < m$} {\label{PermutationHauptschleifenbeginn}
+    \While {$k < n$} {
+        \If {$t_k$ ist mit keinem Parameter von $p$ gematcht} {
+            \If {$\mathrm{FindCommutativeMatch}(p_i, t_k)$} {
+                merke: $p_i$ ist mit $t_k$ gematcht\; 
+                $i \leftarrow i + 1$\;
+                $k \leftarrow 1$\; \label{PermutationKDummEins}
+                \Goto {\ref{PermutationHauptschleifenbeginn}}\;
+            }
+        }
+        $k \leftarrow k + 1$\;        
+    }
+    \If {$i = 1$} {
+        \Return {$\mathrm{false}$}
+    }
+    \Let {$k'$ aus \glqq $p_{i-1}$ ist mit $t_{k'}$ gematcht\grqq{}}\;
+    \If {$\mathrm{Rematch}(p_{i-1}, t_{k'})$} {
+        $k \leftarrow 1$\; \label{PermutationKDummZwei}
+    }    
+    \Else {
+        merke: $p_{i}$ ist nicht mehr mit $t_{k'}$ gematcht\;
+        $i \leftarrow i - 1$\;
+        $k \leftarrow k' + 1$\;
+    }
  }
  \Return {$p$ enthält eine Multi-Matchvariable \textbf{or} alle $t_k$ wurden gematcht}
 \end{algorithm}
