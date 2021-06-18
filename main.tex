@@ -49,19 +49,24 @@
 %gibt text in fett und rot aus
 \newcommand{\BFred}[1]{\textbf{\textcolor{red}{#1}}}
 
-%in algorithm folgt nach "if" kein "then", nach "for" kein "do" ...
-\SetKwIF{If}{ElseIf}{Else}{if}{ }{else if}{else}{}
-\SetKwFor{For}{for}{}{}
-\SetKwFor{While}{while}{}{}
-
 %\paren*{a + b} skaliert automatisch klammern um a + b
 \DeclarePairedDelimiter\paren{(}{)} 
 \DeclarePairedDelimiter\curl{\{}{\}}
 
+
+
 %befehle für algorithm2e
+
+%in algorithm folgt nach "if" kein "then", nach "for" kein "do" ...
+\SetKwIF{If}{ElseIf}{Else}{if}{ }{else if}{else}{}
+\SetKwFor{For}{for}{}{}
+\SetKwFor{While}{while}{}{}
+\SetKwSwitch{Switch}{Case}{Other}{switch}{}{case}{otherwise}{endcase}{endsw}
 \SetKw{Goto}{goto}
 \SetKw{Let}{let}
 \SetArgSty{text} %statt default emph
+\newcommand{\KwAnd}{\textbf{and }}
+\newcommand{\KwOr}{\textbf{or }}
 
 
 %.........................................................................

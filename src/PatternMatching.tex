@@ -30,17 +30,17 @@ Da eine Mustervariable in dieser Arbeit mehrfach in einem Muster vorkommen darf,
 \caption{$\mathrm{simpleMatchAlgorithm} \colon M \times T \times (X \rightharpoonup T) \rightarrow (\mathit{Bool}, X \rightharpoonup T)$}\label{simpleMatchAlgorithm}
 \KwIn {$p \in M$, $t \in T$, $v_p \colon X \rightharpoonup T$}
 
-\If {$p \in X$ \textbf{and} $v_p~p = \bot$}{
+\If {$p \in X$ \KwAnd $v_p~p = \bot$}{\label{simpleBindend}
     $(v_p~p) \leftarrow t$\;
     \Return {$(\mathrm{true}, v_p)$}
 }
-\ElseIf {$p \in X$ \textbf{and} $v_p~p \neq \bot$}{
+\ElseIf {$p \in X$ \KwAnd $v_p~p \neq \bot$}{ \label{simpleNichtBindend}
     \Return {$(v_p~p = t, v_p)$}
 }
 \ElseIf {$p \in C \setminus X$} {
     \Return {$(p = t, v_p)$}
 }
-\ElseIf {$p = (f, p_1, \dots, p_n)$ \textbf{and} $t = (f, t_1, \dots, t_n)$}{
+\ElseIf {$p = (f, p_1, \dots, p_n)$ \KwAnd $t = (f, t_1, \dots, t_n)$}{
     \For {$k \in \{1, \dots, n\}$}{
         $(\mathit{success}_k, v_p) \leftarrow \mathrm{simpleMatchAlgorithm}(m_k, t_k, v_p)$\;
         \If {$\mathrm{not}~\mathit{success}_k$}{
@@ -121,35 +121,39 @@ Die Summe der linken Seite setzt sich für die folgenden Algorithmen dieses Kapi
 %.........................................................................
 \subsection{Kommutative Muster} \label{subsecACMuster}
 
+\newtheorem{defBindend}[bsp]{Definition}
+\begin{defBindend}~\\
+Die Instanz einer Mustervariable $\mathbf x$ wird als \emph{bindend}  bezeichnet, wenn sie in einer Tiefensuche durch das gesamte Muster als erste Instanz abgelaufen wird. Da Algorithmus \ref{simpleMatchAlgorithm} das Muster in einer Tiefensuche abläuft, ist Zeile \ref{simpleBindend} damit genau dann wahr, wenn $p$ bindend ist\footnote{Der Begriff \emph{bindend} ist so zu verstehen, dass $\mathbf x$ nach Ablauf der ersten Instanz in Algorithmus \ref{simpleMatchAlgorithm} einen festen Wert $v_p~\mathbf x$ hat, also für den spätere Teile des Musters an diesen Wert gebunden ist.}.
+\end{defBindend}
 
 Abweichend von bisherigen Algorithmen wird von hier an in der Notation nicht mehr jede in echt notwendige Information explizit übergeben. $v_p$ ist nach wie vor sowohl Teil der Parameter als auch Teil des Rückgabewertes. Datenstrukturen, die die Reihenfolge der Parameter einer kommutativen Funktionsanwendung in einem Muster zwischenspeichern werden hier allerdings absichtlich offen gehalten, um die Logik in den Vordergrund zu heben. Klar ist allerdings, dass diese in Realität parrallel zu $v_p$ gemanaged werden müssen.
  
 \begin{algorithm}
 \DontPrintSemicolon
-\caption{$\mathrm{FindCommutativeMatch} \colon M \times T \rightarrow \mathit{Bool}$}\label{FindCommutativeMatch}
+\caption{$\mathrm{findCommutativeMatch} \colon M \times T \rightarrow \mathit{Bool}$}\label{findCommutativeMatch}
 \KwIn {$p \in M$, $t \in T$}
 
-\If {$p \in X$ \textbf{and} $v_p~p = \bot$}{
-    $(v_p~p) \leftarrow t$\;
+\If {$p \in X$ \KwAnd $p$ bindend}{
+    merke: $v_p~p = t$\;
     \Return {$\mathrm{true}$}
 }
-\ElseIf {$p \in X$ \textbf{and} $v_p~p \neq \bot$}{
+\ElseIf {$p \in X$ \KwAnd $p$ nicht bindend}{
     \Return {$v_p~p = t$}
 }
 \ElseIf {$p \in C \setminus X$} {
     \Return {$p = t$}
 }
-\ElseIf {$p = (f, \elems p 1 m)$ \textbf{and} $t = (f, \elems t 1 n)$}{
+\ElseIf {$p = (f, \elems p 1 m)$ \KwAnd $t = (f, \elems t 1 n)$}{
     \If {$u~f$ kommutativ} {
-        \Return {$\mathrm{FindPermutation}(p, t, 1, 1)$}
+        \Return {$\mathrm{findPermutation}(p, t, 1, 1)$}
     }
     \ElseIf {$\elems t 1 n$ enthalten Multi-Matchvariablen} {
-        \Return {$\mathrm{FindDilation}(p, t, 1, 1)$}
+        \Return {$\mathrm{findDilation}(p, t, 1, 1)$}
     }
     \ElseIf {$m = n$} {
         \For {$i \in \{1, \dots, n\}$} {
-            \If {$\mathrm{not}~\mathrm{FindCommutativeMatch}(p_i, t_i)$} { 
-                \Return {$\mathrm{TrackBack}(p, t, i)$}                
+            \If {$\mathrm{not}~\mathrm{findCommutativeMatch}(p_i, t_i)$} { 
+                \Return {$\mathrm{trackBack}(p, t, i)$}                
             }
         }
         \Return {$\mathrm{true}$}  
@@ -160,7 +164,7 @@ Abweichend von bisherigen Algorithmen wird von hier an in der Notation nicht meh
 
 \begin{algorithm}
 \DontPrintSemicolon
-\caption{$\mathrm{FindPermutation} \colon M \times T \times \mathbb N \times \mathbb N \rightarrow \mathit{Bool}$}\label{FindPermutation}
+\caption{$\mathrm{findPermutation} \colon M \times T \times \mathbb N \times \mathbb N \rightarrow \mathit{Bool}$}\label{findPermutation}
 \KwIn {$p = (f, \elems p 1 m) \in M$, $t = (f, \elems t 1 n) \in T$,\\
  $i \in \{1, \dots, m\}$, $k \in \{1, \dots, n\}$}
  \If {$m > n$} {
@@ -169,7 +173,7 @@ Abweichend von bisherigen Algorithmen wird von hier an in der Notation nicht meh
  \While {$i < m$} {\label{PermutationHauptschleifenbeginn}
     \While {$k < n$} {
         \If {$t_k$ ist mit keinem Parameter von $p$ gematcht} {
-            \If {$\mathrm{FindCommutativeMatch}(p_i, t_k)$} {
+            \If {$\mathrm{findCommutativeMatch}(p_i, t_k)$} {
                 merke: $p_i$ ist mit $t_k$ gematcht\; 
                 $i \leftarrow i + 1$\;
                 $k \leftarrow 1$\; \label{PermutationKDummEins}
@@ -182,7 +186,7 @@ Abweichend von bisherigen Algorithmen wird von hier an in der Notation nicht meh
         \Return {$\mathrm{false}$}
     }
     \Let {$k'$ aus \glqq $p_{i-1}$ ist mit $t_{k'}$ gematcht\grqq{}}\;
-    \If {$\mathrm{Rematch}(p_{i-1}, t_{k'})$} {
+    \If {$\mathrm{rematch}(p_{i-1}, t_{k'})$} {
         $k \leftarrow 1$\; \label{PermutationKDummZwei}
     }    
     \Else {
@@ -191,18 +195,18 @@ Abweichend von bisherigen Algorithmen wird von hier an in der Notation nicht meh
         $k \leftarrow k' + 1$\;
     }
  }
- \Return {$p$ enthält eine Multi-Matchvariable \textbf{or} alle $t_k$ wurden gematcht}
+ \Return {$p$ enthält eine Multi-Matchvariable \KwOr alle $t_k$ wurden gematcht}
 \end{algorithm}
 
 \begin{algorithm}
 \DontPrintSemicolon
-\caption{$\mathrm{FindDilation} \colon M \times T \times \mathbb N \times \mathbb N \rightarrow \mathit{Bool}$}\label{FindDilation}
+\caption{$\mathrm{findDilation} \colon M \times T \times \mathbb N \times \mathbb N \rightarrow \mathit{Bool}$}\label{findDilation}
 \KwIn {$p = (f, \elems p 1 m) \in M$, $t = (f, \elems t 1 n) \in T$, $i \in \{1, \dots, m\}$, $k \in \{1, \dots, n\}$}
 \end{algorithm}
 
 \newtheorem{lemKomplexitaetKomm}[bsp]{Lemma}
 \begin{lemKomplexitaetKomm}\label{lemKomplexitaetKomm}~\\
-Die Laufzeitkomplexität von Algorithmus \ref{FindCommutativeMatch} ist \BFred{TODO}
+Die Laufzeitkomplexität von Algorithmus \ref{findCommutativeMatch} ist \BFred{TODO}
 \end{lemKomplexitaetKomm}
 
 \newtheorem{bewKomplexitaetKomm}[bsp]{Beweis}
