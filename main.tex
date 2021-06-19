@@ -17,7 +17,8 @@
 \numberwithin{figure}{section} %label nr. beinhaltet section
 
 \usepackage{qtree}
-\usepackage[linesnumbered, german, ruled, vlined]{algorithm2e}
+ %option linesnumbered schlägt sich mit goto labeln
+\usepackage[german, ruled, vlined]{algorithm2e} 
 
 \usepackage[backend=biber, style=alphabetic]{biblatex}
 \addbibresource{quellen.bib}
@@ -61,6 +62,8 @@
 \SetKwIF{If}{ElseIf}{Else}{if}{ }{else if}{else}{}
 \SetKwFor{For}{for}{}{}
 \SetKwFor{While}{while}{}{}
+\SetKwFor{Loop}{loop}{}{}
+\SetKwRepeat{DoWhile}{do}{while}
 \SetKwSwitch{Switch}{Case}{Other}{switch}{}{case}{otherwise}{endcase}{endsw}
 \SetKw{Goto}{goto}
 \SetKw{Let}{let}
