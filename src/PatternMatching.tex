@@ -128,6 +128,11 @@ Die Instanz einer Mustervariable $\mathbf x$ wird als \emph{bindend}  bezeichnet
 
 Abweichend von bisherigen Algorithmen wird von hier an in der Notation nicht mehr jede in echt notwendige Information explizit übergeben. Als Beispiel muss $v_p$ nach wie vor von jedem Funktionsaufruf aktualisiert werden, ist aber im Pseudocode der Algorithmen \ref{findMatch}, \ref{findPermutation}, \ref{findDilation}, etc. nicht länger explizit in Parameterliste oder als Rückgabewert erwähnt.
 Anstelle der konkreten Zuweisung eines Wertes zu einem Namen, dargestellt duch den Pfeil nach links \glqq $\leftarrow$\grqq{}, wird die Veränderung einer solchen nich explizit erwähnten Datenstruktur nur mit dem Wort \glqq merke\grqq{} dargestellt.
+
+
+\subsubsection{findMatch und rematch}
+Die Algorithmen \ref{findMatch}, \ref{rematch}, \ref{findPermutation}, \ref{findDilation} und \ref{findIdentic} bilden zusammen die Grundlage des finalen Matchalgorithmus dieser Arbeit. Der Startpunkt einer Matchsuche ist der Aufruf von $\mathrm{findMatch}$. Hier wird allerdings im Kontrast zu $\mathrm{simpleMatchAlgorithm}$ nicht direkt ein Rekursionsaufruf durchgeführt, sondern abhändig von der Form der vorgefundenen Funktionsanwendung eine entsprechende Strategie für die Suche eines Matches gewählt. Die Algorithmen, die die entsprechenden Strategien implementieren sind $\mathrm{findPermutation}$, $\mathrm{findDilation}$ und $\mathrm{findIdentic}$. Alle hier vorgestellten Strategien nutzen dabei Backtracking um die verschiedenen Möglichkeiten zu testen. Sollte dabei die Notwendigkeit auftreten, für einen bereits gematchten Teil des Musters ein neues Match mit dem selben Literal zu finden, wird in allen drei Strategien $\mathrm{rematch}$ aufgerufen. Dieser Algorithmus ist ähnlich zu $\mathrm{findMatch}$, erwartet dementsprechend allerdings, dass das übergebende Muster $p$ bereits mit dem übergebenen Literal $t$ gematcht ist. Die eigentliche Arbeit wird bei $\mathrm{rematch}$ allerdings erneut an die Suchstrategien abgegeben. Da der Startpunkt dieser allerdings davon abhängig ist, ob bereits eine bestimmte Zuordnung der Parameter als erfolgreich matchend festgehalten ist oder nicht, wird diese Information als letztes Argument jeder Strategie mit übergeben.
+
  
 \begin{algorithm}
 \DontPrintSemicolon
@@ -152,7 +157,7 @@ Anstelle der konkreten Zuweisung eines Wertes zu einem Namen, dargestellt duch d
         \Return {$\mathrm{findDilation}(p, t, \mathrm{false})$}
     }
     \ElseIf {$m = n$} {
-        \Return {$\mathrm{findBacktracking}(p, t, \mathrm{false})$}
+        \Return {$\mathrm{findIdentic}(p, t, \mathrm{false})$}
     }
 }
 \Return{$\mathrm{false}$}  
@@ -170,18 +175,55 @@ Anstelle der konkreten Zuweisung eines Wertes zu einem Namen, dargestellt duch d
         \Return {$\mathrm{findDilation}(p, t, \mathrm{true})$}
     }
     \ElseIf {$m = n$} {
-        \Return {$\mathrm{findBacktracking}(p, t, \mathrm{true})$}        
+        \Return {$\mathrm{findIdentic}(p, t, \mathrm{true})$}        
     }
 }        
 \Return {$\mathrm{false}$}  
 \end{algorithm}
 
+Im Grundaufbau funktionieren alle Strategien gleich. Die Parameter $\elems p 0 {m-1}$ des Musters $p$ werden in der vorliegenden Reihenfolge mit den Parametern $\elems t 0 {n-1}$ des Literals $t$ gematcht. kann für den aktellen Parameter $p_i$ kein Match mehr gefunden werden, wird probiert die vorhergehenden Parameter $\elems p 0 {i-1}$ neu zu matchen, beginnend mit $p_{i-1}$. Mit welchen Parametern $t_k$ ein Match dabei erlaubt ist, ist nach Strategie unterschiedlich. Am stärksten eingeschränkt ist $\mathrm{findIdentic}$. $p_i$ kann dort nur mit $t_k$ gematcht werden, wenn $k = i$ gilt\footnote{Algorithmus \ref{simpleMatchAlgorithm} hat ausschließlich auf diese Weise nach einem Match gesucht}. Das andere Extrem stellt $\mathrm{findPermutation}$ da. Hier kann jedes $p_i$ mit jedem $t_k$ gematcht werden, vorrausgesetzt $t_k$ ist noch nicht mit einem Parameter aus $\elems p 0 {i-1}$ gematcht. In der Freiheit dazwischen steht $\mathrm{findDilation}$, welche die Reihenfolge der $p_i$ untereinander gleich halten muss, jedoch eine Lücke beliebiger Länge zwischen $p_{i-1}$ und $p_i$ erlaubt, sofern im Muster an dieser Stelle eine Multi-Matchvariable steht\footnote{Wie in Abschnitt \ref{subsecMulti} erörtert, treten diese hier nicht als echte Parameter auf.}.
+
+
+\subsubsection {findIdentic}
+Als Strategie mit den wenigsten Freiheiten ist die Umsetzung von $\mathrm{findIdentic}$ die kürzeste. Die Laufvariable $i$ läuft parrallel über Muster und Literal. Wenn der Aufruf aus $\mathrm{findMatch}$ erfolgt, wird mit $i = 0$ gestartet und in Abschnitt \texttt{\ref{backtrackMatchMuster}} versucht für alle $i$ bis $n-1$ $p_i$ mit $t_i$ zu matchen. Sollte das  für ein $i$ fehlschlagen, besteht die Hoffnung, dass einer der Parameter $p_j \in \{\elems p 0 {i-1}\}$ anders als bisher mit $t_j$ gematcht werden kann, wodurch das Match von $p_i$ mit $t_i$ ermöglicht wird. Gefunden wird $p_j$ in Abschnitt \texttt{\ref{backtrackRematchMuster}}. 
+Soll das gesamte Muster neu gematcht werden, startet $\mathrm{findIdentic}$ bei einem Aufruf durch $\mathrm{rematch}$ deswegen bei \texttt{\ref{backtrackRematchMuster}} und $i = n$.
+
+
+\begin{algorithm}
+\DontPrintSemicolon
+\caption{$\mathrm{findIdentic} \colon M \times T \times \mathit{Bool} \rightarrow \mathit{Bool}$}\label{findIdentic}
+\KwIn {$p = (f, \elems p 0 {n-1}) \in M$, $t = (f, \elems t 0 {n-1}) \in T$, $\mathit{starteGematcht} \in \mathit{Bool}$}
+\Let {$i \leftarrow 0$}\;
+\If {$\mathit{starteGematcht}$} {
+    $i \leftarrow n$\;
+    \Goto {\ref{backtrackRematchMuster}}\;
+}
+\Loop {} {
+    \nlset{matche $p_i$} \label{backtrackMatchMuster}
+    \While {$\mathrm{findMatch}(p_i, t_i)$} {
+        $i \leftarrow i + 1$\;
+        \lIf {i = n} {\Return {$\mathrm{true}$}}    
+    }
+    \nlset{zurück} \label{backtrackRematchMuster}
+    \DoWhile {not $\mathrm{rematch}(p_i, t_i)$} { 
+        \lIf {i = 0} {\Return {$\mathrm{false}$}}
+        $i \leftarrow i - 1$\;
+    }    
+    $i \leftarrow i + 1$\;
+}
+\end{algorithm}
+
+
+
+\subsubsection {findPermutation}
+Algorithmus \ref{findPermutation} 
+
 \begin{algorithm}
 \DontPrintSemicolon
 \caption{$\mathrm{findPermutation} \colon M \times T \times \mathit{Bool} \rightarrow \mathit{Bool}$}\label{findPermutation}
-\KwIn {$p = (f, \elems p 0 {m-1}) \in M$, $t = (f, \elems t 0 {n-1}) \in T$, $\mathit{findRematch} \in \mathit{Bool}$}
+\KwIn {$p = (f, \elems p 0 {m-1}) \in M$, $t = (f, \elems t 0 {n-1}) \in T$, $\mathit{starteGematcht} \in \mathit{Bool}$}
 \Let {$i \leftarrow 0$, $k \leftarrow 0$}\;
-\If {$\mathit{findRematch}$} {
+\If {$\mathit{starteGematcht}$} {
     $i \leftarrow m$\;
     \Goto {\ref{permutationRematchMuster}}\;
 }
@@ -215,13 +257,14 @@ Anstelle der konkreten Zuweisung eines Wertes zu einem Namen, dargestellt duch d
 \end{algorithm}
 
 
+\subsubsection {findDilation}
 
 
 \begin{algorithm}
 \DontPrintSemicolon
 \caption{$\mathrm{findDilation} \colon M \times T \times \mathit{Bool} \rightarrow \mathit{Bool}$}\label{findDilation}
 \KwIn {$p = (f, \elems p 0 {m-1}) \in M$, $t = (f, \elems t 0 {n-1}) \in T$}
-\If {$\mathit{findRematch}$} {
+\If {$\mathit{starteGematcht}$} {
     $i \leftarrow m$\;
     \Goto {\ref{dilationRematchLastNeedle}}\;
 }
@@ -264,29 +307,6 @@ $k \leftarrow k + 1$\;
 \end{algorithm}
 
 
-
-
-\begin{algorithm}
-\DontPrintSemicolon
-\caption{$\mathrm{findBacktracking} \colon M \times T \times \mathit{Bool} \rightarrow \mathit{Bool}$}\label{findBacktracking}
-\KwIn {$p = (f, \elems p 0 {n-1}) \in M$, $t = (f, \elems t 0 {n-1}) \in T$, $\mathit{findRematch} \in \mathit{Bool}$}
-\Let {$i \leftarrow 0$}\;
-\If {$\mathit{findRematch}$} {
-    $i \leftarrow n$\;
-    \Goto {\ref{backtrackRematchMuster}}\;
-}
-\Loop {} {
-    \While {$\mathrm{findMatch}(p_i, t_i)$} {
-        $i \leftarrow i + 1$\;
-        \lIf {i = n} {\Return {$\mathrm{true}$}}    
-    }
-    \nlset{zurück} \DoWhile {not $\mathrm{rematch}(p_i, t_i)$} { \label{backtrackRematchMuster}
-        \lIf {i = 0} {\Return {$\mathrm{false}$}}
-        $i \leftarrow i - 1$\;
-    }    
-    $i \leftarrow i + 1$\;
-}
-\end{algorithm}
 
 \newtheorem{lemKomplexitaetKomm}[bsp]{Lemma}
 \begin{lemKomplexitaetKomm}\label{lemKomplexitaetKomm}~\\
@@ -349,7 +369,7 @@ $$(\texttt{sum}, (\texttt{pow}, \mathbf a, 2), (\texttt{prod}, 2, \mathbf a, \ma
 
 \newtheorem{lemTransitivStark}[bsp]{Lemma}
 \begin{lemTransitivStark}~\\
-Für Muster $p, q, r \in M$ mit $p \prec q \leq r$ folgt $p \prec r$ $(1)$. In die andere Richtung folgt zudem aus $p \leq q \prec r$ dass $p \prec r$ $(2)$.
+$\prec$ und $\preceq$ sind transitiv $(1)$ und für $p, q, r \in M$  gilt $p \prec q \preceq r \implies p \prec r$ sowie $p \preceq q \prec r \implies p \prec r$ $(2)$. 
 \end{lemTransitivStark}
 
 \newtheorem{bewTransitivStark}[bsp]{Beweis}
