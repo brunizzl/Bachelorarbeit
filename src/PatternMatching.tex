@@ -30,27 +30,27 @@ Da eine Mustervariable in dieser Arbeit mehrfach in einem Muster vorkommen darf,
 \caption{$\mathrm{simpleMatchAlgorithm} \colon M \times T \times (X \rightharpoonup T) \rightarrow (\mathit{Bool}, X \rightharpoonup T)$}\label{simpleMatchAlgorithm}
 \KwIn {$p \in M$, $t \in T$, $v_p \colon X \rightharpoonup T$}
 
-\If {$p \in X$ \KwAnd $v_p~p = \bot$}{\label{simpleBindend}
-    $(v_p~p) \leftarrow t$\;
-    \Return {$(\mathrm{true}, v_p)$}
+\If {$p \in X$ \KwAnd $v_p~p = \bot$} {
+	$(v_p~p) \leftarrow t$\;
+	\Return {$(\mathrm{true}, v_p)$}
 }
-\ElseIf {$p \in X$ \KwAnd $v_p~p \neq \bot$}{ \label{simpleNichtBindend}
-    \Return {$(v_p~p = t, v_p)$}
+\ElseIf {$p \in X$ \KwAnd $v_p~p \neq \bot$}{
+	\Return {$(v_p~p = t, v_p)$}
 }
 \ElseIf {$p \in C \setminus X$} {
-    \Return {$(p = t, v_p)$}
+	\Return {$(p = t, v_p)$}
 }
 \ElseIf {$p = (f, \elems p 0 {m-1})$ \KwAnd $t = (f, \elems t 0 {n-1})$}{
-    \For {$k \in \{0, \dots, {n-1}\}$}{
-        $(\mathit{success}_k, v_p) \leftarrow \mathrm{simpleMatchAlgorithm}(m_k, t_k, v_p)$\;
-        \If {$\mathrm{not}~\mathit{success}_k$}{
-            \Return {$(\mathrm{false}, v_p)$}
-        }
-    }
-    \Return {$(\mathrm{true}, v_p)$}  
+	\For {$k \in \{0, \dots, {n-1}\}$}{
+		$(\mathit{success}_k, v_p) \leftarrow \mathrm{simpleMatchAlgorithm}(m_k, t_k, v_p)$\;
+		\If {$\mathrm{not}~\mathit{success}_k$}{
+			\Return {$(\mathrm{false}, v_p)$}
+		}
+	}
+	\Return {$(\mathrm{true}, v_p)$}  
 }
 \Else {
-    \Return {$(\mathrm{false}, v_p)$}  
+	\Return {$(\mathrm{false}, v_p)$}  
 }
 \end{algorithm}
 
@@ -69,6 +69,11 @@ Gibt es kein Match wird das Literal so lange indentisch zum anderen Fall abgelau
 \hfill $\square$\\
 \end{bewNatchLinear}
 
+
+\newtheorem{defBindend}[bsp]{Definition}
+\begin{defBindend}~\\
+Die Instanz einer Mustervariable $\mathbf x$ wird als \emph{bindend}  bezeichnet, wenn sie in einer Tiefensuche durch das gesamte Muster als erste Instanz abgelaufen wird. Da Algorithmus \ref{simpleMatchAlgorithm} das Muster in einer Tiefensuche abläuft, ist die Bedingung $p \in X$ \KwAnd $v_p~p = \bot$ in der ersten Zeile damit genau dann wahr, wenn $p$ bindend ist\footnote{Der Begriff \emph{bindend} ist so zu verstehen, dass $\mathbf x$ nach Ablauf der ersten Instanz in Algorithmus \ref{simpleMatchAlgorithm} einen festen Wert $v_p~\mathbf x$ hat, also für den spätere Teile des Musters an diesen Wert gebunden ist.}. Weitere Instanzen von $\mathbf x$ im selben Muster werden als \emph{gebunden} bezeichnet.
+\end{defBindend}
 
 
 %.........................................................................
@@ -101,13 +106,13 @@ Die in dieser Arbeit gewählte Lösung zur Beschreibung von beliebig vielen Para
 
 Formal wird die Multi-Mustervariable damit nicht als echtes neues Symbol in die Menge der Muster aufgenommen, sondern ist lediglich eine vereinfachende Schreibweise, die wie auch vorher immer für eine beliebige Anzahl an Teiltermen steht, in diesem Fall Mustervariablen. Ein Muster mit einer Multi-Mustervariable $\mathbf{xs...}$ repräsentiert also formal unendlich viele konkrete Muster mit konkreten Mustervariablen $\mathbf{x_i}$:
 \begin{equation*}
-    \begin{split}
-    		(f, \mathbf{ts...}) = \{&(f), \\
-    		&(f, \mathbf{x_1}),\\
-    		&(f, \mathbf{x_1}, \mathbf{x_2}), \\
-    		&(f, \mathbf{x_1}, \mathbf{x_2}, \mathbf{x_3}), \\
-    		&\dots \}    		
-    \end{split}
+	\begin{split}
+			(f, \mathbf{ts...}) = \{&(f), \\
+			&(f, \mathbf{x_1}),\\
+			&(f, \mathbf{x_1}, \mathbf{x_2}), \\
+			&(f, \mathbf{x_1}, \mathbf{x_2}, \mathbf{x_3}), \\
+			&\dots \}    		
+	\end{split}
 \end{equation*}
 Für die folgenden Algorithmen dieses Kapitels, sowie der echten Umsetzung, ist es allerdings nicht praktikabel diese Definition anzuwenden. Mit der Restriktion, dass jede Multi-Matchvariable auf der linken Seite einer Ersetzungsregel höchstens ein Mal vorkommen darf, ist eine sehr einfache Verwaltung möglich. Für Funktionsanwendungen kommutativer Funktionssymbole in einem Muster muss lediglich zwischen \emph{enthält eine Multi-Matchvariable} und \emph{enthält keine Multi-Matchvariable} unterschieden werden. Multi-Matchvariablen in Funktionsanwendungen nicht kommutativer Funktionssymbole haben allerdings eine eindeutige Position. Im folgenden werden aber auch hier keine weitern Parameter für Multi-Matchvariablen hinzugefügt. Alternativ wird für jeden tatsächlichen Term in den Parametern einer solchen Funktionsanwendung festgehalten, ob er Nachfolger einer Multi-Matchvariable ist und weiter, ob an dem letzten Parameter noch eine Multi-Matchvariable anschließt. 
 Die Ersetzungsregel für die erste Binomischen Formel anwendbar auf Summen beliebiger Länge wird wiefolgt geschrieben.
@@ -121,44 +126,36 @@ Die Summe der linken Seite setzt sich für die folgenden Algorithmen dieses Kapi
 %.........................................................................
 \subsection{Kommutative Muster} \label{subsecACMuster}
 
-\newtheorem{defBindend}[bsp]{Definition}
-\begin{defBindend}~\\
-Die Instanz einer Mustervariable $\mathbf x$ wird als \emph{bindend}  bezeichnet, wenn sie in einer Tiefensuche durch das gesamte Muster als erste Instanz abgelaufen wird. Da Algorithmus \ref{simpleMatchAlgorithm} das Muster in einer Tiefensuche abläuft, ist Zeile \ref{simpleBindend} damit genau dann wahr, wenn $p$ bindend ist\footnote{Der Begriff \emph{bindend} ist so zu verstehen, dass $\mathbf x$ nach Ablauf der ersten Instanz in Algorithmus \ref{simpleMatchAlgorithm} einen festen Wert $v_p~\mathbf x$ hat, also für den spätere Teile des Musters an diesen Wert gebunden ist.}. Weitere Instanzen von $\mathbf x$ im selben Muster werden als \emph{gebunden} bezeichnet.
-\end{defBindend}
-
-Abweichend von bisherigen Algorithmen wird von hier an in der Notation nicht mehr jede in echt notwendige Information explizit übergeben. Als Beispiel muss $v_p$ nach wie vor von jedem Funktionsaufruf aktualisiert werden, ist aber im Pseudocode der Algorithmen \ref{findMatch}, \ref{findPermutation}, \ref{findDilation}, etc. nicht länger explizit in Parameterliste oder als Rückgabewert erwähnt.
-Anstelle der konkreten Zuweisung eines Wertes zu einem Namen, dargestellt duch den Pfeil nach links \glqq $\leftarrow$\grqq{}, wird die Veränderung einer solchen nich explizit erwähnten Datenstruktur nur mit dem Wort \glqq merke\grqq{} dargestellt.
+Die Algorithmen \ref{findMatch}, \ref{rematch}, \ref{findPermutation}, \ref{findDilation} und \ref{findIdentic} bilden zusammen die Grundlage des finalen Matchalgorithmus dieser Arbeit. Der Startpunkt einer Matchsuche ist der Aufruf von $\mathrm{findMatch}$. Hier wird allerdings im Kontrast zu $\mathrm{simpleMatchAlgorithm}$ nicht direkt ein Rekursionsaufruf durchgeführt, sondern abhändig von der Form der vorgefundenen Funktionsanwendung eine entsprechende Strategie für die Suche eines Matches gewählt. Die Algorithmen, die die entsprechenden Strategien implementieren sind $\mathrm{findPermutation}$, $\mathrm{findDilation}$ und $\mathrm{findIdentic}$. Alle hier vorgestellten Strategien nutzen dabei Backtracking um die verschiedenen Möglichkeiten zu testen. Sollte dabei die Notwendigkeit auftreten, für einen bereits gematchten Teil des Musters ein neues Match mit dem selben Literal zu finden, wird in allen drei Strategien $\mathrm{rematch}$ aufgerufen. Dieser Algorithmus ist ähnlich zu $\mathrm{findMatch}$, erwartet dementsprechend allerdings, dass das übergebende Muster $p$ bereits mit dem übergebenen Literal $t$ gematcht ist. Die eigentliche Arbeit wird bei $\mathrm{rematch}$ allerdings erneut an die Suchstrategien abgegeben. Da der Startpunkt dort allerdings davon abhängig ist, ob bereits eine bestimmte Zuordnung der Parameter als erfolgreich matchend festgehalten ist oder nicht, wird diese Information als letztes Argument jeder Strategie mit übergeben.
 
 
-\subsubsection{findMatch und rematch}
-Die Algorithmen \ref{findMatch}, \ref{rematch}, \ref{findPermutation}, \ref{findDilation} und \ref{findIdentic} bilden zusammen die Grundlage des finalen Matchalgorithmus dieser Arbeit. Der Startpunkt einer Matchsuche ist der Aufruf von $\mathrm{findMatch}$. Hier wird allerdings im Kontrast zu $\mathrm{simpleMatchAlgorithm}$ nicht direkt ein Rekursionsaufruf durchgeführt, sondern abhändig von der Form der vorgefundenen Funktionsanwendung eine entsprechende Strategie für die Suche eines Matches gewählt. Die Algorithmen, die die entsprechenden Strategien implementieren sind $\mathrm{findPermutation}$, $\mathrm{findDilation}$ und $\mathrm{findIdentic}$. Alle hier vorgestellten Strategien nutzen dabei Backtracking um die verschiedenen Möglichkeiten zu testen. Sollte dabei die Notwendigkeit auftreten, für einen bereits gematchten Teil des Musters ein neues Match mit dem selben Literal zu finden, wird in allen drei Strategien $\mathrm{rematch}$ aufgerufen. Dieser Algorithmus ist ähnlich zu $\mathrm{findMatch}$, erwartet dementsprechend allerdings, dass das übergebende Muster $p$ bereits mit dem übergebenen Literal $t$ gematcht ist. Die eigentliche Arbeit wird bei $\mathrm{rematch}$ allerdings erneut an die Suchstrategien abgegeben. Da der Startpunkt dieser allerdings davon abhängig ist, ob bereits eine bestimmte Zuordnung der Parameter als erfolgreich matchend festgehalten ist oder nicht, wird diese Information als letztes Argument jeder Strategie mit übergeben.
+Im Grundaufbau funktionieren alle Strategien gleich. Die Parameter $\elems p 0 {m-1}$ des Musters $p$ werden in der vorliegenden Reihenfolge mit den Parametern $\elems t 0 {n-1}$ des Literals $t$ gematcht. kann für den aktellen Parameter $p_i$ kein Match mehr gefunden werden, wird probiert die vorhergehenden Parameter $\elems p 0 {i-1}$ neu zu matchen, beginnend mit $p_{i-1}$. Mit welchen Parametern $t_k$ ein Match dabei erlaubt ist, ist nach Strategie unterschiedlich. Am stärksten eingeschränkt ist $\mathrm{findIdentic}$. $p_i$ kann dort nur mit $t_k$ gematcht werden, wenn $k = i$ gilt\footnote{Algorithmus \ref{simpleMatchAlgorithm} hat ausschließlich auf diese Weise nach einem Match gesucht}. Das andere Extrem stellt $\mathrm{findPermutation}$ da. Hier kann jedes $p_i$ mit jedem $t_k$ gematcht werden, vorrausgesetzt $t_k$ ist noch nicht mit einem Parameter aus $\elems p 0 {i-1}$ gematcht. In der Freiheit dazwischen steht $\mathrm{findDilation}$, welche die Reihenfolge der $p_i$ untereinander gleich halten muss, jedoch eine Lücke beliebiger Länge zwischen $p_{i-1}$ und $p_i$ erlaubt, sofern im Muster an dieser Stelle eine Multi-Matchvariable steht\footnote{Wie in Abschnitt \ref{subsecMulti} erörtert, treten diese hier nicht als echte Parameter auf.}.
 
- 
 \begin{algorithm}
 \DontPrintSemicolon
 \caption{$\mathrm{findMatch} \colon M \times T \rightarrow \mathit{Bool}$}\label{findMatch}
 \KwIn {$p \in M$, $t \in T$}
 
 \If {$p \in X$ \KwAnd $p$ bindend}{
-    merke: $v_p~p = t$\;
-    \Return {$\mathrm{true}$}
+	merke: $v_p~p = t$\;
+	\Return {$\mathrm{true}$}
 }
 \ElseIf {$p \in X$ \KwAnd $p$ gebunden}{
-    \Return {$v_p~p = t$}
+	\Return {$v_p~p = t$}
 }
 \ElseIf {$p \in C \setminus X$} {
-    \Return {$p = t$}
+	\Return {$p = t$}
 }
 \ElseIf {$p = (f, \elems p 0 {m-1})$ \KwAnd $t = (f, \elems t 0 {n-1})$}{
-    \If {$u~f$ kommutativ} {
-        \Return {$\mathrm{findPermutation}(p, t, \mathrm{false})$}
-    }
-    \ElseIf {$\elems t 1 n$ enthalten Multi-Matchvariablen} {
-        \Return {$\mathrm{findDilation}(p, t, \mathrm{false})$}
-    }
-    \ElseIf {$m = n$} {
-        \Return {$\mathrm{findIdentic}(p, t, \mathrm{false})$}
-    }
+	\If {$u~f$ kommutativ} {
+		\Return {$\mathrm{findPermutation}(p, t, \mathrm{false})$}
+	}
+	\ElseIf {$\elems t 1 n$ enthalten Multi-Matchvariablen} {
+		\Return {$\mathrm{findDilation}(p, t, \mathrm{false})$}
+	}
+	\ElseIf {$m = n$} {
+		\Return {$\mathrm{findIdentic}(p, t, \mathrm{false})$}
+	}
 }
 \Return{$\mathrm{false}$}  
 \end{algorithm}
@@ -168,163 +165,194 @@ Die Algorithmen \ref{findMatch}, \ref{rematch}, \ref{findPermutation}, \ref{find
 \caption{$\mathrm{rematch} \colon M \times T \rightarrow \mathit{Bool}$}\label{rematch}
 \KwIn {$p \in M$, $t \in T$}
 \If {$p = (f, \elems p 0 {m-1})$ \KwAnd $t = (f, \elems t 0 {n-1})$} {
-    \If {$u~f$ kommutativ} {
-        \Return {$\mathrm{findPermutation}(p, t, \mathrm{true})$}
-    }
-    \ElseIf {$\elems t 1 n$ enthalten Multi-Matchvariablen} {
-        \Return {$\mathrm{findDilation}(p, t, \mathrm{true})$}
-    }
-    \ElseIf {$m = n$} {
-        \Return {$\mathrm{findIdentic}(p, t, \mathrm{true})$}        
-    }
+	\If {$u~f$ kommutativ} {
+		\Return {$\mathrm{findPermutation}(p, t, \mathrm{true})$}
+	}
+	\ElseIf {$\elems t 1 n$ enthalten Multi-Matchvariablen} {
+		\Return {$\mathrm{findDilation}(p, t, \mathrm{true})$}
+	}
+	\ElseIf {$m = n$} {
+		\Return {$\mathrm{findIdentic}(p, t, \mathrm{true})$}        
+	}
 }        
 \Return {$\mathrm{false}$}  
 \end{algorithm}
 
-Im Grundaufbau funktionieren alle Strategien gleich. Die Parameter $\elems p 0 {m-1}$ des Musters $p$ werden in der vorliegenden Reihenfolge mit den Parametern $\elems t 0 {n-1}$ des Literals $t$ gematcht. kann für den aktellen Parameter $p_i$ kein Match mehr gefunden werden, wird probiert die vorhergehenden Parameter $\elems p 0 {i-1}$ neu zu matchen, beginnend mit $p_{i-1}$. Mit welchen Parametern $t_k$ ein Match dabei erlaubt ist, ist nach Strategie unterschiedlich. Am stärksten eingeschränkt ist $\mathrm{findIdentic}$. $p_i$ kann dort nur mit $t_k$ gematcht werden, wenn $k = i$ gilt\footnote{Algorithmus \ref{simpleMatchAlgorithm} hat ausschließlich auf diese Weise nach einem Match gesucht}. Das andere Extrem stellt $\mathrm{findPermutation}$ da. Hier kann jedes $p_i$ mit jedem $t_k$ gematcht werden, vorrausgesetzt $t_k$ ist noch nicht mit einem Parameter aus $\elems p 0 {i-1}$ gematcht. In der Freiheit dazwischen steht $\mathrm{findDilation}$, welche die Reihenfolge der $p_i$ untereinander gleich halten muss, jedoch eine Lücke beliebiger Länge zwischen $p_{i-1}$ und $p_i$ erlaubt, sofern im Muster an dieser Stelle eine Multi-Matchvariable steht\footnote{Wie in Abschnitt \ref{subsecMulti} erörtert, treten diese hier nicht als echte Parameter auf.}.
+Abweichend von bisherigen Algorithmen wird von hier an im Pseudocode nicht mehr jede in echt notwendige Information explizit übergeben. Als Beispiel muss $v_p$ nach wie vor von jedem Funktionsaufruf aktualisiert werden, ist aber im Pseudocode der Algorithmen \ref{findMatch}, \ref{findPermutation}, \ref{findDilation}, etc. nicht länger explizit in Parameterliste oder als Rückgabewert erwähnt.
+Anstelle der konkreten Zuweisung eines Wertes zu einem Namen, dargestellt duch den Pfeil nach links \glqq $\leftarrow$\grqq{}, wird die Veränderung einer solchen nicht explizit erwähnten Datenstruktur nur mit dem Wort \glqq merke\grqq{} dargestellt.
+
+\subsubsection{findMatch und rematch}
+Algorithmus \ref{findMatch} ist in der Struktur ähnlich zu $\mathrm{simpleMatchAlgorithm}$. Neben dem Aulagern der Rekursionsaufrufe in die verschiedenen Matchstrategien, besteht ein Unterschied im Umgang mit Mustervariablen. Für $\mathrm{simpleMatchAlgorithm}$ wird getestet, ob er Funktionswert $v_p~\mathbf x$ für eine Mustervariable $\mathbf x$ bereits definiert ist, wenn $\mathbf x$ angetroffen wird und herausgefunden werden muss ob die Instanz bindend oder gebunden ist. Das reicht für $\mathrm{findMatch}$ nicht, da dieser Algorithmus auch funktionieren muss, wenn die verschiedenen Matchstrategien backtracken, also für eine bereits besuchte Mustervariable ein neues Match suchen.
+$\mathrm{rematch}$ ist fast identisch zur unteren Hälfte von $\mathrm{findMatch}$, ruft die verschiedenen Matchstrategien allerdings mit $\mathrm{true}$ als letzen Parameter auf, was bedeutet, dass direkt zum Backtracking gesprungen wird.
+
 
 
 \subsubsection {findIdentic}
-Als Strategie mit den wenigsten Freiheiten ist die Umsetzung von $\mathrm{findIdentic}$ die kürzeste. Die Laufvariable $i$ läuft parrallel über Muster und Literal. Wenn der Aufruf aus $\mathrm{findMatch}$ erfolgt, wird mit $i = 0$ gestartet und in Abschnitt \texttt{\ref{backtrackMatchMuster}} versucht für alle $i$ bis $n-1$ $p_i$ mit $t_i$ zu matchen. Sollte das  für ein $i$ fehlschlagen, besteht die Hoffnung, dass einer der Parameter $p_j \in \{\elems p 0 {i-1}\}$ anders als bisher mit $t_j$ gematcht werden kann, wodurch das Match von $p_i$ mit $t_i$ ermöglicht wird. Gefunden wird $p_j$ in Abschnitt \texttt{\ref{backtrackRematchMuster}}. 
-Soll das gesamte Muster neu gematcht werden, startet $\mathrm{findIdentic}$ bei einem Aufruf durch $\mathrm{rematch}$ deswegen bei \texttt{\ref{backtrackRematchMuster}} und $i = n$.
-
-
 \begin{algorithm}
 \DontPrintSemicolon
 \caption{$\mathrm{findIdentic} \colon M \times T \times \mathit{Bool} \rightarrow \mathit{Bool}$}\label{findIdentic}
 \KwIn {$p = (f, \elems p 0 {n-1}) \in M$, $t = (f, \elems t 0 {n-1}) \in T$, $\mathit{starteGematcht} \in \mathit{Bool}$}
 \Let {$i \leftarrow 0$}\;
 \If {$\mathit{starteGematcht}$} {
-    $i \leftarrow n$\;
-    \Goto {\ref{backtrackRematchMuster}}\;
+	$i \leftarrow n$\;
+	\Goto {\ref{backtrackRematchMuster}}\;
 }
 \Loop {} {
-    \nlset{matche $p_i$} \label{backtrackMatchMuster}
-    \While {$\mathrm{findMatch}(p_i, t_i)$} {
-        $i \leftarrow i + 1$\;
-        \lIf {i = n} {\Return {$\mathrm{true}$}}    
-    }
-    \nlset{zurück} \label{backtrackRematchMuster}
-    \DoWhile {not $\mathrm{rematch}(p_i, t_i)$} { 
-        \lIf {i = 0} {\Return {$\mathrm{false}$}}
-        $i \leftarrow i - 1$\;
-    }    
-    $i \leftarrow i + 1$\;
+	\nlset{matche $p_i$} \label{backtrackMatchMuster}
+	\While {$\mathrm{findMatch}(p_i, t_i)$} {
+		$i \leftarrow i + 1$\;
+		\lIf {i = n} {\Return {$\mathrm{true}$}}    
+	}
+	\nlset{zurück} \label{backtrackRematchMuster}
+	\DoWhile {not $\mathrm{rematch}(p_i, t_i)$} { 
+		\lIf {i = 0} {\Return {$\mathrm{false}$}}
+		$i \leftarrow i - 1$\;
+	}    
+	$i \leftarrow i + 1$\;
 }
 \end{algorithm}
 
 
+Als Strategie mit den wenigsten Freiheiten ist die Umsetzung von $\mathrm{findIdentic}$ die kürzeste. Die Laufvariable $i$ läuft parrallel über Muster und Literal. Wenn der Aufruf aus $\mathrm{findMatch}$ erfolgt, wird mit $i = 0$ gestartet und in Abschnitt \texttt{\ref{backtrackMatchMuster}} versucht für alle $i$ bis $n-1$ $p_i$ mit $t_i$ zu matchen. Sollte das  für ein $i$ fehlschlagen, besteht die Hoffnung, dass einer der Parameter $p_j \in \{\elems p 0 {i-1}\}$ anders als bisher mit $t_j$ gematcht werden kann, wodurch dann das Match von $p_i$ mit $t_i$ ermöglicht wird. Gefunden wird $p_j$ in Abschnitt \texttt{\ref{backtrackRematchMuster}}. 
+Soll das gesamte Muster neu gematcht werden, startet $\mathrm{findIdentic}$ bei einem Aufruf durch $\mathrm{rematch}$ deswegen bei \texttt{\ref{backtrackRematchMuster}} und $i = n$.
+
+
+
 
 \subsubsection {findPermutation}
-Algorithmus \ref{findPermutation} 
-
 \begin{algorithm}
 \DontPrintSemicolon
 \caption{$\mathrm{findPermutation} \colon M \times T \times \mathit{Bool} \rightarrow \mathit{Bool}$}\label{findPermutation}
 \KwIn {$p = (f, \elems p 0 {m-1}) \in M$, $t = (f, \elems t 0 {n-1}) \in T$, $\mathit{starteGematcht} \in \mathit{Bool}$}
 \Let {$i \leftarrow 0$, $k \leftarrow 0$}\;
 \If {$\mathit{starteGematcht}$} {
-    $i \leftarrow m$\;
-    \Goto {\ref{permutationRematchMuster}}\;
+	$i \leftarrow m$\;
+	\Goto {\ref{permutationRematchMuster}}\;
 }
  \If {$m > n$} {
-    \Return {$\mathrm{false}$}
+	\Return {$\mathrm{false}$}
  }
- \nlset{matche $p_i$} \While {$i < m$} {\label{PermutationHauptschleifenbeginn}
-    \While {$k < n$} {
-        \If {$t_k$ ist mit keinem Parameter von $p$ gematcht} {
-            \If {$\mathrm{findMatch}(p_i, t_k)$} {
-                \Goto {\ref{permutationNaechstesMuster}}\;
-            }
-        }
-        $k \leftarrow k + 1$\;
-    }
-    \nlset{zurück} \If {$i = 0$} { \label{permutationRematchMuster}
-        \Return {$\mathrm{false}$}
-    }
-    $i \leftarrow i - 1$\;
-    {$k \leftarrow k'$ aus \glqq $p_{i}$ ist mit $t_{k'}$ gematcht\grqq{}}\;
-    \If {not $\mathrm{rematch}(p_{i}, t_{k})$} {
-        merke: $p_{i}$ ist nicht mehr mit $t_{k}$ gematcht\;
-        $k \leftarrow k + 1$\;
-        \Goto {\ref{PermutationHauptschleifenbeginn}}\;
-    } 
-    \nlset{weiter} merke: $p_i$ ist mit $t_k$ gematcht\; \label{permutationNaechstesMuster}
-    $i \leftarrow i + 1$\;
-    $k \leftarrow 0$\;    
+ \nlset{matche $p_i$}\label{PermutationHauptschleifenbeginn}
+ \While {$i < m$} {
+	\While {$k < n$} {
+		\If {$t_k$ ist mit keinem Parameter von $p$ gematcht} {
+			\If {$\mathrm{findMatch}(p_i, t_k)$} {
+				\Goto {\ref{permutationNaechstesMuster}}\;
+			}
+		}
+		$k \leftarrow k + 1$\;
+	}
+	\nlset{zurück}\label{permutationRematchMuster}
+	\If {$i = 0$} {
+		\Return {$\mathrm{false}$}
+	}
+	$i \leftarrow i - 1$\;
+	{$k \leftarrow k'$ aus \glqq $p_{i}$ ist mit $t_{k'}$ gematcht\grqq{}}\;
+	\If {not $\mathrm{rematch}(p_{i}, t_{k})$} {
+		merke: $p_{i}$ ist nicht mehr mit $t_{k}$ gematcht\;
+		$k \leftarrow k + 1$\;
+		\Goto {\ref{PermutationHauptschleifenbeginn}}\;
+	} 
+	\nlset{weiter}\label{permutationNaechstesMuster}
+	merke: $p_i$ ist mit $t_k$ gematcht\;
+	$i \leftarrow i + 1$\;
+	$k \leftarrow 0$\;    
  }
  \Return {$p$ enthält eine Multi-Matchvariable \KwOr alle $t_k$ wurden gematcht}
 \end{algorithm}
 
+Algorithmus \ref{findPermutation} probiert das Muster einer kommutativen Funktionsanwendung $p$ auf ein Literal $t$ der gleichen Form zu matchen. Die beiden Laufvariablen $i$ und $k$ sind Index für die Muster Parameter $\elems p 0 {m-1}$, bzw. der Parameter des Literals $\elems t 0 {n-1}$. Für die Suche eines Matches wird zuerst versucht $p_0$ mit $t_0$ zu matchen. Schlägt das fehl, wird $k$ hochgezählt, bis $p_0$ ein $t_k$ matchen kann oder jedes $t_k$ getestet wurde. Im erfolglosen Fall wird die Suche beendet, da für $p_0$ alle verfügbaren Freiheitsgerade getestet wurden. Wurde $p_0$ erfolgreich mit $t_k$ gematcht, wiederholt sich der Prozess für $p_1$, mit der Ausname, dass $t_k$ jetzt nicht mehr als Matchkandidat zur Verfügung steht. Wird ein Parameter gefunden, der $p_1$ matcht, wird $i = 3$ gesetzt und der Prozess wiederholt sich für $p_3$. Falls die Suche für $p_1$ in dem Durchlauf allerings erfolglos war, heißt es allerdings nicht, dass kein Match von $p$ und $t$ möglich ist. Es besteht die Option, dass $p_0$ mit $t_k$ noch auf eine andere Weise als die bisherige gematcht werden kann. Beinhaltet $p_1$ Mustervariablen, die in $p_0$ bindend vorkommen, eröffnet ein ändern der Bindung möglicherweise neue Matchmöglichkeiten für $p_1$. Aus dem Grund wird im Abschnitt \texttt{\ref{permutationRematchMuster}} zuerst versucht $p_0$ mit $t_k$ zu rematchen. Sollte das fehlschlagen, ist es möglich, dass $p_0$ noch mit Parametern von $t$ gematcht werden kann, die nach $t_k$ aufgelistet sind, was wiederum $p_1$ erlauben würde, ein Match mit $t_k$ zu testen. Auch diese Option wird ausprobiert.
+Wurde für alle $p_i$ ein Match gefunden, ist dann ganz $p$ mit ganz $t$ gematcht, wenn entweder auch alle $t_k$ gematcht sind oder wenn $p$ eine Multi-Matchvariable enthält. Sollte keiner der beiden Fälle eintreten, ist an dieser Stelle kein Match von $p$ und $t$ möglich. 
+
+
+\newtheorem{lemKomplexitaetFindPermutation}[bsp]{Lemma}
+\begin{lemKomplexitaetFindPermutation}\label{lemKomplexitaetFindPermutation}~\\
+Die Laufzeitkomplexität von Algorithmus \ref{findPermutation} bei der Suche eines Matches für ein Muster $p = (f, \elems {\mathbf x} 0 {m-1})$ mit einem Literal $t = (f, \elems t 0 {n-1})$ ist in $O(n^m)$, wenn jeder Parameter $t_k$ von $t$ nur $O(1)$ Konstantensymbole und Funktionssymbole besitzt.
+\end{lemKomplexitaetFindPermutation}
+
+\newtheorem{bewKomplexitaetKomm}[bsp]{Beweis}
+\begin{bewKomplexitaetKomm}~\\
+Der Beweis erfolgt als Induktion über $m$.
+Für den Induktionsanfang mit $m = 1$ muss $\mathbf x_0$ höchstens mit allen $n$ Parametern des Literals verglichen werden. Unabhängig davon, ob die Instanz von $\mathbf x_0$ bindend oder gebunden ist, terminiert $\mathrm{findMatch}(\mathbf x_0, t_k)$ in $O(1)$, da alle $t_k$ in ihrer Größe beschränkt sind. \\
+Im allgemeinen Fall kann die Anwendung von $\mathrm{findPermutation}$ mit $p$ und $t$ auf höchstens $m$ Anwendungen des Algorithmus mit Mustergröße $m-1$ zurückgeführt werden. Erneut kann $\mathbf x_0$ potenziell mit jedem $t_k$ matchen. Das Match mit $t_k$ erfolgt wie im Indunktionsanfang beschrieben in $O(1)$. Der Ablauf des restlichen Algorithmus ist in der Komplexität equivalent zu einem neuen Aufruf von $\mathrm{findPermutation}$ mit dem Muster $p' = (f, \elems {\mathbf x} 1 {m-1})$ und dem Literal $t' = (f, \elems t 0 {k-1}, t_k', \elems t {k+1} {n-1})$, wobei $t_k'$ ein spezieller Wert ist, mit dem ein Match zu jedem Muster in $O(1)$ abgelehnt wird \footnote{Der Wert von $t_k'$ ist sonst nicht notwendig, da in Bereich \texttt{\ref{PermutationHauptschleifenbeginn}} durch die if-Abfrage der problematische Matchversuch mit $t_k$ umgangen wird.}. Gibt dieser Aufruf $\mathrm{false}$ zurück, gibt auch $\mathrm{rematch}(\mathbf x_0, t_k)$ in $O(1)$ $\mathrm{false}$ zurück. Der Übergang von $t_k$ zu $t_{k-1}$ erfolgt ebenfalls in $O(1)$. Für jedes der bis zu $n$ Matches von $\mathbf x_0$ mit einem $t_k$ treten damit Laufzeitkosten von $O(1)$ außerhalb der Rekursion auf. Jeder der $n$ Rekursionsaufrufe hat nach Induktionshypothese eine Laufzeit in $O(n^{m-1})$. Insgesamt ergibt sich so also eine Laufzeit in $n \cdot O(1) \cdot O(n^{m-1}) = O(n^m)$.
+\hfill $\square$\\
+\end{bewKomplexitaetKomm}
+
 
 \subsubsection {findDilation}
-
-
 \begin{algorithm}
 \DontPrintSemicolon
 \caption{$\mathrm{findDilation} \colon M \times T \times \mathit{Bool} \rightarrow \mathit{Bool}$}\label{findDilation}
 \KwIn {$p = (f, \elems p 0 {m-1}) \in M$, $t = (f, \elems t 0 {n-1}) \in T$}
+\Let $i \leftarrow 0$, $k \leftarrow 0$\;
 \If {$\mathit{starteGematcht}$} {
-    $i \leftarrow m$\;
-    \Goto {\ref{dilationRematchLastNeedle}}\;
+	$i \leftarrow m$\;
+	\Goto {\ref{dilationRematchLastNeedle}}\;
 }
 \If {$m = 0$} {
-    \Return {$\mathrm{true}$}
+	\Return {$\mathrm{true}$}
 }
 \If {$n = 0$} {
-    \Return {$\mathrm{false}$}
+	\Return {$\mathrm{false}$}
 }
-\nlset{matche $p_i$} \If {$k < n$} { \label{dilationMatchCurrentNeedle}
-    \DoWhile {$p_i$ ist Nachfolger einer Multi-Matchvariable \KwAnd $k < n$} { 
-        \If {$\mathrm{findMatch}(p_i, t_k)$} {
-            \Goto {\ref{dilationPrepareNextNeedle}}\;
-        }
-        $k \leftarrow k + 1$\;
-    }
+\nlset{matche $p_i$} \label{dilationMatchCurrentNeedle} 
+\If {$k < n$} {
+	\DoWhile {$p_i$ ist Nachfolger einer Multi-Matchvariable \KwAnd $k < n$} { 
+		\If {$\mathrm{findMatch}(p_i, t_k)$} {
+			\Goto {\ref{dilationPrepareNextNeedle}}\;
+		}
+		$k \leftarrow k + 1$\;
+	}
 }
-\nlset{zurück} \While {$i \neq 0$} { \label{dilationRematchLastNeedle}
-    $i \leftarrow i - 1$\;
-    {$k \leftarrow k'$ aus \glqq $p_{i}$ ist mit $t_{k'}$ gematcht\grqq{}}\;
-    \If {$\mathrm{rematch}(p_i, t_k)$} {
-        \Goto {\ref{dilationPrepareNextNeedle}}\;
-    }
-    \ElseIf {$p_i$ ist Nachfolger einer Multi-Matchvariable} {
-        $k \leftarrow k + 1$\;
-    \Goto {\ref{dilationMatchCurrentNeedle}}\;
-    }
+\nlset{zurück} \label{dilationRematchLastNeedle} 
+\While {$i > 0$} {
+	$i \leftarrow i - 1$\;
+	{$k \leftarrow k'$ aus \glqq $p_{i}$ ist mit $t_{k'}$ gematcht\grqq{}}\;
+	\If {$\mathrm{rematch}(p_i, t_k)$} {
+		\Goto {\ref{dilationPrepareNextNeedle}}\;
+	}
+	\ElseIf {$p_i$ ist Nachfolger einer Multi-Matchvariable} {
+		$k \leftarrow k + 1$\;
+	\Goto {\ref{dilationMatchCurrentNeedle}}\;
+	}
 }
 \Return{$\mathrm{false}$}\;
-\nlset{weiter} merke: $p_i$ ist mit $t_k$ gematcht\; \label{dilationPrepareNextNeedle}
+\nlset{weiter} \label{dilationPrepareNextNeedle} 
+merke: $p_i$ ist mit $t_k$ gematcht\;
 $i \leftarrow i + 1$\;
 $k \leftarrow k + 1$\;
-\If {$i \neq m$} {
-    \Goto {\ref{dilationMatchCurrentNeedle}}\;
+\If {$i < m$} {
+	\Goto {\ref{dilationMatchCurrentNeedle}}\;
 }
-\ElseIf {$k \neq n$ \KwAnd nach $p_{m-1}$ folgt keine Multi-Matchvariable} {
-    \Goto {\ref{dilationRematchLastNeedle}}\;
+\ElseIf {$k < n$ \KwAnd nach $p_{m-1}$ folgt keine Multi-Matchvariable} {
+	\Goto {\ref{dilationRematchLastNeedle}}\;
 }
 \Return {$\mathrm{true}$}
 \end{algorithm}
 
 
+Algorithmus \ref{findDilation} teilt die Musterparameter $\elems p 0 {m-1}$ in Blöcke der Form $\elems p i j$ ein. Ein solcher Block muss Elementweise einen Block $\elems t k {k + j - i}$ der Parameter des Literals matchen. Die Aufteilung der Musterparameter in Blöcke ist dabei fest. Wenn zwischen $p_{i-1}$ und $p_{i}$ eine Multi-Matchvariable liegt, ist dort eine Blockgrenze. Aus dem Grund wird in \texttt{\ref{dilationMatchCurrentNeedle}} nur mehr als ein Schleifendurchlauf erlaubt, wenn $p_i$ einen neuen Block beginnt, $t_k$ also nicht durch den bereits gematchen Beginn des Blockes festgelegt ist. 
+Konnte $p_i$ nicht gematcht werden, wird  $i$ im Bereich \texttt{\ref{dilationRematchLastNeedle}} so lange heruntergezählt, bis entweder $\mathrm{rematch}$ erfolgreich ist oder $p_i$ das erste Element des aktuellen Blocks ist. Besonderes Verhalten tritt erneut für $i = 0$ auf. War jeder Matchversuch für $p_0$ erfolglos, gibt es keine Möglichkeit mehr die Teilterme von $p$ so zu \glqq strecken\grqq{}\footnote{daher auch der Name $\mathrm{findDilation}$}, dass ein Match mit $t$ gefunden werden kann, ähnlich der Situation für $p_0$ in $\mathrm{findPermutation}$. Anders als bei $\mathrm{findPermutation}$ wird $k$ im Bereich \texttt{\ref{dilationPrepareNextNeedle}} $k$ allerdings hochgezählt, da $p_i$ nie ein Literal $t_k$ matchen darf, wenn $p_{i-1}$ bereits mit $t_l$ gematcht ist und $l > k$.
 
-\newtheorem{lemKomplexitaetKomm}[bsp]{Lemma}
-\begin{lemKomplexitaetKomm}\label{lemKomplexitaetKomm}~\\
-Die Laufzeitkomplexität von Algorithmus \ref{findMatch} ist \BFred{TODO}
-\end{lemKomplexitaetKomm}
 
-\newtheorem{bewKomplexitaetKomm}[bsp]{Beweis}
-\begin{bewKomplexitaetKomm}~\\
-\BFred{TODO: beweise Lemma \ref{lemKomplexitaetKomm}}
-\end{bewKomplexitaetKomm}
+\newtheorem{lemKomplexitaetDilation}[bsp]{Lemma}
+\begin{lemKomplexitaetDilation}\label{lemKomplexitaetDilation}~\\
+Die Laufzeitkomplexität von Algorithmus \ref{findDilation} ist \BFred{TODO}.
+\end{lemKomplexitaetDilation}
+
+\newtheorem{bewKomplexitaetDilation}[bsp]{Beweis}
+\begin{bewKomplexitaetDilation}~\\
+\BFred{TODO: beweise Lemma \ref{lemKomplexitaetDilation}}
+\end{bewKomplexitaetDilation}
 
 %.........................................................................
 %.........................................................................
 %.........................................................................
 \subsection{Bessere Laufzeit für kommutative Muster} \label{subsecCMuster}
 
-Recht einfach zu implementieren ist ein Matchalgorithmus, der bei kommutativen Funktionssymbolen für jede Permutation der Parameter prüft, ob ein Match existiert. Ziel dieses Abschnittes ist, a priori möglichst viele Reihenfolgen der Parameter des Musters auszuschließen, dann also auch nicht prüfen zu müssen. Vorraussetzung dafür ist, dass sowohl Muster als auch Literal mit $\mathrm{normalize}$ aus Kapitel \ref{secErsteNormalform} normalisiert werden. Insbesondere die Sortierung ist relevant. Abweichend von Abschnitt \ref{subsecNormalSortieren} wird im folgenden allerdings eine Ordnung verwendet, die Mustervariablen hinter jede andere Art von Term sortiert.
-Bestimmte Muster mit kommutativen Funktionssymbolen können mit dieser einfachen Maßname bereits in linearer Zeit mit einem Literal abgeglichen werden. Besteht ein Muster etwa aus der Anwendung eines komutativen Funktionssymbols $f$ auf $m$ Parameter $\elems p 1 m$ und sind die Parameter $p_i$ ausschließlich Funktionsanwendungen paarweise verschiedener Funktionssymbole, ist garantiert, dass die Parameter eines Literals für ein Match in der selben Reihenfolge liegen müssen. Wenn auch alle Teilmuster $p_i$ dieser Struktur folgen, bzw. nicht kommutativ sind, wird ein Match zuverlässig bereits mit Algorithmus \ref{simpleMatchAlgorithmShell} gefunden\footnote{unter der Annahme, dass keine assoziativen Funktionssymbole im Muster enthalten sind}. Das liegt daran, dass für alle $i, j \in \{1, \dots, m\}, i < j$ gilt, dass $p_i$ ausschließlich Literale matchen kann, die vor jedes Literal sortiert werden, welches mit $p_j$ gematcht werden könnte. Diese Idee der Ordnung zweier Muster wird im folgenden ausgeführt.
+Benanav zeigte 1987, dass auch das Matchproblem mit einem kommutativen Funktionssymbol NP-vollständig ist \cite{NPHardMatching}. Dennoch kann die Laufzeit von $\mathrm{findPermutation}$ für bestimmte Arten von Mustern verbessert werden. In diesem Abschnitt wird das versucht, indem a priori ausgeschlossen wird, dass bestimmte Reihenfolgen von Musterparametern erfolgreich matchen können. Diese Reihenfolgen müssen dann im Algorithmus nicht mehr geprüft werden.
+Vorraussetzung dafür wird sein, dass sowohl Muster als auch Literal mit $\mathrm{normalize}$ aus Kapitel \ref{secErsteNormalform} normalisiert werden. Insbesondere die Sortierung ist relevant.
+Bestimmte Muster mit kommutativen Funktionssymbolen können mit dieser einfachen Maßname bereits in linearer Zeit mit einem Literal abgeglichen werden. Besteht ein Muster etwa aus der Anwendung eines komutativen Funktionssymbols $f$ auf $m$ Parameter $\elems p 1 m$ und sind die Parameter $p_i$ ausschließlich Funktionsanwendungen paarweise verschiedener Funktionssymbole, ist garantiert, dass die Parameter eines normalisierten Literals für ein Match in der selben Reihenfolge liegen müssen. Wenn auch alle Teilmuster $p_i$ dieser Struktur folgen, bzw. nicht kommutativ sind, wird ein Match zuverlässig bereits mit Algorithmus \ref{simpleMatchAlgorithmShell} gefunden\footnote{unter der Annahme, dass keine assoziativen Funktionssymbole im Muster enthalten sind}. Das liegt daran, dass für alle $i, j \in \{1, \dots, m\}, i < j$ gilt, dass $p_i$ ausschließlich Literale matchen kann, die vor jedes Literal sortiert werden, welches mit $p_j$ gematcht werden könnte. Diese Idee der Ordnung von Mustern wird im folgenden ausgeführt.
 
 
 \newtheorem{defStarkGeordnet}[bsp]{Definition}
@@ -334,19 +362,19 @@ Gilt für zwei Muster $p_1, p_2 \in M(F, C)$, dass alle Literale $t_1, t_2 \in T
 
 Für folgende Formen von Mustern $p$ und $q$ gilt $p \prec q$:
 \begin{itemize}
-    \item{$p$ und $q$ enthalten keine Mustervariablen und $p \neq q$}
-    
-    \item{$p$ ist ein Konstantensymbol aber keine Mustervariable und $q$ ist eine Funktionsanwendung}
-    
-    \item{$p$ und $q$ sind Funktionsanwendungen verschiedener Funktionssymbole $f$ und $g$ mit $f < g$}
-    
-    \item{$p = (f, \elems p 1 m)$ und $q = (f, \elems q 1 n)$ sind Funktionsanwendungen des selben nicht kommutativen Funktionssymbols $f$ und $m < n \land \forall j \in \{1, \dots, m\} \colon p_j = q_j$}
-    
-    \item{$p = (f, \elems p 1 m)$ und $q = (f, \elems q 1 n)$ sind Funktionsanwendungen des selben nicht kommutativen Funktionssymbols $f$ und $\exists i \leq min\{n, m\} \colon p_i \prec q_i \land \forall j \in \{1, \dots, i  - 1\} \colon p_j = q_j$}
-    
-    \item{$p = (g, \elems p 1 m)$ und $q = (g, \elems q 1 n)$ sind Funktionsanwendungen des selben kommutativen Funktionssymbols $g$ und $\forall i \in \{1, \dots, m\}, j \in \{1, \dots, n\} \colon p_i \prec q_j \lor p_i = q_j$}
-    
-    \item{\BFred{TODO: was ist mit kommutativen Funktionssymbolen? (die Regel hier drüber ist SEHR konservativ)}}
+	\item{$p$ und $q$ enthalten keine Mustervariablen und $p \neq q$}
+	
+	\item{$p$ ist ein Konstantensymbol aber keine Mustervariable und $q$ ist eine Funktionsanwendung}
+	
+	\item{$p$ und $q$ sind Funktionsanwendungen verschiedener Funktionssymbole $f$ und $g$ mit $f < g$}
+	
+	\item{$p = (f, \elems p 1 m)$ und $q = (f, \elems q 1 n)$ sind Funktionsanwendungen des selben nicht kommutativen Funktionssymbols $f$ und $m < n \land \forall j \in \{1, \dots, m\} \colon p_j = q_j$}
+	
+	\item{$p = (f, \elems p 1 m)$ und $q = (f, \elems q 1 n)$ sind Funktionsanwendungen des selben nicht kommutativen Funktionssymbols $f$ und $\exists i \leq min\{n, m\} \colon p_i \prec q_i \land \forall j \in \{1, \dots, i  - 1\} \colon p_j = q_j$}
+	
+	\item{$p = (g, \elems p 1 m)$ und $q = (g, \elems q 1 n)$ sind Funktionsanwendungen des selben kommutativen Funktionssymbols $g$ und $\forall i \in \{1, \dots, m\}, j \in \{1, \dots, n\} \colon p_i \prec q_j \lor p_i = q_j$}
+	
+	\item{\BFred{TODO: was ist mit kommutativen Funktionssymbolen? (die Regel hier drüber ist SEHR konservativ)}}
 \end{itemize}
 
 \BFred{TODO: Beweise $p \prec q$ in beschriebenen Fällen}
@@ -354,11 +382,11 @@ Für folgende Formen von Mustern $p$ und $q$ gilt $p \prec q$:
 
 Für folgende Formen von Mustern $p$ und $q$ gilt $p \preceq q$:
 \begin{itemize}
-    \item{$p \prec q$}
-    
-    \item{$p = q$}
-    
-    \item{kontextabhängig, wenn $p = \mathbf x$ und $q = \mathbf y$ Mustervariablen sind und das gesamte Muster $r$, in dem sowohl $p$ als auch $q$ sich befinden \emph{symmetrisch} zu $\mathbf x$ und $\mathbf y$ ist. Symmetrisch ist $r$ dann, wenn $\mathbf x$ und $\mathbf y$ in ganz $r$ getauscht werden können um $r'$ zu erhalten und die normalisierte Form von $r'$ identisch zu $r$ ist.}
+	\item{$p \prec q$}
+	
+	\item{$p = q$}
+	
+	\item{kontextabhängig, wenn $p = \mathbf x$ und $q = \mathbf y$ Mustervariablen sind und das gesamte Muster $r$, in dem sowohl $p$ als auch $q$ sich befinden \emph{symmetrisch} zu $\mathbf x$ und $\mathbf y$ ist. Symmetrisch ist $r$ dann, wenn $\mathbf x$ und $\mathbf y$ in ganz $r$ getauscht werden können um $r'$ zu erhalten und die normalisierte Form von $r'$ identisch zu $r$ ist.}
 \end{itemize}
 
 \BFred{TODO: Beweise $p \preceq q$ in beschriebenen Fällen}
