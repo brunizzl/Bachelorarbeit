@@ -91,24 +91,35 @@ Der Term $t = (\texttt{sum}, 3, (\texttt{prod}, 2, 4), (\texttt{neg}, 1))$ kann 
 \end{equation*}
 \end{bEval}
 
+
+\subsubsection{Konstruktor}
+Eine direkt aus der Struktur des Terms folgende Interpretation $u_c$ für Funktionssymbole ist die des \emph{Konstruktors}. Als Konstruktor eines Typen $A$ wird allgemein eine Funktion bezeichnet, die nach $A$ abbildet. Für typenlose Terme ist diese Definition deshalb schwierig. Insbesondere in funktionalen Sprachen wird das Konzept allerdings noch verfeinert. In Haskell transformiert ein Konstruktor Daten nicht im eigentlichen Sinne, sondern bündelt lediglich ein Tag, das festhält welcher Konstruktor genutzt wurde, mit den $n$ übergebenen Paramtern zu einem Tupel der Größe $n+1$ \cite{haskellConstructor}. Das entspricht exakt der Funktionsanwendung in einem Term, mit dem Funktionssymbol als Tag. Wenn $u_c$ angewendet auf ein Funktionssymbol $f$ das $n$ Tupel von Parametern auf eine Funktionsanwendung von $f$ mit den selben $n$ Parametern abbildet, ist $u_c~f$ damit ein Konstruktor. 
+
 \newtheorem{defKonstruktor}[bsp]{Definition}
 \begin{defKonstruktor}~\\
-Eine direkt aus der Struktur des Terms folgende Interpretation $u_c$ für Funktionssymbole ist die des \emph{Konstruktors}. Als Konstruktor eines Typen $A$ wird eine Funktion bezeichnet, die nach $A$ abbildet \cite{haskellConstructor}. Mit $f \in F$ und $\mathrm{arity} f = n \in \mathbb N$ 
-gilt $$u_c~f \colon T^n \rightarrow T, ~(\tOneN) \mapsto (f, \tOneN)$$
+ Mit $f \in F$ und $\mathrm{arity} f = n \in \mathbb N$ 
+gilt 
+$$u_c~f \colon T^n \rightarrow T, ~(\tOneN) \mapsto (f, \tOneN)$$
 Mit einem beliebigen $v \colon C \rightarrow C'$ ändert die Auswertung $\mathrm{eval}(u_c, v) \colon T(F, C) \rightarrow T(F, C')$ damit nur die Konstantensymbole eines Terms, lässt aber die sonstige Struktur unverändert. Insbesondere ist $\mathrm{eval}(u_c, v) \colon T \rightarrow T$ mit $v~y = y$ die Identität.
 
 Die Interpretation $u_c$ reicht für bestimmte Funktionssymbole aus, etwa kann so das Funktionssymbol $\texttt{pair}$ ein Paar als Term darstellen.
 $$u_c~\texttt{pair} \colon T^2 \rightarrow T, ~(a, b) \mapsto (\texttt{pair}, a, b)$$
-Äquivalent ist die Darstellung endlicher Mengen und Tupel mit variadischen Funktionssymbolen \texttt{set}\footnote{Da eine Menge ihren Elementen keine Reihenfolge gibt, muss $u_c~\texttt{set}$ im Unterschied zu $u_c~\texttt{tup}$ prinzipiell nicht die ursprüngliche Parameterreihenfolge erhalten. In Kapitel \ref{subsecNormalSortieren} wird eine Größenrelation zur möglichen Umordung diskutiert.} und \texttt{tup} möglich.
+Äquivalent ist die Darstellung endlicher Mengen und Tupel mit variadischen Funktionssymbolen \texttt{set} und \texttt{tup} möglich\footnote{Da eine Menge ihren Elementen keine Reihenfolge gibt, muss $u_c~\texttt{set}$ im Unterschied zu $u_c~\texttt{tup}$ prinzipiell nicht die ursprüngliche Parameterreihenfolge erhalten. In Kapitel \ref{subsecNormalSortieren} wird eine Größenrelation zur möglichen Umordung diskutiert.}.
 \end{defKonstruktor}
 
+
+\newtheorem{bspKonstruktor}[bsp]{Beispiel}
+\begin{bspKonstruktor}~\\
+Ein Graph $G = (V, E)$ wird als Paar der Menge von Knoten $V$ und Menge der Kanten $E$ definiert. Eine Kante ist dabei eine zweielementige Menge von Knoten. Der vollständige Graph auf drei Knoten ist $K_3 = \paren*{\{1, 2, 3\}, \curl*{\{1, 2\}, \{2, 3\}, \{1, 3\}}}$. Mit der Interpretation der Funktionssymbole $\texttt{pair}$ und $\texttt{set}$ als Konstruktoren lässt sich $K_3$ auch als Term darstellen:
+$$(\texttt{pair}, (\texttt{set}, 1, 2, 3), (\texttt{set}, (\texttt{set}, 1, 2), (\texttt{set}, 2, 3), (\texttt{set}, 1, 3)))$$
+\end{bspKonstruktor}
 
 \subsection{Muster} \label{subsecMuster}
 
 Bisher wurden die Objekte beschrieben, die in dieser Arbeit transformiert werden sollen. Die Transformationsregeln selbst lassen sich allerdings auch als Paare von bestimmten Termen darstellen. Zur Abgrenzung beider Konzepte werden die zu transformierenden Terme $t\in T(F, C)$ von hier an \emph{Literal} genannt, Terme die  Teil einer Regeldefinition sind werden \emph{Muster} genannt. Die Menge der Muster $M(F, C)$ ist dabei eine Obermenge der Literale, da sie deren Konstantensymbole um die Menge der \emph{Mustervariablen} $X$ erweitert\footnote{Die Ergänzung der Funktionssymbole um Mustervariablen ist genau so möglich, wird aber vor allem um die Notation verdaubar zu halten in den folgenden Kapiteln außen vor gelassen.}. Konkrete Elemente $\mathbf x \in X$ werden im folgenden \textbf{fett} geschrieben.
 $$M(F, C) \coloneqq T(F, C \cup X)$$
 
-Eine \emph{Ersetzungsregel} für Literale $t \in T(F, C)$ hat die Form $(l, r) \in M(F, C)^2$. Die linke Seite $l$ steht für das Muster, dass im Literal durch einen Ausdruck der Form der rechten Seite $r$ ersetzt werden soll. Für die bessere Lesbarkeit wird statt $(l, r)$ auch $l \mapsto r$ geschrieben.
+Eine \emph{Ersetzungsregel} für Literale $t \in T(F, C)$ hat die Form $(l, r) \in M(F, C) \times M(F, C)$. Die linke Seite $l$ steht für das Muster, dass im Literal durch einen Ausdruck der Form der rechten Seite $r$ ersetzt werden soll. Für die bessere Lesbarkeit wird statt $(l, r)$ auch $l \mapsto r$ geschrieben.
 
 \newtheorem{bMuster}[bsp]{Beispiel} 
 \begin{bMuster} \label{bMuster}
@@ -128,13 +139,17 @@ $$\tilde v_p~ c = \begin{cases}
 	c      & c \in C \setminus X
 \end{cases}$$
 $v_p$ muss die Mustervariablen in $p$ so durch Literale ersetzen, dass ein Term identisch zu $t$ entsteht. 
-Im vorangegandenden Beispiel \ref{bMuster} gilt damit $v_p~ \mathbf a = (\texttt{sin}, 3)$.
+Im vorangegangenen Beispiel \ref{bMuster} gilt damit $v_p~ \mathbf a = (\texttt{sin}, 3)$.
 
-Im folgenden wird der Begriff des Matches noch etwas weiter gefasst. Es werden nach wie vor die Mustervariablen durch Literale ersetzt, allerdings muss nicht direkt das Ergebnis der Ersetzung, sondern nur eine normalisierte Form des Ergebnisses mit dem Literal $t$ übereinstimmen:
-$$\mathrm{normalize}~(\mathrm{eval}(u_c, \tilde v_p)~ m) = t$$
-Die Funktion $\mathrm{normalize} \colon T(F, C) \rightarrow T(F, C)$ projiziert einen Term auf seine normalisierte Form. Welche Uneindeutigkeiten $\mathrm{normalize}$ beseitigt soll hier nicht festgelegt werden. Klar ist aber, dass je nach Wahl der Projektion zwar ein einzelnes Muster sehr mächtig werden kann, also ein Match mit sehr vielen Termen möglich ist, das finden des Matches dann im allgemeinen Fall allerdings immer schwieriger wird.
+Im Folgenden wird der Begriff des Matches noch etwas weiter gefasst. Es werden nach wie vor die Mustervariablen durch Literale ersetzt, allerdings muss nicht direkt das Ergebnis der Ersetzung, sondern nur eine normalisierte Form des Ergebnisses mit dem Literal $t$ übereinstimmen:
+$$\mathrm{normalize}~(\mathrm{eval}(u_c, \tilde v_p)~ p) = t$$
+Aus der Definition ist bereits klar, dass $\mathrm{normalize} \colon T(F, C) \rightarrow T(F, C)$ Terme auf Terme abbildet und ein Match $v_p$ nur dann gefunden werden kann, wenn $t$ im Bild von $\mathrm{normalize}$ liegt. 
+Gedacht ist $\mathrm{normalize}$ als Mittel, um Unterschiede zwischen Termen zu reduzieren, die die Auswertung für eine gebebende Interpretation $(u, v)$ nicht ändern. Da das Ergebnis von $\mathrm{normalize}$ aber nur von dem übergebenen Term abhängig ist, können nie direkt Unterschiede zwischen mehreren Termen verglichen und beseitigt werden. Ist die normalisierte Form $t'$ eines Terms $t$ ein Fixpunkt von $\mathrm{normalize}$, ist in dem Kontext klar, dass $t$ und $t'$ die gleiche Auswertung mit der Interpretation $(u, v)$ besitzen, da auch $\mathrm{normalize}~t' = \mathrm{normalize}~t$ gilt. Wäre $\mathrm{normalize}~t' \neq t'$, würde die Funktion nicht die ihr zugedachte Aufgabe erfüllen. Deshalb muss $\mathrm{normalize}$ eine Projektion sein, also eine Funktion, für die jeder Bildpunkt gleichzeitig ein Fixpunkt ist. 
+
+Welche Unterschiede $\mathrm{normalize}$ beseitigt soll hier nicht festgelegt werden. Klar ist aber, dass je nach Wahl von $\mathrm{normalize}$ zwar ein einzelnes Muster sehr mächtig werden kann, also ein Match mit sehr vielen Termen möglich ist, das Finden des Matches dann im allgemeinen Fall allerdings immer aufwändiger wird. 
+
 \end{defMatch}
 
-Ein \emph{Matchalgorithmus} ist eine Vorgehensweise für ein gegebendes Paar $(p, t) \in M(F, C) \times T(F, C)$ ein gültiges Match zu finden. Perfekt wird ein solcher Algorithmus dann genannt, wenn jedes mögliche Match gefunden werden kann.
+Ein \emph{Matchalgorithmus} ist eine Vorgehensweise für ein gegebenes Paar $(p, t) \in M(F, C) \times T(F, C)$ ein gültiges Match zu finden. Perfekt wird ein solcher Algorithmus dann genannt, wenn jedes mögliche Match gefunden werden kann.
 
 

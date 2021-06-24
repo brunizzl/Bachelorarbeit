@@ -47,16 +47,13 @@ Der folgende Ausdruck kann durch Ersetzung der Struktur der linken Seite einer V
     & = 3
     \end{split}
 \end{equation*}
-Hervorzuheben ist dabei, dass Variablennamen wie $a$ oder $b$ in den Vereinfachungsregeln eine andere Bedeutung haben, als die Variablen $x$ und $y$ im zu vereinfachenden Ausdruck. Erstere sind Platzhalter in der Ersetzungsregel, stehen damit also representativ für einen Teil des Ausdrucks, der transformiert wird, während zweitere ihre Bedeutung außerhalb des Ersetzungssystems haben. Formalisiert wird dieser Unterschied in Abschnitt \ref{subsecMuster}. Als Beispiel wird das Variablensymbol $b$ der Ersetzungsregel $(1)$ in der Anwendung der Regel mit den Ausdruck $\sin(x + y)^2$ assoziiert. 
-\BFred{Ist es legitim diesen Detailgrad bereits in der Einleitung zu diskutieren?}
+Hervorzuheben ist dabei, dass Variablennamen wie $a$ oder $b$ in den Vereinfachungsregeln eine andere Bedeutung haben, als die Variablen $x$ und $y$ im zu vereinfachenden Ausdruck. Erstere sind Platzhalter in der Ersetzungsregel, stehen damit also representativ für einen Teil des Ausdrucks, der transformiert wird, während zweitere ihre Bedeutung außerhalb des Ersetzungssystems haben. Formalisiert wird dieser Unterschied in Abschnitt \ref{subsecMuster}. Als Beispiel gilt für die erste Umformung $b = \sin(x + y)^2$ mit $b$ aus Regel $(1)$.
 \end{bsp}
 
 \subsection{Aufbau der Arbeit}
-In Abschnitt \ref{secGrundlegendeDefinitionen} werden die Begriffe eingeführt, die zur Beschreibung eines zu transformierenden Ausdrucks, aber auch zur Beschreibung der Transformation selbst notwendig sind. Mit den dann etablierten Begriffen werden die Algorithmen zur Mustererkennung in Abschnitt \ref{secPattermatching} erläutert.  
-Der theoretische Teil wird mit der Beschreibung des gesamten Termersetzungssystems in Abschnitt \ref{secTermersetzungssystem} abgeschlossen.
+In Abschnitt \ref{secGrundlegendeDefinitionen} werden die Begriffe eingeführt, die zur Beschreibung eines zu transformierenden Ausdrucks, aber auch zur Beschreibung der Transformation selbst notwendig sind. Mit den dann etablierten Begriffen werden die Algorithmen zur Normalisierung ohne Mustererkennung aus Kapitel \ref{secErsteNormalform} und die Algorithmen zur Mustererkennung in Abschnitt \ref{secPattermatching} erläutert. Aufbauend auf Patternmatching tut dann Kapitel \ref{secTermersetzungssystem}, wo die Transformation eines Terms durch vordefinierte Muster beschrieben wird.
 Die tatsächliche Umsetzung und ihre Abweichungen von vorhergehenden Ideen ist in den Abschnitten \BFred{TODO} und \ref{secKernUmsetzungInCpp} behandelt. 
-Zum Schluss 
-
+Zum Schluss wird das entwickelte Termersetzungssystem genutzt um Terme über den komplexen Zahlen zu vereinfachen. Weiter werden alternative Sprachen und Systeme mit ähnlichem Fokus diskutiert und diese Arbeit damit verglichen.
 
 
 
