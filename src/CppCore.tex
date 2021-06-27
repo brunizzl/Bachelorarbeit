@@ -67,7 +67,7 @@ Solche Zeichenketten sind von hier an in \texttt{monospace} gesetzt.
         \verb|smaller(x, y)|       & \verb|x < y|\\
         \verb|greater_eq(x, y)|    & \verb|x >= y|\\
         \verb|smaller_eq(x, y)|    & \verb|x <= y|\\
-        \verb|_Of_T(x, y)|         & \verb|x :y|\\
+        \verb|of_type__(x, y)|     & \verb|x :y|\\
         \hline
     \end{tabular}
     \caption{alternative Syntax für bestimmte Funktionssymbole}
@@ -82,51 +82,17 @@ Da der ASCII Zeichensatz keine griechischen Buchstaben enthält, wird anstelle d
 Komplexe Zahlen auf der reellen Achse sind in der Syntax vergleichbar mit Darstellungen für Integer und Fließkommazahlen erlaubt in C. Möglich sind etwa \verb|42|, \verb|3.1415|, \verb|1.337e3|, \verb|1.602e-19| oder \verb|1e+10|. Komplexe Zahlen auf der imaginären Achse sind in der Struktur identisch, allerdings immer direkt gefolgt vom Zeichen \verb|i|. 
 
 Die verschiedenen Mustervariablen werden auch unterschiedliche Weise identifiziert. Eine normale Mustervariable muss mit einem Unterstrich beginnen (\verb|_x|), eine Wert-Mustervariable mit einem Dollar (\verb|$x|) und eine Multi-Mustervariable endet in drei Punkten (\verb|xs...|). Besitzt eine Zeichenfolge aus Zeichen in $\Sigma$ keiner dieser besonderen Merkmale, wird daraus kontextabhängig ein Lambdaparameter oder ein Symbol aus $\Sigma^+$. Bindet ein umschließendes Lambda bereits den Name, wird die innerste Bindung des Namens als Lambdaparameter gewählt. 
+
+
+
 \subsection{Datenstruktur}
-
-
-Die C\texttt{++} Implementierung ist nicht nur nicht generisch in ihren Mengen $F$ und $C$, sondern unterscheidt zudem auf der Typebene nicht zwischen den beiden. Konkret ist ein Literal ein Baum, welcher als innere Knoten Funktionsanwendungen und Lambdafunktionen und als äußere Knoten Komplexe Zahlen, durch Strings identifizierte Symbole und Platzhalter für Lambda Parameter enthalten kann. 
-
-Die Einzelnen Knoten haben dabei folgende Eigenschaften:
-\begin{itemize}
-\item \mintinline{cpp}{Literal::symbol} stellt ein beliebiges, dem System möglicherweise unbekanntes Symbol da. Für den Nutzer ist ein Symbol durch einen String identifiziert, welcher lateinische Großbuchstaben und Kleinbuchstaben, Dezimalziffern und Unterstriche enthalten kann, wobei das erste Zeichen keine Ziffer sein darf. Intern sind die tatsächlichen Zeichenketten nur in einer zentralen Tabelle zu finden, im einzelnen Term ist ein String durch seinen Index in dieser Tabelle beschrieben. Nachteil dieser Vorgehensweise ist, dass ohne viel organisatorischen Mehraufwand nie in der Programmlaufzeit ein Eintrag in der zentralen Namenstabelle gelöscht werden darf, da nicht klar ist, ob es noch Symbole mit diesem Namen gibt. Das ist in der Praxis allerdings kein Problem, da Symbolnamen nicht mutierbar sind, also jedes tatsächlich genutzte Symbol auch nur genau einen Eintrag produziert.
-\item \mintinline{cpp}{Literal::complex} repräsentiert eine Instanz von \mintinline{cpp}{std::complex<double>}, also ein Paar aus zwei 64-bit Fließkommazahlen, welche eine Komplexe Zahl in karthesischen Koordinaten annähren. Für ein Computeralgebrasystem ist die Nutzung von Fließkommazahlen problematisch, da (sofern nicht anders gewünscht) nur exakte Transformationen durchgeführt werden sollen. Der haupsächliche Grund in der Nutzung liegt darin, dass grundlegende Operationen und einige Funktionen wie Sinus und Cosinus bereits in der Standardbibliothek definiert sind. 
-\item \mintinline{cpp}{Literal::lambda} repräsentiert eine anonyme Funktion, also eine Funktion, die nur über ihre Abbildungsvorschrift definiert ist. Als Parameteranzahl erlaubt ist dabei eine natürliche Zahl $n \in [1, 2^{16} - 1]$. Speichern tut ein Lambda damit primär seine Parameteranzahl und einen Verweis auf den Term, der die Abbildungsvorschrift darstellt.
-\item \mintinline{cpp}{Literal::lambda_param} ist der Platzhalter, der in der Definition der Abbildungsvorschrift eines Lambdas für einen bestimmten Parameter steht. Identifiziert wird der einzelne Parameter dabei durch einen Index.
-\item \mintinline{cpp}{Literal::f_app} Entspricht der Funktionsanwendung aus vorrangegangenden Abschnitten, ist also ein Tupel aus Verweisen auf weitere Knoten, wobei der erste Verweis als anzuwendene Funktion interpretiert wird, alle weiteren Verweise als Parameter.
-\end{itemize}
-
-\begin{listing}
-\small
-\begin{minted}[linenos=true]{cpp}
-enum class Literal
-{
-    symbol,
-    complex,
-    lambda,
-    lambda_param,
-    f_app,
-};
-\end{minted}
-\label{abbLiteralEnum}
-\caption{Mögliche Knotentypen in einem Literal}
-\end{listing}
-
-\subsection{Konkrete Datenstruktur} \label{subsecKonkreteDatenstruktur}
-%TODO: huebsche bäume zum veranschaulichen
-
-Problem beim Speichern eines Terms ist die möglicherweise erst zur Laufzeit bekannte Parameteranzahl der einzelnen Funktionsanwendung. Die Matchalgorithmen aus Abschnitt \ref{secPattermatching} greifen auf die einzelnen Parameter in nicht immer vorhersehbarer Reihenfolge zu, weswegen dieser Zugriff möglichst schnell erfolgen können sollte. Eine verkettete Liste macht zwar das speichern beliebig vieler Parameter trivial, erlaubt aber keinen schnellen Zugriff auf beliebige Elemente. Die C\texttt{++} Standardbibliothek enthält \mintinline{cpp}{std::vector} zur Lösung ähnlicher Probleme einen Datentyp zur Verwaltung von Arrays veränderbarer Größe auf dem Heap. Eine Möglichkeit wäre also eine klassische Pointerstruktur mit \mintinline{cpp}{std::vector} als Knoten zu konstruieren. Ein Nachteil dieser Lösung ist die doppelte Indirektion in der Verwaltung: Der Pointer zu einer Funktionsanwendung zeigt in dem Fall zur Verwaltungsstruktur des Vektors, welche selbst erst den Pointer auf die Parameter enthält. Ein zweiter Nachteil wäre, dass die Information über den Typ eines Terms nur indirekt über virtuelle Funktionen abgerufen werden können würde. 
-
-
-In der implementierten Variante sind die Knoten eines Termbaumes in einem Array gespeichert, wobei dem einzelnen Arrayelement nicht zu entnehmen ist, welche Art Knoten es repräsentiert. Ein Verweis auf einen Knoten beinhaltet also nicht nur den Arrayindex, sondern auch den Knotentyp. Als Paar zusammengefasst sind beide in der Klasse \mintinline{cpp}{NodeIndex}. 
-Da die Knotentypen \mintinline{cpp}{Literal::symbol} und \mintinline{cpp}{Literal::lambda_param} durch einen vorzeichenlosen Integer bereits eindeutig dargestellt werden können, hat der Index einer \mintinline{cpp}{NodeIndex} Instanz für diese Typen nicht die Bedeutung eines Arrayindex, sondern ist direkt die komplette Beschreibung des Knoteninhaltes.
-
+\BFred{TODO}
 
 \subsection{Muster} \label{subsecCppMuster}
-%TODO
+\BFred{TODO}
 
 \subsection{Musteranwendung} \label{subsecCppMusterAnwendung}
-%TODO
+\BFred{TODO}
 
 
 
