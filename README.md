@@ -6,3 +6,8 @@ Der Textteil meiner Bachelorarbeit
 - pdflatex main.tex listet alle zitierten quellen
 - biber main.tex verarbeitet alle zitierten quellen
 - pdflatex + makeindex + bibtex main.tex baut finale pdf inklusive aller quellen
+
+## TODO
+- C++ fertig schreiben
+- Beweise in PatternMatching machen
+- Termersetzungsystem
