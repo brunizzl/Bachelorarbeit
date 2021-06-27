@@ -14,8 +14,7 @@ Im Kontrast ist die rechte Seite einer Ersetzungsregel dann einfach zu lesen, we
 Ein Konzept welches diese Anforderungen erfüllt ist die Lambdafunktion, frei nach \cite{ChurchLambda36}. Im Kontext eines Terms ist eine Lambdafunktion primär ein Funktionsymbol, welches nur durch seine Stelligkeit und Abbildungsvorschrift identifiziert ist. Die Abbildungsvorschrift selbst ist ein Term, welcher neben sonst erlaubten Konstantensymbolen noch vom Lambda gebundene Variablen enthalten kann. Gleichzeitig ist ein Lambda allerdings auch ein gültiges Konstantensymbol, kann also selbst Parameter einer Funktionsanwendung sein.
 
 
-\newtheorem{dLambda}[bsp]{Definition}
-\begin{dLambda}
+\begin{definition}
 Eine besondere Klasse von Funktionssymbolen und Konstantensymbolen ist die der Lambdas. Die Notation wird eingeleutet durch ein kleines Lambda, gefolgt von der Nennung der gebundenen Variablen. Der Term, der die Abbildungsvorschrift beschreibt folgt als letztes und ist durch ein Punkt von den Variablenbindungen getrennt. Auswertung der Funktionsanwendung eines Lambdas ist $\beta$-Reduktion. \BFred{Ich vermute sachen wie $\beta$-Reduktion oder DeBrujin sollten mit Quellen verknüpft sein?}
 $$
 \lambda \textit{Variablenname(n)}~.\textit{Abbildungsvorschrift}
@@ -24,7 +23,7 @@ Als Beispiel bindet das Funktionssymbol $f = \lambda x y.(\texttt{pow}, x, y)$ d
 Intern werden für die Unterscheidung der in Lamdas gebundenen Variablen keine Zeichenketten, sondern DeBrujin Indizes verwendet. Mit DeBrujin Index als Index ergänzt ist $f = \lambda x_0 y_1.(\texttt{pow}, x_0, y_1)$ und $g = \lambda x_0.\lambda y_1.(\texttt{pow}, x_0, y_1)$ sowie $(g, 1) = \lambda y_0.(\texttt{pow}, 1, y_0)$.
 
 Das Beispiel $g$ zeigt die definierende Eigenschaft der DeBrujin Indizes. Durch die Indexverschiebung der gebundenenen Variablen in einer geschachtelten Lambdadefinition um die Anzahl der bereits vorher gebundenen Variablen wird jede Variable eindeutig einer Lambdafunktion zugeordnet. Wird eine Funktionsanwendung eines Lambdas $f$ der Stelligkeit $n$ ausgewertet und befindet sich eine Variable mit DeBrujin Index $i > n$ in der Abbildungvorschrift von $f$, so wird die Variable nicht durch einen Parameter von der Funktionasanwendung von $f$ ersetzt, sondern nur $n$ von $i$ subtrahiert.
-\end{dLambda}
+\end{definition}
 
 Mit Lambdas als Konstantensymbolen ist es erlaubt, als Parameter der Funktionsanwendung eines Lambdas $a$ ein Lambda $p$ zu übergeben. Es gibt zwei Möglichkeiten die DeBrujin Indizes der von $p$ gebundenen Variablen nach Ersetzung anzupassen. 
 Eine Möglichkeit ist, bei der Ersetzung der gebundenen Variablen während der Auswertung eines Lambdas immer die aktuelle Verschiebung mitzuschreiben und bei Ersetzung einer gebundenen Variable durch ein Lambda diese Verschiebung zu allen gebundenen Variablen im resultierenden Lambda dazuzuaddieren. Problem dieses Ansatzes ist zum einen, dass dann nicht nur getestet werden muss ob ein Parameter ein Lambda ist, sondern auch ob ein Parameter ein Lambda enthält. Diese Operation ist in ihrer Komplexität linear in der Anzahl der Funktionsanwendungen und Konstantensymbole des Parameters und deswegen unerwünscht. \\

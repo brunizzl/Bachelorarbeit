@@ -1,19 +1,89 @@
 
 
 \section{Umsetzung in C\texttt{++}} \label{secKernUmsetzungInCpp}
-\textcolor{red} {
-\begin{itshape}
-Anmerkung: Hier wird erläutert, wie meine konkrete Implementierung Terme speichert und verwaltet und wie die Algorithmen konkret umgesetzt sind. Vielleicht auch noch wo anders im Text anzufinden, aber auch jeden Fall auch hier ist meine Implementierung der Lambdafunktion als Term, was die Vereinfachungsmuster noch etwas ausdrucksstärker macht. Dann gibt es noch spezielle Matchvariablen, die darauf optimiert sind bestimmte Werte zu matchen, die werde ich an dieser Stelle auch erläutern, mathematisch rigoros ist mir das glaube ich zu aufwendig.
-Mögliche Tangenten:
-\begin{itemize}
-\item {Ausflug in die Codegenerierung mit Templates für Funktionen, die genau ein Muster matchen (ist ein recht tiefes Kaninchenloch)}
-\item {Meine Idee (und Umsetzung) einer Art Aufzählung (in cpp und Co. als enum in der Sprache enthalten), die Hierarchien erlaubt und damit Basis eines (wie ich finde) relativ eleganten Typsystems für die einzelnen Arten von Termknoten darstellt}
-\item {Idee und Umsetzung eines sehr einfachen Typsystems}
-\item{Möglichkeit Mustervariablen nur zu matchen, sollten Extrabedingungen erfüllt sein}
-\item {Speichermanagement}
-\end{itemize}
-\end{itshape}
-}
+
+\subsection{Konzeptionelle Unterschiede}
+Die in diesem Kapitel vergestellte Umsetzung implementiert nicht exakt die bisher beschriebenen Strukturen. Der erste Unterschied ist, dass die Konzepte \emph{Funktionssymbol} und \emph{Konstantensymbol} hier nicht unterschieden werden. Da der Zweck der Implementierung zudem alleine in der Vereinfachung von Ausdrücken über den Komplexen Zahlen $\mathbb C$ liegt, ist die Menge an Symbolen zudem im Code nicht generisch gehalten. Die beiden wichtigsten Arten von Symbolen für Literale sind Komplexe Zahlen $z \in \mathbb C$, sowie Zeichenketten $c_1 c_2\dots c_n$ beliebiger Länge $n$. Die einzelnen Zeichen $c_i$ stammen dabei aus dem Alphabet $\Sigma$, welches aus Klein-und Großbuchstaben des lateinischen Alphabetes, Ziffern von $0$ bis $9$, den Abostroph \verb|'| und dem Unterstrich \verb|_| besteht. Die Ausname bildet das erste Zeichen $c_1$, welches ein Klein-oder Großbuchstabe des Lateinischen Alphabetes sein muss. Zu den Zeichenketten gehören insbesondere auch die Funktionssymbole. Mit der dadurch entstehenden Möglichkeit Funktionssymbole als Werte zu behandeln, ergibt es Sinn auch Funktionsanwendungen von dynamisch bestimmten Funktionssymbolen zuzulassen. Das erste Element $f$ des Funktionsanwendungstupels $(f, \elems t 0 {n-1})$ ist in der Umsetzung also kein Symbol, sondern ein Term. Mit den bis hier diskutierten Änderungen und $\Sigma^+$ als Bezeichnung für die Menge von Zeichenketten über dem beschriebenen Alphabet $\Sigma$ sähe die idealisierte Menge aller Literale in der Umsetzung im Kontrast zu Definition \ref{defTerm} so aus:
+
+$$T \coloneqq \Sigma^+ \cup \mathbb C \cup \curl*{(\elems t 0 n)~|~ \elems t 0 n \in T)}.$$
+
+Die wichtigste Erweiterung der Implementierung ist allerdings die der anoymen Funktion bekannt als \emph{Lambda}. Das Lambdakalkül von Church \cite{ChurchLambda36} definiert Terme verwandt mit den in dieser Arbeit diskutierten. Der wichtigste Unterschied ist, dass keine externe Interpretation für einen gegebenden Lambdaausdruck notwendig ist. Anstatt Funktionssymbole über Namen zu identifizieren und die Abbildungsvorschrift getrennt anzugeben, ist eine Lambdafunktion $f \in \Lambda$ ausschließlich durch ihre Abbildungsvorschrift identifiziert. Church erlaubt neben der Funktionsanwendung als Term lediglich Variablensymbole  $v \in V$ und Lambdafunktionen. Soll $T$ also eine Obermenge aller Ausdrücke im Lambdakalkül werden, müsste prinzipiell nur die Lambdafunktion selbst hinzugefügt werden. Die Menge der Variablen $V$, hier als \emph{Lambdaparameter} bezeichnet wird allerdings von den bisher erlaubten Zeichenketten in $\Sigma^+$ getrennt.
+
+Muster sind in der Umsetzung auch entsprechend flexibler, schließlich sind sie eine Obermenge der Literale. Dazu kommt die Fähigkeit, Bedingungen an Mustervariablen zu stellen, um mögliche Matches weiter einzuschränken. Eine spezielle Form dieser Einschränkung ist dabei die der \emph{Wert-Mustervariable} $w \in W$, welche versucht Matches zu finden, die in Unterkapitel \ref{subsecNormalKombinieren} erlaubt werden, also Komplexe Zahlen wieder in Rechenausdrücke zu dekonstruieren. Näher behandelt wird die Wert-Mustervariable noch im folgenden Abschnitt \ref{subsecMustervariablen}. 
+Zuletzt kann die Multi-Mustervariable aus Abschnitt \ref{subsecMulti} von hier an nicht mehr nur als abstrakte Idee gehandelt werden. Die Menge der Multi-Mustervariablen wird dementsprechend $X^*$ genannt. Zuletzt werden nur noch bindende Instanzen einer normalen Mustervariable der Menge $X$ zugeordnet, gebundene Instanzen sind Element einer neuen Menge $X'$.
+
+\begin{definition}
+Die Menge der Terme $T$ ist in diesem Kapitel definiert als
+$$T \coloneqq \Sigma^+ \cup \mathbb C \cup X \cup X' \cup X^* \cup W \cup V \cup \Lambda \cup \curl*{(\elems t 0 n)~|~ \elems t 0 n \in T, n > 0)}$$
+mit
+\begin{align*}
+    \Sigma^+  &\coloneqq \text{Zeichenketten}\\
+    \mathbb C &\coloneqq \text{Komplexe Zahlen}\\
+    X         &\coloneqq \text{bindende Mustervariablen}\\
+    X'        &\coloneqq \text{gebundene Mustervariablen}\\
+    X^*       &\coloneqq \text{Multi-Mustervariablen}\\
+    W         &\coloneqq \text{Wert-Mustervariablen}\\
+    V         &\coloneqq \text{Lambdaparameter}\\
+    \Lambda   &\coloneqq \text{Lambdafunktionen}.
+\end{align*}
+\end{definition}
+
+
+
+
+\subsection{Lambdafunktionen} \label{subsecLambdafunktionen}
+\BFred{TODO}
+
+
+\subsection{Mustervariablen} \label{subsecMustervariablen}
+\BFred{TODO}
+
+\subsection{Syntax} \label{subsecSyntax}
+In der Umsetzung wird der Termbaum immer aus einer ASCII Zeichenkette gebaut.
+Solche Zeichenketten sind von hier an in \texttt{monospace} gesetzt.
+
+\subsubsection{Funktionsanwendungen}
+\begin{figure}
+    \label{tabZucker}
+    \centering
+    \begin{tabular}{l l}
+        \hline
+        Normale Schreibweise & Alternative Syntax\\
+        \hline \hline
+        \verb|sum(x, y)|           & \verb|x + y|\\
+        \verb|sum(x, prod(-1, y))| & \verb|x - y|\\
+        \verb|prod(-1, x)|         & \verb|-x|\\
+        \verb|prod(x, y)|          & \verb|x * y|\\
+        \verb|prod(x, y)|          & \verb|x y|\\
+        \verb|prod(x, pow(y, -1))| & \verb|x / y|\\
+        \verb|pow(x, y)|           & \verb|x^y|\\
+        \verb|cons(x, y)|           & \verb|x :: y|\\
+        \verb|and(x, y)|           & \verb|x && y|\\
+        \verb|or(x, y)|            & \verb!x || y!\\
+        \verb|not(x)|              & \verb|!x|\\
+        \verb|eq(x, y)|            & \verb|x == y|\\
+        \verb|neq(x, y)|           & \verb|x != y|\\
+        \verb|greater(x, y)|       & \verb|x > y|\\
+        \verb|smaller(x, y)|       & \verb|x < y|\\
+        \verb|greater_eq(x, y)|    & \verb|x >= y|\\
+        \verb|smaller_eq(x, y)|    & \verb|x <= y|\\
+        \verb|_Of_T(x, y)|         & \verb|x :y|\\
+        \hline
+    \end{tabular}
+    \caption{alternative Syntax für bestimmte Funktionssymbole}
+\end{figure}
+
+Die bisher genutzte Schreibweise $(f, x, y, z)$ für die Funktionsanwendung des Funktionssymbols $f$ auf die Parameter $x, y, z$ wurde in Abschnitt \ref{subsecTerm} eingeführt, um den Term syntaktisch von anderen Matheausdrücken zu differenzieren. Dies ist für die Umsetzung in C\texttt{++} nicht notwendig, da von vorne herein klar ist, ob eine Zeichenkette in einen Term übersetzt wird. Aus dem Grund werden Funktionsanwendungen in der Syntax \verb|f(x, y, z)| geparst. Weiter können Funktionsanwendungen bestimmter Funktionen auch mit fest definierten Infixoperatoren geschrieben werden, siehe Tabelle \ref{tabZucker}. hervorzuheben sind dabei zwei Dinge: Zum einen wird ein Leerzeichen zwischen zwei Termen als Multiplikation interpretiert, Funktionsanwendungen dürfen also kein Leerzeichen zwischen Funktion und Parametertupel setzen. \verb|f (x)| ist dementsprechend gleichbedeutend zu \verb|prod(f, x)|, während \verb|f (x, y)| einen Syntaxfehler darstellt. Die zweite Besonderheit ist das Fehlen von Funktionssymbolen für die Darstellung des additiven Inversen und des multiplikativen Inversen. Dies reduziert die Anzahl der Ersetzungsregeln, die benötigt werden um eine Gesetzmäßigkeit, die Summen oder Produkte involviert abzubilden. 
+
+\subsubsection{Lambdafunktionen}
+Da der ASCII Zeichensatz keine griechischen Buchstaben enthält, wird anstelle des kleinen Lambdas $\lambda$ der umgekehrte Schrägstrich \verb~\ ~genutzt. Die Identitätsfunktion $\lambda x.x$ wird dementsprechend \verb~\x .x~ geschrieben. Mehrere Parameter werden durch Leerzeichen getrennt: \verb~\x y .pow(x, y)~ ist eine Lambdafunktion mit identischem Verhalten zum Funktionssymbol \verb|pow|.
+
+\subsubsection{Symbole}
+Komplexe Zahlen auf der reellen Achse sind in der Syntax vergleichbar mit Darstellungen für Integer und Fließkommazahlen erlaubt in C. Möglich sind etwa \verb|42|, \verb|3.1415|, \verb|1.337e3|, \verb|1.602e-19| oder \verb|1e+10|. Komplexe Zahlen auf der imaginären Achse sind in der Struktur identisch, allerdings immer direkt gefolgt vom Zeichen \verb|i|. 
+
+Die verschiedenen Mustervariablen werden auch unterschiedliche Weise identifiziert. Eine normale Mustervariable muss mit einem Unterstrich beginnen (\verb|_x|), eine Wert-Mustervariable mit einem Dollar (\verb|$x|) und eine Multi-Mustervariable endet in drei Punkten (\verb|xs...|). Besitzt eine Zeichenfolge aus Zeichen in $\Sigma$ keiner dieser besonderen Merkmale, wird daraus kontextabhängig ein Lambdaparameter oder ein Symbol aus $\Sigma^+$. Bindet ein umschließendes Lambda bereits den Name, wird die innerste Bindung des Namens als Lambdaparameter gewählt. 
+\subsection{Datenstruktur}
+
 
 Die C\texttt{++} Implementierung ist nicht nur nicht generisch in ihren Mengen $F$ und $C$, sondern unterscheidt zudem auf der Typebene nicht zwischen den beiden. Konkret ist ein Literal ein Baum, welcher als innere Knoten Funktionsanwendungen und Lambdafunktionen und als äußere Knoten Komplexe Zahlen, durch Strings identifizierte Symbole und Platzhalter für Lambda Parameter enthalten kann. 
 

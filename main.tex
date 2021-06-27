@@ -76,6 +76,12 @@
 \newcommand{\KwOr}{\textbf{or }}
 
 
+%theorem umgebungen
+\newtheorem{beispiel}{Beispiel}[section] %zähler zweistellig mit section
+\newtheorem{definition}[beispiel]{Definition} %selber zähler wie beispiel
+\newtheorem{lemma}[beispiel]{Lemma}           %selber zähler wie beispiel
+
+
 %.........................................................................
 %................................ Body ...................................
 %.........................................................................
@@ -93,9 +99,7 @@
 \include{src/Normalform}
 \include{src/PatternMatching}
 \include{src/Termersetzungssystem}
-\include{src/CppHelfer}
 \include{src/CppCore}
-\include{src/Computeralgebra}
 \include{src/Zusammenfassung}
 
 \printbibliography

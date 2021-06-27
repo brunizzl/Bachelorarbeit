@@ -3,7 +3,7 @@
 
 \section{Grundlegende Definitionen} \label{secGrundlegendeDefinitionen}
 
-\subsection{Term}
+\subsection{Term} \label{subsecTerm}
 Eine Menge von Termen $T$ ist in dieser Arbeit immer  in Abhängigkeit der Mengen $F$ und $C$, sowie der \emph{Stelligkeitsfunktion} $\mathrm{arity} \colon F \rightarrow \mathbb{N} \cup \{\omega\}$ definiert, ähnlich der Notation von Benanav et. al. in \cite{NPHardMatching}. $F$ enthält die sogenannten \emph{Funktionssymbole}. Beispiele für mögliche Elemente in $F$ sind \texttt{sin} und \texttt{sqrt}, zudem auch Operatoren wie die Division, etwa geschrieben als \texttt{divide}. Die Stelligkeitsfunktion $\mathrm{arity}$ gibt für jedes Funktionssymbol an, wie viele Parameter erwartet werden. Eine mögliche Stelligkeit der genannten Beispielsymbole ist die folgende.
 
 $$\mathrm{arity} f = \begin{cases}
@@ -17,6 +17,8 @@ Die Menge $C$ enthält die \emph{Konstantensymbole}. Mit den genannten Beispiele
 
 
 
+
+\begin{definition}\label{defTerm}~\\
 Ein Term $t \in T(F, C)$ ist dann  {
 \begin{itemize}
 	\item{ein Konstantensymbol, also $t \in C$}
@@ -28,6 +30,8 @@ $$T(F, C) \coloneqq C \cup \curl*{
 (f, \tOneN)~|
 ~f\in F,~\mathrm{arity}(f) \in \{n, \omega\},~ \tOneN \in T(F, C)
 }$$ 
+\end{definition}
+
 Eine Funktionsanwendung wird in der Literatur oft mit dem Funktionssymbol außerhalb des Tupels geschrieben (\cite{buch1977}, \cite{NPHardMatching}), also $f(\tOneN)$ statt $(f, \tOneN)$. Zum deutlicheren Abheben von Funktionen die Terme transformieren zu Termen selbst, wird diese Schreibweise hier keine Verwendung finden. 
 
 
@@ -37,10 +41,9 @@ Eine Funktionsanwendung wird in der Literatur oft mit dem Funktionssymbol außer
 \caption{Baumdarstellung des Terms $(\texttt{divide}, 3, (\texttt{sin}, 1))$ }
 \end{figure}
 
-\newtheorem{bBaum}[bsp]{Beispiel}
-\begin{bBaum}~\\
+\begin{beispiel}~\\
 Als Beispiel lässt sich der Ausdruck $\frac 3 {\sin 1}$ in der formalen Schreibweise als Term mittels der Funktionssymbole $\texttt{sin}$ und $\texttt{divide}$, sowie den Konstantensymbolen $3$ und $1$ darstellen als $(\texttt{divide}, 3, (\texttt{sin}, 1))$. Ein Term kann dabei auch immer als Baum\footnote{In der theoretischen Informatik auch Syntaxbaum oder AST (englisch für \textit{Abstract Syntax Tree})} aufgefasst werden, etwa das aktuelle Beispiel in in Abb. \ref{ersterBeispielBaum} .
-\end{bBaum}
+\end{beispiel}
 
 Mit dem Kontext der Baumdarstellung lassen sich nun die folgenden Begriffe auf Terme übertragen. In der Funktionsanwendung $t = (f, \tOneN)$ sind $\tOneN$ die \emph{Kinder} ihres \emph{Vaters} $t$. Kinder sind allgemeiner \emph{Nachkommen}. Nachkommen verhalten sich transitiv, also ein Nachkomme $z$ des Nachkommen $y$ von $x$ ist auch ein Nachkomme von $x$. Umgekehrt ist $x$ \emph{Ahne} von $y$ und $z$. \\
 
@@ -61,8 +64,7 @@ Gilt $\mathrm{arity} f = n \in N$ für ein $f \in F$, ist zudem die Funktion $u~
 Die Funktion $u$ wird als \emph{Interpretation} der Funktionssymbole $F$, die Funktion $v$ als Interpretation der Konstantensymbole $C$ und das Paar $(u, v)$ als Interpretation der Terme $T(F, C)$ bezeichnet. Die Funktion $\mathrm{eval}(u, v) \colon T \rightarrow Y$ ist eine \emph{Auswertung} nach $Y$. 
 \\~\\
 
-\newtheorem{bEval}[bsp]{Beispiel}
-\begin{bEval} \label{bEval}
+\begin{beispiel} \label{bEval}
 Sei $F = \{\texttt{sum}, \texttt{prod}, \texttt{neg} \}$ und $C = \mathbb{N}$ mit $\mathrm{arity}~ \texttt{sum} = \mathrm{arity}~ \texttt{prod} = \omega$ und $\mathrm{arity}~ \texttt{neg} = 1$.
 Die Interpretation $(u, v)$ kann so gewählt werden, dass jeder Term in $T$ zu einer ganzen Zahl $n \in \mathbb{Z}$ auswertbar ist.
 
@@ -89,14 +91,13 @@ Der Term $t = (\texttt{sum}, 3, (\texttt{prod}, 2, 4), (\texttt{neg}, 1))$ kann 
     &= 10 \\
     \end{split}
 \end{equation*}
-\end{bEval}
+\end{beispiel}
 
 
 \subsubsection{Konstruktor}
 Eine direkt aus der Struktur des Terms folgende Interpretation $u_c$ für Funktionssymbole ist die des \emph{Konstruktors}. Als Konstruktor eines Typen $A$ wird allgemein eine Funktion bezeichnet, die nach $A$ abbildet. Für typenlose Terme ist diese Definition deshalb schwierig. Insbesondere in funktionalen Sprachen wird das Konzept allerdings noch verfeinert. In Haskell transformiert ein Konstruktor Daten nicht im eigentlichen Sinne, sondern bündelt lediglich ein Tag, das festhält welcher Konstruktor genutzt wurde, mit den $n$ übergebenen Paramtern zu einem Tupel der Größe $n+1$ \cite{haskellConstructor}. Das entspricht exakt der Funktionsanwendung in einem Term, mit dem Funktionssymbol als Tag. Wenn $u_c$ angewendet auf ein Funktionssymbol $f$ das $n$ Tupel von Parametern auf eine Funktionsanwendung von $f$ mit den selben $n$ Parametern abbildet, ist $u_c~f$ damit ein Konstruktor. 
 
-\newtheorem{defKonstruktor}[bsp]{Definition}
-\begin{defKonstruktor}~\\
+\begin{definition}~\\
  Mit $f \in F$ und $\mathrm{arity} f = n \in \mathbb N$ 
 gilt 
 $$u_c~f \colon T^n \rightarrow T, ~(\tOneN) \mapsto (f, \tOneN)$$
@@ -105,14 +106,13 @@ Mit einem beliebigen $v \colon C \rightarrow C'$ ändert die Auswertung $\mathrm
 Die Interpretation $u_c$ reicht für bestimmte Funktionssymbole aus, etwa kann so das Funktionssymbol $\texttt{pair}$ ein Paar als Term darstellen.
 $$u_c~\texttt{pair} \colon T^2 \rightarrow T, ~(a, b) \mapsto (\texttt{pair}, a, b)$$
 Äquivalent ist die Darstellung endlicher Mengen und Tupel mit variadischen Funktionssymbolen \texttt{set} und \texttt{tup} möglich\footnote{Da eine Menge ihren Elementen keine Reihenfolge gibt, muss $u_c~\texttt{set}$ im Unterschied zu $u_c~\texttt{tup}$ prinzipiell nicht die ursprüngliche Parameterreihenfolge erhalten. In Kapitel \ref{subsecNormalSortieren} wird eine Größenrelation zur möglichen Umordung diskutiert.}.
-\end{defKonstruktor}
+\end{definition}
 
 
-\newtheorem{bspKonstruktor}[bsp]{Beispiel}
-\begin{bspKonstruktor}~\\
+\begin{beispiel}~\\
 Ein Graph $G = (V, E)$ wird als Paar der Menge von Knoten $V$ und Menge der Kanten $E$ definiert. Eine Kante ist dabei eine zweielementige Menge von Knoten. Der vollständige Graph auf drei Knoten ist $K_3 = \paren*{\{1, 2, 3\}, \curl*{\{1, 2\}, \{2, 3\}, \{1, 3\}}}$. Mit der Interpretation der Funktionssymbole $\texttt{pair}$ und $\texttt{set}$ als Konstruktoren lässt sich $K_3$ auch als Term darstellen:
 $$(\texttt{pair}, (\texttt{set}, 1, 2, 3), (\texttt{set}, (\texttt{set}, 1, 2), (\texttt{set}, 2, 3), (\texttt{set}, 1, 3))).$$
-\end{bspKonstruktor}
+\end{beispiel}
 
 \subsection{Muster} \label{subsecMuster}
 
@@ -121,17 +121,15 @@ $$M(F, C) \coloneqq T(F, C \cup X)$$
 
 Eine \emph{Ersetzungsregel} für Literale $t \in T(F, C)$ hat die Form $(l, r) \in M(F, C) \times M(F, C)$. Die linke Seite $l$ steht für das Muster, dass im Literal durch einen Ausdruck der Form der rechten Seite $r$ ersetzt werden soll. Für die bessere Lesbarkeit wird statt $(l, r)$ auch $l \mapsto r$ geschrieben.
 
-\newtheorem{bMuster}[bsp]{Beispiel} 
-\begin{bMuster} \label{bMuster}
+\begin{beispiel} \label{bMuster}
 Die Regel, die die Summe zweier identischer Terme $a$ als Produkt von $2$ und $a$ transformiert wird geschrieben als
 $$(\texttt{sum}, \mathbf a, \mathbf a) \mapsto (\texttt{prod}, 2, \mathbf a)$$
 Wird die Regel jetzt auf das Literal 
 $t = (\texttt{sum}, (\texttt{sin}, 3), (\texttt{sin}, 3))$ angewandt, kann man $t$ zu $t' = (\texttt{prod}, 2, (\texttt{sin}, 3))$ transformieren. 
 Hervorzuheben ist dabei, dass die Mustervariable $\mathbf a$ selbst nicht mehr im Ergebnisterm vorkommt. Sie wurde stattdessen durch den Teilterm ersetzt, der im Ursprungsliteral an der Stelle von $\mathbf a$ stand, nämlich $(\texttt{sin}, 3)$.
-\end{bMuster}
+\end{beispiel}
 
-\newtheorem{defMatch}[bsp]{Definition}
-\begin{defMatch}
+\begin{definition}
 Für ein Paar $(p, t) \in M(F, C) \times T(F, C)$ ist eine Funktion $v_p \colon X \rightarrow T(F, C)$ ein \emph{Match}, wenn folgendes gilt:
 $$\mathrm{eval}(u_c, \tilde v_p)~ p = t$$
 $$\tilde v_p~ c = \begin{cases}
@@ -148,7 +146,7 @@ Gedacht ist $\mathrm{normalize}$ als Mittel, um Unterschiede zwischen Termen zu 
 
 Welche Unterschiede $\mathrm{normalize}$ beseitigt soll hier nicht festgelegt werden. Klar ist aber, dass je nach Wahl von $\mathrm{normalize}$ zwar ein einzelnes Muster sehr mächtig werden kann, also ein Match mit sehr vielen Termen möglich ist, das Finden des Matches dann im allgemeinen Fall allerdings immer aufwändiger wird. 
 
-\end{defMatch}
+\end{definition}
 
 Ein \emph{Matchalgorithmus} ist eine Vorgehensweise für ein gegebenes Paar $(p, t) \in M(F, C) \times T(F, C)$ ein gültiges Match zu finden. Perfekt wird ein solcher Algorithmus dann genannt, wenn jedes mögliche Match gefunden werden kann.
 

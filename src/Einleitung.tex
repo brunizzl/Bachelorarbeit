@@ -26,8 +26,7 @@ Der Algorithmus soll ein Muster dabei möglichst nicht nur erkennen, wenn der Te
 Damit ist das Ziel die Mustererkennung möglichst schnell durchführen zu können beim Treffen von Designentscheidungen in der Musterstruktur nicht ausschlaggebend, eine polinomielle Laufzeitkomplexität ist allerdings angestrebt.\\
 Das Leistungsvermögen des entwickelten Termersetzungssystems wird in einer Anwendung zur Vereinfachung algebraischer Ausdrücke über den Komplexen Zahlen getestet. 
 
-\newtheorem{bsp}{Beispiel}[section]
-\begin{bsp}~\\
+\begin{beispiel}~\\
 Es werden vier Vereinfachungsregeln definiert:
 \begin{alignat*}{4}
     ~& a \cdot b + a \cdot c & &= a \cdot (b + c) &~~~& (1) \\
@@ -48,7 +47,7 @@ Der folgende Ausdruck kann durch Ersetzung der Struktur der linken Seite einer V
     \end{split}
 \end{equation*}
 Hervorzuheben ist dabei, dass Variablennamen wie $a$ oder $b$ in den Vereinfachungsregeln eine andere Bedeutung haben, als die Variablen $x$ und $y$ im zu vereinfachenden Ausdruck. Erstere sind Platzhalter in der Ersetzungsregel, stehen damit also representativ für einen Teil des Ausdrucks, der transformiert wird, während zweitere ihre Bedeutung außerhalb des Ersetzungssystems haben. Formalisiert wird dieser Unterschied in Abschnitt \ref{subsecMuster}. Als Beispiel gilt für die erste Umformung $b = \sin(x + y)^2$ mit $b$ aus Regel $(1)$.
-\end{bsp}
+\end{beispiel}
 
 \subsection{Aufbau der Arbeit}
 In Abschnitt \ref{secGrundlegendeDefinitionen} werden die Begriffe eingeführt, die zur Beschreibung eines zu transformierenden Ausdrucks, aber auch zur Beschreibung der Transformation selbst notwendig sind. Mit den dann etablierten Begriffen werden die Algorithmen zur Normalisierung ohne Mustererkennung aus Kapitel \ref{secErsteNormalform} und die Algorithmen zur Mustererkennung in Abschnitt \ref{secPattermatching} erläutert. Aufbauend auf Patternmatching tut dann Kapitel \ref{secTermersetzungssystem}, wo die Transformation eines Terms durch vordefinierte Muster beschrieben wird.

@@ -54,7 +54,7 @@ Die Funktion $u_n \colon T_C \rightharpoonup C$ kann hier und in den weiteren Al
 
 \subsection{Kommutative Funktionsanwendungen} \label{subsecNormalSortieren}
 Eine Normalform für kommutative Funktionsanwendungen erfordert eine totale Ordnung auf der Menge aller Terme $T(F, C)$. Aufbauend auf einer totalen Ordnung von $F$ sowie $C$, kann eine lexikographische Ordnung $<$ von $T$ frei nach \cite{LexikografischeOrdnung} wie folgt definiert werden. 
-\begin{itemize}
+\begin{enumerate}
 	\item{sind $c, \tilde{c} \in T$ Konstantensymbole, so ist die Ordnung identisch zu der Ordnung in $C$}
 	\item{sind $c, a, \in T$ sowie $c$ ein Konstantensymbol und $a$ eine Funktionsanwendung gilt $c < a$ }
 	\item{sind $a = (f, ts...), b = (g, rs...) \in T$ Funktionsanwendungen und ist $f \neq g$ gilt $a < b \iff f < g $}
@@ -64,7 +64,7 @@ Eine Normalform für kommutative Funktionsanwendungen erfordert eine totale Ordn
 		\item{ist $n < m$ und $\forall i < n\colon t_i = r_i$ gilt $a < b$}
 		\item{ist $n = m$ und $\forall i \leq n\colon t_i = r_i$ gilt $a = b$}
 	\end{itemize}
-\end{itemize}
+\end{enumerate}
 Zur Normalisierung einer kommutativen Funktionsanwendung werden zuerst alle Parameter normalisiert, dann können die Parameter nach der lexikographischen Ordnung $<$ von $T$ sortiert werden. 
 
 \subsection{Teilweise Auswertung} \label{subsecNormalKombinieren}
