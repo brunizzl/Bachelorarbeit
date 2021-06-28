@@ -129,7 +129,7 @@ $t = (\texttt{sum}, (\texttt{sin}, 3), (\texttt{sin}, 3))$ angewandt, kann man $
 Hervorzuheben ist dabei, dass die Mustervariable $\mathbf a$ selbst nicht mehr im Ergebnisterm vorkommt. Sie wurde stattdessen durch den Teilterm ersetzt, der im Ursprungsliteral an der Stelle von $\mathbf a$ stand, nämlich $(\texttt{sin}, 3)$.
 \end{beispiel}
 
-\begin{definition}
+\begin{definition} \label{defMatch}
 Für ein Paar $(p, t) \in M(F, C) \times T(F, C)$ ist eine Funktion $v_p \colon X \rightarrow T(F, C)$ ein \emph{Match}, wenn folgendes gilt:
 $$\mathrm{eval}(u_c, \tilde v_p)~ p = t$$
 $$\tilde v_p~ c = \begin{cases}

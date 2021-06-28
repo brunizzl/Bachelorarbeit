@@ -1,10 +1,14 @@
 
 
 
+
 \section{Termersetzungssystem} \label{secTermersetzungssystem}
 
-Im vorangehenden Kapitel wurde beschrieben, wie das Match $v_p$ eines Musters $p$ mit einem Literal $t$ gefunden werden kann. In diesem Kapitel wird darauf aufbauend die Transformation durch Anwendung von Ersetzungsregeln erörtert. 
+Das Ziel dieses Abschnittes ist erneut die Normalisierung eines Terms. Im Unterschied zu Kapitel \ref{secErsteNormalform} werden die Ersetzungsregeln hier nicht im Algorithmus festgelegt, sondern erst als Parameter mit übergeben.
+
+\subsection{Strategien}
+Es gibt verschiedene Strategien in einem Term nach Teiltermen zu suchen, die transformiert werden können. Die Funktion $\mathrm{normalize}$ aus Kapitel \ref{secErsteNormalform} geht von innen nach außen, normalisiert also zuerst die Argumente einer Funktionsanwendung, bevor die Funktionsanwendung selbst normalisiert wird. Das hat den Vorteil, dass $\mathrm{normalize}$ ein sehr einfachen Aufbau besitzen kann, schließlich bleiben die Argumente in ihrer Normalform, wenn die umschließende Funktionsanwendung selbst normalisiert wird. Jede Funktionsanwendung eines zu normalisierenden Terms muss also nur ein Mal besucht werden.
 
 
-
+Hier wird zuerst die äußerste Funktionsanwendung transformiert, dann ihre Argumente. Der Vorteil besteht darin, dass mehr Terme normalisiert werden können \cite{EvalStrategien}. Der Nachteil besteht darin, dass die Normalisierung eines Argumentes 
 

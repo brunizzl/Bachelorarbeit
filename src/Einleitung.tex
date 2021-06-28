@@ -18,6 +18,10 @@ Anmerkung: Hier kommt hin, was halt in eine Einleitung soll:
 \end{itshape}
 }
 
+Die Manipulation symbolischer Ausdrücke ist in der Mathematik allgegenwärtig. Ist bekannt, dass ein Ausdruck $A$ gleichbedeutend zu einem zweiten Ausdruck $B$ ist, so kann in einem dritten Ausdruck $C$ jedes Vorkommen von $A$ durch $B$ ersetzt werden. Als Beispiel kann der Bruch $C = \frac{4}{2}$ auch als $C' = \frac{2 \cdot 2}{2}$ geschrieben werden, wenn bekannt ist, dass $A = 4$ und $B = 2 \cdot 2$ die gleiche Bedeutung haben. 
+
+Oft ist für zwei Ausdrücke bekannt, dass sie gleichbedeutend sind, wenn beide jeweils einer bestimmten Struktur folgen. Im Beispiel kann $C'$ auch als $C'' = 2$ geschrieben werden, da unabhängig konkreter Werte von $x$ und $y$ feststeht, dass der Ausdruck $\frac{x \cdot y}{x}$ auch als $y$ geschrieben werden kann.
+
 Die Idee Computer zu nutzen um symbolische Ausdrücke zu manipulieren ist fast so alt wie der Computer selbst.  LISP ist als eine der ersten höheren Programmiersprachen bereits für diesen Zweck geschaffen worden \cite{lisp}. 
 
 \subsection{Zielsetzung}
@@ -51,8 +55,8 @@ Hervorzuheben ist dabei, dass Variablennamen wie $a$ oder $b$ in den Vereinfachu
 
 \subsection{Aufbau der Arbeit}
 In Abschnitt \ref{secGrundlegendeDefinitionen} werden die Begriffe eingeführt, die zur Beschreibung eines zu transformierenden Ausdrucks, aber auch zur Beschreibung der Transformation selbst notwendig sind. Mit den dann etablierten Begriffen werden die Algorithmen zur Normalisierung ohne Mustererkennung aus Kapitel \ref{secErsteNormalform} und die Algorithmen zur Mustererkennung in Abschnitt \ref{secPattermatching} erläutert. Aufbauend auf Patternmatching tut dann Kapitel \ref{secTermersetzungssystem}, wo die Transformation eines Terms durch vordefinierte Muster beschrieben wird.
-Die tatsächliche Umsetzung und ihre Abweichungen von vorhergehenden Ideen ist in den Abschnitten \BFred{TODO} und \ref{secKernUmsetzungInCpp} behandelt. 
-Zum Schluss wird das entwickelte Termersetzungssystem genutzt um Terme über den komplexen Zahlen zu vereinfachen. Weiter werden alternative Sprachen und Systeme mit ähnlichem Fokus diskutiert und diese Arbeit damit verglichen.
+Die tatsächliche Umsetzung und ihre Abweichungen von vorhergehenden Ideen ist in den Kapitel \ref{secKernUmsetzungInCpp} behandelt. 
+Kapitel \ref{secZusammenfassung} fasst die Arbeit zusammen.
 
 
 
