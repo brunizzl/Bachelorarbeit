@@ -401,6 +401,37 @@ $\prec$ und $\preceq$ sind transitiv $(1)$ und für $p, q, r \in M$  gilt $p \pr
 
 
 
+\subsection{Termersetzungssystem} \label{subsecTermersetzungssystem}
+
+Das Ziel dieses Abschnittes ist erneut die Normalisierung eines Terms. Im Unterschied zu Kapitel \ref{secErsteNormalform} werden die Ersetzungsregeln hier nicht im Algorithmus festgelegt, sondern erst als Parameter mit übergeben. 
+
+Ist eine Ersetzungsregel auf das übergebende Literal $l = l^{(0)}$ oder ein Teil dessen anwendbar, so wird das Ergebnis der Ersetzung $l^{(1)}$ genannt. Auf dem selben Weg kann aus $l^{(1)}$ der Term $l^{(2)}$ erzeugt werden oder allgemeiner aus $l^{(i)}$ der Term $l^{(i+1)}$. Ist auf keinen Teil von $l^{(n)}$ mehr eine Regel anwendbar, wird $l^{(n)}$ als \emph{Normalform} von $l$ zu den übergebenden Ersetzungsregeln bezeichnet. 
+
+Es ist möglich, dass ein Literal $l$ mit einer bestimmten Regelmenge mehr als nur eine Normalform besitzt. Eine einfache Regelmenge mit dieser Eigenschaft besteht aus zwei Regeln mit identischer linker Seite aber unterschiedlicher rechter Seite. Bestimmte Regeln können allerdings auch in Isolation mehrere Normalformen produzieren. Ein Beispiel ist die folgende Regel, welche $\mathbf x$ ausklammert:
+$$(\texttt{sum}, \mathbf x, (\texttt{prod}, \mathbf x, \mathbf{ys...}), \mathbf{zs...}) 
+\mapsto (\texttt{sum}, (\texttt{prod}, \mathbf x, (\texttt{sum}, 1, (\texttt{prod}, \mathbf{ys...})) , \mathbf{zs...})$$
+
+Für das Literal $l = (\texttt{sum}, a, b, (\texttt{prod}, a, b))$ existiert sowohl die Normalform 
+$$l' = (\texttt{sum}, b, (\texttt{prod}, a, (\texttt{sum}, 1, b))),$$ 
+als auch 
+$$l'' = (\texttt{sum}, a, (\texttt{prod}, b, (\texttt{sum}, 1, a))).$$
+
+Das ist an dieser Stelle allerdings nicht neu: Algorithmus \ref{rematch} ($\mathrm{rematch}$) ist eine direkte Antwort auf Muster dieser Art. Die Fragestellung welche Mengen von Ersetzungsregeln eindeutige Normalformen unabhängig von der Reihenfolge ihrer Anwendung produzieren (\emph{konfluent} sind) ist im allgemeinen Fall unentscheidbar \cite{KonfluenzUnentscheidbar}. 
+Algorithmus \ref{algoTermersetzung} baut allerdings darauf auf, dass die übergebende Regelmenge konfluent ist.
+
+\subsubsection{Strategien}
+Eine besondere Eigenschaft der Normalisierung aus Kapitel \ref{secErsteNormalform} ist, dass die dadurch definierte Normalform eines Terms eindeutig ist. Gemeint ist damit, dass nicht nur die Funktion $\mathrm{normalize}$ deterministisch ist, sondern dass sie immer das selbe Ergebnis produziert, wie eine beliebige andere Strategie, die so lange die erläuterten drei Regeln Sortieren kommutativer Funktionsanwendungen, Zusammenfassen assoziativer Funktionsanwendungen und Auswerten auswertbarer Teile auf jeden Teilterm anwendet, bis keine Anwendung mehr zu einer Veränderung führt. Dies ist allerdings nicht für beliebige Mengen von Ersetzungsregeln der Fall. Das einfachste Gegenbeispiel sind zwei Regeln mit gleicher linker Seite aber unterschiedlicher rechter Seite.
+
+
+
+
+Es gibt verschiedene Strategien in einem Term nach Teiltermen zu suchen, die transformiert werden können. Die Funktion $\mathrm{normalize}$ aus Kapitel \ref{secErsteNormalform} geht von innen nach außen, normalisiert also zuerst die Argumente einer Funktionsanwendung, bevor die Funktionsanwendung selbst normalisiert wird. Das hat den Vorteil, dass $\mathrm{normalize}$ ein sehr einfachen Aufbau besitzen kann, schließlich bleiben die Argumente in ihrer Normalform, wenn die umschließende Funktionsanwendung selbst normalisiert wird. Jede Funktionsanwendung eines zu normalisierenden Terms muss also nur ein Mal besucht werden.
+
+
+Hier wird zuerst probiert Ersetzungsregeln auf das Literal als ganzes anzuwenden, dann, sollte das Literal eine Funktionsanwendung sein, auf seine Argumente. Der Vorteil besteht darin, dass mehr Terme normalisiert werden können \cite{EvalStrategien}. Der Nachteil besteht darin, dass der zur Umsetzung notwendige Algorithmus aufwendiger ist, da die Normalisierung eines Argumentes möglicherweise neue Transformationen für umschließende Terme eröffnet.
+
+Ein grundlegendes Problem ist, dass die Normalform eines Literals für entsprechend gewählte Regelsätze von der gewählten Normalisierungsstrategie abhängt. 
+
 
 
 
