@@ -37,26 +37,40 @@ mit
 %.........................................................................
 %.........................................................................
 \subsection{Lambdafunktionen} \label{subsecLambdafunktionen}
-Die umgesetzten Funktionen erweitern die Definition von Church, indem die selbe Lambdaabstraktion auch mehrere Parameter erlaubt. Während der Ausdruck $\lambda x_0 y_1 . x_0(y_1)$ für Church also nur eine vereinfachte Schreibweise\footnote{Die Klammern um $y$ werden in der Literatur oft weggelassen, für diese Arbeit sind sie allerdings notwendig.} für den Ausdruck $\lambda x_0 .\lambda y_1 .x_0(y_1)$ darstellt, handelt es sich für die hier berschriebende Umsetzung um zwei verschiedene Funktionen. 
+Die umgesetzten Funktionen erweitern die Definition von Church, indem die selbe Lambdaabstraktion auch mehrere Parameter erlaubt. Während der Ausdruck $\lambda x y . x(y)$ für Church also nur eine vereinfachte Schreibweise\footnote{Die Klammern um $y$ werden in der Literatur oft weggelassen, für diese Arbeit sind sie allerdings notwendig.} für den Ausdruck $\lambda x .\lambda y .x(y)$ darstellt, handelt es sich für die hier berschriebende Umsetzung um zwei verschiedene Funktionen. 
 Ein Lambdaparameter ist in der Syntax nicht von anderen Symbolen unterscheidbar\footnote{siehe \ref{subsubsecLambdaSyntax}}, wird intern allerdings mit einer Variante der De Bruijn Indices dargestellt \cite{deBruijn}.
- Jeder neu gebundene Parameter bekommt als Index die Zahl der weiter außen bzw. in der selben Abstraktion vor ihm gebundenen Parameter. Zur Veranschaulichung wird hier der Index im Tiefsatz mitgeschrieben. 
+ Jeder neu gebundene Parameter bekommt als Index die Anzahl der weiter außen bzw. in der selben Abstraktion vor ihm gebundenen Parameter. Zur Veranschaulichung wird hier der Index im Tiefsatz mitgeschrieben\footnote{Der Umsetzung sind ausschließlich die Indices bekannt, Namen der Lambdaparameter werden intern nicht gespeichert.}. 
  Als Beispiel dient $\lambda x_0 y_1 .\lambda z_2 .x_0 + y_1 + z_2$. Das Zeichen $x$ wird in der äußersten Abstraktion zuerst gebunden, hat also keine Vorgänger und dementsprechend Index $0$. In der selben Abstraktion wird als zweiter Parameter weiter $y$ gebunden. Als Nachfolger von $x$ wird $y$ Index $1$ zugewiesen. Die Bindung von $z$ liegt Innerhalb der Abbildungsvorschrift des äußeren Lambdas, $x$ und $y$ können also referenziert werden. Dementsprechend hat $z$ zwei Vorgänger und Index $2$. 
  
- Die Auswertung der Funktionsanwendung einer Lambdafunktion $f$ entspricht der $\beta$-Redunktion (von Church \cite{ChurchLambda36} als \emph{operation II} bezeichnet). Parameter von $f$ werden dafür durch die übergebenden Argumente ersetzt. Enthält die Definition von $f$ allerdings weitere Lambdaabstraktionen, so werden die Indices derer Parameter nur um die Stelligkeit von $f$ erniedrigt.
- Als Beispiel wird der Ausdruck $(\lambda x_0 .\lambda y_1 .x_0 + y_1)(3)$ zum Ausdruck $\lambda y_0 .3 + y_0$ ausgewertet\footnote{die Namen der Variablen $x$ und $y$ sind dem System dabei nicht bekannt, lediglich die Indices $0$ und $1$ identifizieren die Parameter.}.
+ Die Auswertung der Funktionsanwendung einer Lambdafunktion $f$ entspricht der $\beta$-Reduktion (von Church \cite{ChurchLambda36} als \emph{operation II} bezeichnet). Parameter von $f$ werden dafür durch die übergebenen Argumente ersetzt. Enthält die Definition von $f$ selbst weitere Lambdaabstraktionen, so werden die Indices derer Parameter um die Stelligkeit von $f$ erniedrigt.
+ Der Ausdruck $(\lambda x_0 y_1 .\lambda z_2 .x_0 + y_1 + z_2)(3, 6)$ wird damit zum Ausdruck $\lambda z_0 .3 + 6 + z_0$ ausgewertet.
  
- Enthält ein Argument $a$ der Funktionsanwendung einer Lambdafunktion $f$ allerdings selbst eine Lambdafunktion $g$, so reicht es mit bisher diskutierten Konzepten im allgemeinen Fall nicht aus, den entsprechenden Parameter von $f$ einfach durch $a$ zu ersetzen: Sollte diese Ersetzung innerhalb einer Lambdaabstraktion $f'$ stattfinden, haben die Parameter von $g$ einen jetzt falschen Index und werden mindestens teilweise fälschlicherweise $f'$ zugeordnet. Als Beispiel ist $a = g = \lambda x_0 .x_0$ die Identität, welche der Funktion $f = \lambda x_0 .\lambda y_1 .x_0(y_1)$ übergeben wird.
+ Enthält ein Argument $a$ der Funktionsanwendung einer Lambdafunktion $f$ allerdings selbst eine Lambdafunktion $g$, so reicht es für die Auswertung von $f$ mit bisher diskutierten Konzepten im allgemeinen Fall nicht aus, den entsprechenden Lambdaparameter von $f$ einfach durch $a$ zu ersetzen: Sollte diese Ersetzung innerhalb einer Lambdaabstraktion $f'$ stattfinden, müssen alle Lambdaparameter von $g$ im Index um die Anzahl der weiter außen gebundenen Parameter erhöht werden. Als Beispiel ist $a = g = \lambda x_0 .x_0$ die Identität, welche der Funktion $f = \lambda x_0 .\lambda y_1 .x_0(y_1)$ übergeben wird. Teil der Definition von $f$ ist $f' = \lambda y_1 .x_0(y_1)$.
  $$(\lambda x_0 .\lambda y_1 .x_0(y_1))(\lambda x_0 .x_0)$$
- Die Naive Ersetzung von $x_0$ in $f$ durch $g$ würde im folgenden Ausdruck resultieren\footnote{Die Darstellung ist in sofern problematisch, als Dank der De Bruijn Indizierung die Lambdaabstraktion keine explizite Bindung einzelner Variablen mehr enthält, lediglich wie viele Variablen gebunden werden.}.
+ An dieser Stelle muss angemerkt werden, dass durch die De Bruijn Indizierung die explizite Bindung eines Lambdaparameters in der Lambdaabstraktion nicht länger notwendig macht. Dem System ist tatsächlich nur die Anzahl der Parameter einer Abstraktion bekannt. Ehrlicher ist die Darstellung einer Lambdaabstraktionen mit $n$ Parametern als $\lambda [n] .\textit{<Definition>}$. Mit den Parametern geschrieben als Prozentzeichen gefolgt von ihrem De Bruijn Index, ist der problematische Ausdruck geschrieben als
+ 
+ $$(\lambda [1] .\lambda [1] .\%0(\%1))(\lambda [1] .\%0)$$.
+ Die Naive Ersetzung von $x_0$ in $f$ durch $g$ würde im folgenden Ausdruck resultieren.
  $$\lambda y_0 .(\lambda x_0 .x_0)(y_0)$$
-Da die Namen $x$ und $y$ nur der Veranschaulichung dienen und nicht tatsächlich zur Unterscheidung genutzt werden können, ist der Ausdruck identisch zu $\lambda y_0 .(\lambda x_1 .y_0)(y_0)$.
-Um dieses Problem zu lösen, ist eine Option bei der Ersetzung der Lambdaparameter durch die Argumente für jede Ersetzung innerhalb einer weiteren Lambdaabstraktion die Indices von Lamndaparametern im Argument entsprechend anzupassen. Das würde allerdings bedeuten, dass die Komplexität der Auswertung von der Größe der Argumente abhängig ist. Die Alternative ist die Unterscheidung zwischen sogenannten \emph{transparenten} Lambdas und \emph{nicht-transparenten} Lambdas, zweitere dargestellt durch umschließende geschweifte Klammern: $\{f\}$. In ersteren werden bei einer Auswertung Parameter wie beschrieben ersetzt, in zweiteren nicht. Wenn jede äußerste Lambdaabstraktion immer nicht-transparent ist, ist das Problem umgangen. Im bereits behandelten Problemfall werden $f$ und $g$ damit nicht-transparent. Lediglich $f'$ ist zu Beginn transparent, wird allerdings nach Auswertung von $f$ ebendfalls zur äußersten Lambdaabstraktion, verliert also seine Transparenz. 
+ Ohne Namen ist jetzt klar, dass in der Abbildungsvorschrift von $g$ nun fälschlicherweise auf den Parameter von $f'$ abgebildet wird:
+ $$\lambda [1] .(\lambda [1] .\%0)(\%0)$$
+ Es gibt verschiedene Möglichkeiten den Fehler zu beheben. Die wohl einfachste Lösung ist Indices von eingesetzten Argumenten in der Auswertung einer Lambdafunktion entsprechend anzupassen. Das würde allerdings bedeuten, dass die Komplexität der Auswertung von der Größe der Argumente abhängig ist. Ein weiterer Nachteil ist, dass veränderte Argumente kopiert werden müssen. Das macht \emph{lazy evaluation} \cite{EvalStrategien}, also die Idee jede Funktionsanwendung höchstens ein Mal auswerten zu müssen, unmöglich.
+ 
+ Eine Alternative ist die Unterscheidung zwischen sogenannten \emph{transparenten} Lambdas und \emph{nicht-transparenten} Lambdas, zweitere dargestellt durch umschließende geschweifte Klammern: $\{\lambda \textit{<Parameter>}.\textit{<Definition>}\}$, bzw. $\{\lambda [n].\textit{<Definition>}\}$. Kommt ein transparentes Lambda $f'$ in der Definition eines Lambdas $f$ vor, wird bei der Auswertung von $f$ auch in $f'$ nach Lambdaparametern gesucht und diese ersetzt, bzw. deren Index erniedrigt. Transparente Lambdas verhalten sich damit nicht anders als die Lambdas bisher. Ist $f'$ allerdings nicht-transparent, lässt die Auswertung von $f$ die Definition von $f'$ unberührt. 
+ Mit zwei weiteren Bedingungen wird die Überprüfung von Argumenten bei der Auswertung Lambdas dann obszolet: 
+ Zum einen darf ein \emph{außenliegendes} Lambda $f$ nicht transparent sein. Ein Lambda ist außenliegend, wenn es nicht Teil der Definition einem weiteren Lambdas ist. Zum anderen darf die Funktionsanwendung eines Lambdas nur ausgewertet werden, wenn das Lambda außenliegend ist. Damit wird garantiert, dass während der Auswertung des Lambdas $f$ kein Argument $a$ direkt transparente Lambdas enthält, höchtens als Teil $g'$ (im Beispiel nicht enthalten) eines nicht-transparenten Lambdas $g$.
+
+Im bereits behandelten Problemfall sind $f$ und $g$ damit nicht-transparent. Nur $f'$ ist zu Beginn transparent, wird allerdings nach Auswertung von $f$ ebendfalls zur äußersten Lambdaabstraktion, verliert also seine Transparenz. 
 \begin{align*}
-    ~      &~\{\lambda x_0 .\lambda y_1 .x_0(y_1)\}(\{\lambda x_0 .x_0\})(3) \\
-    \mapsto&~\{\lambda y_0 .\{\lambda x_0 .x_0\}(y_0)\}(3)\\
-    \mapsto&~\{\lambda x_0 .x_0\}(3)\\
-    \mapsto&~3
+    ~           &~\{\lambda x_0 .\lambda y_1 .x_0(y_1)\}(\{\lambda x_0 .x_0\}) \\
+    \rightarrow &~\{\lambda y_0 .\{\lambda x_0 .x_0\}(y_0)\}\\
 \end{align*}
+Alternativ ohne Namen:
+\begin{align*}
+    ~           &~\{\lambda [1] .\lambda [1] .\%0(\%1)\}(\{\lambda [1] .\%0\}) \\
+    \rightarrow &~\{\lambda [1] .(\{\lambda [1] .\%0\})(\%0)\}\\
+\end{align*}
+Bemerkenswert ist, dass mit den soeben formulierten Bedingungen der Ausdruck nicht weiter transformiert werden darf. Das liegt daran, dass die Funktionsanwendung von $g$ selbst noch vom Lambda $f'$ umschlossen ist. Es ist also nicht ausgeschlossen, dass Argumente von $g$ (hier nur $\%0$) direkt transparente Lambdas enthalten.
 
 
 %.........................................................................

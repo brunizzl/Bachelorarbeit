@@ -11,3 +11,5 @@ Der Textteil meiner Bachelorarbeit
 - C++ fertig schreiben
 - Beweise in PatternMatching machen
 - Termersetzungsystem
+- Parameter zu Argumente
+- Kapitel fangen alle mit 0. an

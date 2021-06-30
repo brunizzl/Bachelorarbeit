@@ -416,8 +416,9 @@ $$l' = (\texttt{sum}, b, (\texttt{prod}, a, (\texttt{sum}, 1, b))),$$
 als auch 
 $$l'' = (\texttt{sum}, a, (\texttt{prod}, b, (\texttt{sum}, 1, a))).$$
 
-Das ist an dieser Stelle allerdings nicht neu: Algorithmus \ref{rematch} ($\mathrm{rematch}$) ist eine direkte Antwort auf Muster dieser Art. Die Fragestellung welche Mengen von Ersetzungsregeln eindeutige Normalformen unabhängig von der Reihenfolge ihrer Anwendung produzieren (\emph{konfluent} sind) ist im allgemeinen Fall unentscheidbar \cite{KonfluenzUnentscheidbar}. Eine Wichtiges Beispiel ist 
-Algorithmus \ref{algoTermersetzung} baut allerdings darauf auf, dass die übergebende Regelmenge konfluent ist.
+Das ist an dieser Stelle allerdings nicht neu: Algorithmus \ref{rematch} ($\mathrm{rematch}$) ist eine direkte Antwort auf Muster dieser Art. Die Fragestellung welche Mengen von Ersetzungsregeln eindeutige Normalformen unabhängig von der Reihenfolge ihrer Anwendung produzieren (\emph{konfluent} sind) ist im allgemeinen Fall nicht entscheidbar \cite{KonfluenzUnentscheidbar}.
+
+
 
 \subsubsection{Strategien}
 Eine besondere Eigenschaft der Normalisierung aus Kapitel \ref{secErsteNormalform} ist, dass die dadurch definierte Normalform eines Terms eindeutig ist. Gemeint ist damit, dass nicht nur die Funktion $\mathrm{normalize}$ deterministisch ist, sondern dass sie immer das selbe Ergebnis produziert, wie eine beliebige andere Strategie, die so lange die erläuterten drei Regeln Sortieren kommutativer Funktionsanwendungen, Zusammenfassen assoziativer Funktionsanwendungen und Auswerten auswertbarer Teile auf jeden Teilterm anwendet, bis keine Anwendung mehr zu einer Veränderung führt. Dies ist allerdings nicht für beliebige Mengen von Ersetzungsregeln der Fall. Das einfachste Gegenbeispiel sind zwei Regeln mit gleicher linker Seite aber unterschiedlicher rechter Seite.
