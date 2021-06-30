@@ -197,7 +197,7 @@ Der Algorithmus $\mathrm{rematch}$ ist fast identisch zur unteren Hälfte von $\
 		\lIf {i = n} {\Return {$\mathrm{true}$}}    
 	}
 	\nlset{zurück} \label{backtrackRematchMuster}
-	\DoWhile {not $\mathrm{rematch}(p_i, t_i)$} { 
+	\DoWhile {$\mathrm{not}$ $\mathrm{rematch}(p_i, t_i)$} { 
 		\lIf {i = 0} {\Return {$\mathrm{false}$}}
 		$i \leftarrow i - 1$\;
 	}    
@@ -210,7 +210,7 @@ Als Strategie mit den wenigsten Freiheiten ist die Umsetzung von $\mathrm{findId
 Soll das gesamte Muster neu gematcht werden, startet $\mathrm{findIdentic}$ bei einem Aufruf durch $\mathrm{rematch}$ deswegen bei \texttt{\ref{backtrackRematchMuster}} und $i = n$.
 
 \begin{lemma}\label{lemKomplexitaetFindPermutation}~\\
-Die Laufzeitkomplexität von Algorithmus \ref{findIdentic} bei der Suche eines Matches für ein Muster $p = (f, \elems {\mathbf x} 0 {n-1})$ mit einem Literal $t = (f, \elems t 0 {n-1})$ ist in $\mathcal O(n)$, wenn jeder Parameter $t_k$ von $t$ nur $\mathcal O(1)$ Konstantensymbole und Funktionssymbole besitzt.
+Die Laufzeitkomplexität von Algorithmus \ref{findIdentic} bei der Suche eines Matches für ein Muster $p = (f, \elems {\mathbf x} 0 {n-1})$ mit einem Literal $t = (f, \elems t 0 {n-1})$ ist in $\mathcal O(n)$, wenn jeder Parameter $t_i$ von $t$ nur $\mathcal O(1)$ Konstantensymbole und Funktionssymbole besitzt.
 \end{lemma}
 
 \textbf{Beweis}.\\
