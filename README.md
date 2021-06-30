@@ -12,4 +12,5 @@ Der Textteil meiner Bachelorarbeit
 - Beweise in PatternMatching machen
 - Termersetzungsystem
 - Parameter zu Argumente
-- Kapitel fangen alle mit 0. an
+- Kapitelnummern sollen nicht alle mit 0. anfangen
+- Funktionen nicht mit mathrm setzen

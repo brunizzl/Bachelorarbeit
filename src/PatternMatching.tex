@@ -188,7 +188,7 @@ Der Algorithmus $\mathrm{rematch}$ ist fast identisch zur unteren Hälfte von $\
 \Let {$i \leftarrow 0$}\;
 \If {$\mathit{starteGematcht}$} {
 	$i \leftarrow n$\;
-	\Goto {\ref{backtrackRematchMuster}}\;
+	\Goto \texttt{\ref{backtrackRematchMuster}}\;
 }
 \Loop {} {
 	\nlset{matche $p_i$} \label{backtrackMatchMuster}
@@ -209,6 +209,13 @@ Der Algorithmus $\mathrm{rematch}$ ist fast identisch zur unteren Hälfte von $\
 Als Strategie mit den wenigsten Freiheiten ist die Umsetzung von $\mathrm{findIdentic}$ die kürzeste. Die Laufvariable $i$ steht gleichzeitig als Index für die Parameter von Muster und Literal. Wenn der Aufruf aus $\mathrm{findMatch}$ erfolgt, wird mit $i = 0$ gestartet und in Abschnitt \texttt{\ref{backtrackMatchMuster}} versucht für alle $i$ bis $n-1$ $p_i$ mit $t_i$ zu matchen. Sollte das  für ein $i$ fehlschlagen, besteht die Hoffnung, dass einer der Parameter $p_j \in \{\elems p 0 {i-1}\}$ anders als bisher mit $t_j$ gematcht werden kann, wodurch dann das Match von $p_i$ mit $t_i$ ermöglicht wird. Gefunden wird $p_j$ in Abschnitt \texttt{\ref{backtrackRematchMuster}}. 
 Soll das gesamte Muster neu gematcht werden, startet $\mathrm{findIdentic}$ bei einem Aufruf durch $\mathrm{rematch}$ deswegen bei \texttt{\ref{backtrackRematchMuster}} und $i = n$.
 
+\begin{lemma}\label{lemKomplexitaetFindPermutation}~\\
+Die Laufzeitkomplexität von Algorithmus \ref{findIdentic} bei der Suche eines Matches für ein Muster $p = (f, \elems {\mathbf x} 0 {n-1})$ mit einem Literal $t = (f, \elems t 0 {n-1})$ ist in $\mathcal O(n)$, wenn jeder Parameter $t_k$ von $t$ nur $\mathcal O(1)$ Konstantensymbole und Funktionssymbole besitzt.
+\end{lemma}
+
+\textbf{Beweis}.\\
+Der Ausdruck $\mathrm{not}$ $\mathrm{rematch}(pi , ti)$ ist für kein $i$ wahr, da $\mathrm{rematch}$ für Mustervariablen immer $\mathrm{false}$ zurückgibt. Die äußere Schleife wird also nur exakt ein Mal durchlaufen. Sowohl ein Durchlauf der \textbf{while}-Schleife, als auch ein Durchlauf der \textbf{do-while}-Schleife ist in $\mathcal O(1)$, da jedes $t_i$ nur $\mathcal O(1)$ Teilterme hat, bzw. $\mathrm{rematch}(pi , ti)$ für Mustervariblen $p_i$ direkt $\mathrm{false}$ zurückgibt. Entweder wird der Abschnitt \texttt{\ref{backtrackMatchMuster}} exakt $n$ Mal abgelaufen und $\mathrm{true}$ zurückgegeben oder $n' < n$ Mal abgelaufen, woraufhin auch Abschnitt \texttt{\ref{backtrackRematchMuster}} $n'$ Mal abgelaufen wird, bis $\mathrm{false}$ zurückgegeben wird. 
+\hfill $\square$\\
 
 
 
@@ -220,7 +227,7 @@ Soll das gesamte Muster neu gematcht werden, startet $\mathrm{findIdentic}$ bei 
 \Let {$i \leftarrow 0$, $k \leftarrow 0$}\;
 \If {$\mathit{starteGematcht}$} {
 	$i \leftarrow m$\;
-	\Goto {\ref{permutationRematchMuster}}\;
+	\Goto \texttt{\ref{permutationRematchMuster}}\;
 }
  \If {$m > n$} {
 	\Return {$\mathrm{false}$}
@@ -230,7 +237,7 @@ Soll das gesamte Muster neu gematcht werden, startet $\mathrm{findIdentic}$ bei 
 	\While {$k < n$} {
 		\If {$t_k$ ist mit keinem Parameter von $p$ gematcht} {
 			\If {$\mathrm{findMatch}(p_i, t_k)$} {
-				\Goto {\ref{permutationNaechstesMuster}}\;
+				\Goto \texttt{\ref{permutationNaechstesMuster}}\;
 			}
 		}
 		$k \leftarrow k + 1$\;
@@ -244,7 +251,7 @@ Soll das gesamte Muster neu gematcht werden, startet $\mathrm{findIdentic}$ bei 
 	\If {not $\mathrm{rematch}(p_{i}, t_{k})$} {
 		merke: $p_{i}$ ist nicht mehr mit $t_{k}$ gematcht\;
 		$k \leftarrow k + 1$\;
-		\Goto {\ref{PermutationHauptschleifenbeginn}}\;
+		\Goto \texttt{\ref{PermutationHauptschleifenbeginn}}\;
 	} 
 	\nlset{weiter}\label{permutationNaechstesMuster}
 	merke: $p_i$ ist mit $t_k$ gematcht\;
@@ -277,7 +284,7 @@ Im allgemeinen Fall kann die Anwendung von $\mathrm{findPermutation}$ mit $p$ un
 \Let $i \leftarrow 0$, $k \leftarrow 0$\;
 \If {$\mathit{starteGematcht}$} {
 	$i \leftarrow m$\;
-	\Goto {\ref{dilationRematchLastNeedle}}\;
+	\Goto \texttt{\ref{dilationRematchLastNeedle}}\;
 }
 \If {$m = 0$} {
 	\Return {$\mathrm{true}$}
@@ -289,7 +296,7 @@ Im allgemeinen Fall kann die Anwendung von $\mathrm{findPermutation}$ mit $p$ un
 \If {$k < n$} {
 	\DoWhile {$p_i$ ist Nachfolger einer Multi-Matchvariable \KwAnd $k < n$} { 
 		\If {$\mathrm{findMatch}(p_i, t_k)$} {
-			\Goto {\ref{dilationPrepareNextNeedle}}\;
+			\Goto \texttt{\ref{dilationPrepareNextNeedle}}\;
 		}
 		$k \leftarrow k + 1$\;
 	}
@@ -299,11 +306,11 @@ Im allgemeinen Fall kann die Anwendung von $\mathrm{findPermutation}$ mit $p$ un
 	$i \leftarrow i - 1$\;
 	{$k \leftarrow k'$ aus \glqq $p_{i}$ ist mit $t_{k'}$ gematcht\grqq{}}\;
 	\If {$\mathrm{rematch}(p_i, t_k)$} {
-		\Goto {\ref{dilationPrepareNextNeedle}}\;
+		\Goto \texttt{\ref{dilationPrepareNextNeedle}}\;
 	}
 	\ElseIf {$p_i$ ist Nachfolger einer Multi-Matchvariable} {
 		$k \leftarrow k + 1$\;
-	\Goto {\ref{dilationMatchCurrentNeedle}}\;
+	\Goto \texttt{\ref{dilationMatchCurrentNeedle}}\;
 	}
 }
 \Return{$\mathrm{false}$}\;
@@ -312,10 +319,10 @@ merke: $p_i$ ist mit $t_k$ gematcht\;
 $i \leftarrow i + 1$\;
 $k \leftarrow k + 1$\;
 \If {$i < m$} {
-	\Goto {\ref{dilationMatchCurrentNeedle}}\;
+	\Goto \texttt{\ref{dilationMatchCurrentNeedle}}\;
 }
 \ElseIf {$k < n$ \KwAnd nach $p_{m-1}$ folgt keine Multi-Matchvariable} {
-	\Goto {\ref{dilationRematchLastNeedle}}\;
+	\Goto \texttt{\ref{dilationRematchLastNeedle}}\;
 }
 \Return {$\mathrm{true}$}
 \end{algorithm}
@@ -326,7 +333,8 @@ Konnte $p_i$ nicht gematcht werden, wird  $i$ im Bereich \texttt{\ref{dilationRe
 
 
 \begin{lemma}\label{lemKomplexitaetDilation}~\\
-Die Laufzeitkomplexität von Algorithmus \ref{findDilation} ist \BFred{TODO}.
+Die Laufzeitkomplexität von Algorithmus \ref{findDilation} bei der Suche eines Matches für ein Muster $p$  mit einem Literal $t = (f, \elems t 0 {n-1})$ ist in \BFred{TODO}, wenn jeder Parameter $t_k$ von $t$ nur $\mathcal O(1)$ Konstantensymbole und Funktionssymbole besitzt und $p$ eine Funktionsanwendung von $f$ auf $m$ Mustervariablen $\elems {\mathbf x} 0 {m-1}$, 
+wobei jede Mustervariable $\mathbf x_i$ Nachfolger einer Multi-Matchvariable ist und auf $x_{m-1}$ eine Multi-Matchvariable folgt. Für $m = 3$ gilt also $p = (f, \mathbf{as...}, \mathbf x_0, \mathbf{bs...}, \mathbf x_1, \mathbf{cs...}, \mathbf x_2, \mathbf{ds...})$.
 \end{lemma}
 
 \textbf{Beweis}.\\
