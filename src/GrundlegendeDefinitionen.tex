@@ -1,9 +1,9 @@
 
 
 
-\section{Grundlegende Definitionen} \label{secGrundlegendeDefinitionen}
+\chapter{Grundlegende Definitionen} \label{secGrundlegendeDefinitionen}
 
-\subsection{Term} \label{subsecTerm}
+\section{Term} \label{subsecTerm}
 Eine Menge von Termen $T$ ist in dieser Arbeit immer  in Abhängigkeit der Mengen $F$ und $C$, sowie der \emph{Stelligkeitsfunktion} $\mathrm{arity} \colon F \rightarrow \mathbb{N} \cup \{\omega\}$ definiert, ähnlich der Notation von Benanav et. al. in \cite{NPHardMatching}. $F$ enthält die sogenannten \emph{Funktionssymbole}. Beispiele für mögliche Elemente in $F$ sind \texttt{sin} und \texttt{sqrt}, zudem auch Operatoren wie die Division, etwa geschrieben als \texttt{divide}. Die Stelligkeitsfunktion $\mathrm{arity}$ gibt für jedes Funktionssymbol an, wie viele Parameter erwartet werden. Eine mögliche Stelligkeit der genannten Beispielsymbole ist die folgende.
 
 $$\mathrm{arity} f = \begin{cases}
@@ -48,7 +48,7 @@ Als Beispiel lässt sich der Ausdruck $\frac 3 {\sin 1}$ in der formalen Schreib
 Mit dem Kontext der Baumdarstellung lassen sich nun die folgenden Begriffe auf Terme übertragen. In der Funktionsanwendung $t = (f, \tOneN)$ sind $\tOneN$ die \emph{Kinder} ihres \emph{Vaters} $t$. Kinder sind allgemeiner \emph{Nachkommen}. Nachkommen verhalten sich transitiv, also ein Nachkomme $z$ des Nachkommen $y$ von $x$ ist auch ein Nachkomme von $x$. Umgekehrt ist $x$ \emph{Ahne} von $y$ und $z$. \\
 
 
-\subsection{Funktionsauswertung}
+\section{Funktionsauswertung}
 Die Erweiterung des Funktionssymbols zur Funktion, die von einem Raum $Y^n$ nach $Y$ abbildet, folgt mittels der $\mathrm{eval}$ Funktion frei nach \cite{buch1977}.
 
 \begin{equation*}
@@ -94,7 +94,7 @@ Der Term $t = (\texttt{sum}, 3, (\texttt{prod}, 2, 4), (\texttt{neg}, 1))$ kann 
 \end{beispiel}
 
 
-\subsubsection{Konstruktor}
+\subsection{Konstruktor}
 Eine direkt aus der Struktur des Terms folgende Interpretation $u_c$ für Funktionssymbole ist die des \emph{Konstruktors}. Als Konstruktor eines Typen $A$ wird allgemein eine Funktion bezeichnet, die nach $A$ abbildet. Für typenlose Terme ist diese Definition deshalb schwierig. Insbesondere in funktionalen Sprachen wird das Konzept allerdings noch verfeinert. In Haskell transformiert ein Konstruktor Daten nicht im eigentlichen Sinne, sondern bündelt lediglich ein Tag, das festhält welcher Konstruktor genutzt wurde, mit den $n$ übergebenen Paramtern zu einem Tupel der Größe $n+1$ \cite{haskellConstructor}. Das entspricht exakt der Funktionsanwendung in einem Term, mit dem Funktionssymbol als Tag. Wenn $u_c$ angewendet auf ein Funktionssymbol $f$ das $n$ Tupel von Parametern auf eine Funktionsanwendung von $f$ mit den selben $n$ Parametern abbildet, ist $u_c~f$ damit ein Konstruktor. 
 
 \begin{definition}~\\
@@ -114,7 +114,7 @@ Ein Graph $G = (V, E)$ wird als Paar der Menge von Knoten $V$ und Menge der Kant
 $$(\texttt{pair}, (\texttt{set}, 1, 2, 3), (\texttt{set}, (\texttt{set}, 1, 2), (\texttt{set}, 2, 3), (\texttt{set}, 1, 3))).$$
 \end{beispiel}
 
-\subsection{Muster} \label{subsecMuster}
+\section{Muster} \label{subsecMuster}
 
 Bisher wurden die Objekte beschrieben, die in dieser Arbeit transformiert werden sollen. Die Transformationsregeln selbst lassen sich allerdings auch als Paare von bestimmten Termen darstellen. Zur Abgrenzung beider Konzepte werden die zu transformierenden Terme $t\in T(F, C)$ von hier an \emph{Literal} genannt, Terme die  Teil einer Regeldefinition sind werden \emph{Muster} genannt. Die Menge der Muster $M(F, C)$ ist dabei eine Obermenge der Literale, da sie deren Konstantensymbole um die Menge der \emph{Mustervariablen} $X$ erweitert\footnote{Die Ergänzung der Funktionssymbole um Mustervariablen ist genau so möglich, wird aber vor allem um die Notation verdaubar zu halten in den folgenden Kapiteln außen vor gelassen.}. Konkrete Elemente $\mathbf x \in X$ werden im folgenden \textbf{fett} geschrieben.
 $$M(F, C) \coloneqq T(F, C \cup X)$$

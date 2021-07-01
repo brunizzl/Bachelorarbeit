@@ -1,6 +1,6 @@
 
 
-\section{Mustererkennung} \label{secPattermatching}
+\chapter{Mustererkennung} \label{secPattermatching}
 
 In Kapitel \ref{subsecMuster} wurde die Konzepte des Musters und des Matches eingeführt, zweiteres insbesondere in einer weiterfassenden Form, was auch erlaubt Muster mit strukturell nicht exakt identischen Literalen zu assoziieren, sofern die Unterschiede mit der Projektion $\mathrm{normalize} \colon T \rightarrow T$ beseitigt werden können. Die in Kapitel \ref{secErsteNormalform} beschriebene Funktion $\mathrm{normalize}$ ist als solche Projektion nutzbar.  
 
@@ -10,7 +10,7 @@ In diesem Kapitel wird ein Algorithmus entwickelt, der die Äquivalenzklassen de
 %.........................................................................
 %.........................................................................
 %.........................................................................
-\subsection{Grundstruktur} \label{subsecPatternmatchingGrundstruktur}
+\section{Grundstruktur} \label{subsecPatternmatchingGrundstruktur}
 
 Dem Ergebnis eines Matchalgorithmus müssen zwei Dinge entnehmbar sein. Zum ersten muss klar sein, ob ein Match $v_p \colon X \rightarrow T$ gefunden wurde. Wurde ein Match gefunden, muss zudem dessen Abbildungsvorschrift zurückgegeben werden. Der Rückgabetyp von Algorithmus \ref{simpleMatchAlgorithmShell} ist deswegen nicht nur das finale Match, sondern auch ein Wahrheitswert $b \in \mathit{Bool} \coloneqq \{\mathrm{false}, \mathrm{true}\}$. Alternativ kann die Menge aller möglichen Matches zurückgegeben werden. Diese Idee wird im Folgenden allerdings nicht weiter verfolgt, da sie mit den Anforderungen an hier behandelte Muster auch im besten Fall schnell exponentielle Laufzeiten produziert. Sind aber Mehrfachnennungen einer Mustervariable in einem Muster nicht erlaubt, haben Hoffman und O'Donnell in \cite{patternMatchingInTrees} gezeigt, dass sehr effiziente Algorithmen zum gleichzeitigen finden von Matches einer ganzen Menge von Mustern in allen Teiltermen eines Literals mit dieser Grundidee möglich sind.\\
 
@@ -75,7 +75,7 @@ Die Instanz einer Mustervariable $\mathbf x$ wird als \emph{bindend}  bezeichnet
 %.........................................................................
 %.........................................................................
 %.........................................................................
-\subsection{Multi-Mustervariablen} \label{subsecMulti}
+\section{Multi-Mustervariablen} \label{subsecMulti}
 
 Von Anfang an werden Funktionssymbole in dieser Arbeit als möglicherweise variadisch definiert. Das ist in sofern ein Problem, als Muster bisher immer nur eine feste Anzahl an Parametern für jede Funktionsanwendung angeben können. Ist ein variadisches Funtionssymbol zudem assoziativ, ließe sich dieses Problem prinzipiell beheben, wenn Assoziativität im Matchalgorithmus berücksichtigt würde. Das Muster $\tilde p = (f, \mathbf x, \mathbf y)$ würde für ein assoziatives Funktionssymbol $f$ dann auch Literale wie $\tilde t = (f, a, b, c, d)$ matchen, mit verschiedenen Optionen für $v_p$, etwa $v_p~\mathbf x = (f, a, b)$ und $v_p~\mathbf y = (f, c, d)$. Ist auch die leere Funktionsanwendung $(f)$ von $f$ erlaubt \footnote{Das ergibt dann Sinn, wenn $f$ ein neutrales Element $e \in T$ besitzt, da $(f, as..., (f), bs...)$ mit $\mathrm{normalize}$ zu $(f, as..., bs...) = (f, as..., e, bs...)$ umgeformt wird. Im Folgenden wird von der Existenz eines Neutralen Elementes ausgegangen.}, gäbe es fünf verschiedene Matches $v_p$ für $\paren*{\tilde p, \tilde t}$ mit nicht-kommutativem $f$.
 
@@ -117,7 +117,7 @@ Die Summe der linken Seite setzt sich für die folgenden Algorithmen dieses Kapi
 %.........................................................................
 %.........................................................................
 %.........................................................................
-\subsection{Kommutative Muster} \label{subsecACMuster}
+\section{Kommutative Muster} \label{subsecACMuster}
 
 Die Algorithmen \ref{findMatch}, \ref{rematch}, \ref{findPermutation}, \ref{findDilation} und \ref{findIdentic} bilden zusammen die Grundlage des finalen Matchalgorithmus dieser Arbeit. Der Startpunkt einer Matchsuche ist der Aufruf von $\mathrm{findMatch}$. Hier wird allerdings im Kontrast zu $\mathrm{simpleMatchAlgorithm}$ nicht direkt ein Rekursionsaufruf durchgeführt, sondern abhändig von der Form der vorgefundenen Funktionsanwendung eine entsprechende Strategie für die Suche eines Matches gewählt. Die Algorithmen, die die entsprechenden Strategien implementieren sind $\mathrm{findPermutation}$, $\mathrm{findDilation}$ und $\mathrm{findIdentic}$. Alle hier vorgestellten Strategien nutzen dabei Backtracking um die verschiedenen Möglichkeiten zu testen. Sollte dabei die Notwendigkeit auftreten, für einen bereits gematchten Teil des Musters ein neues Match mit dem selben Literal zu finden, wird in allen drei Strategien $\mathrm{rematch}$ aufgerufen. Dieser Algorithmus ist ähnlich zu $\mathrm{findMatch}$, erwartet dementsprechend allerdings, dass das übergebende Muster $p$ bereits mit dem übergebenen Literal $t$ gematcht ist. Die eigentliche Arbeit wird bei $\mathrm{rematch}$ allerdings erneut an die Suchstrategien abgegeben. Da der Startpunkt dort allerdings davon abhängig ist, ob bereits eine bestimmte Zuordnung der Parameter als erfolgreich matchend festgehalten ist oder nicht, wird diese Information als letztes Argument jeder Strategie mit übergeben.
 
@@ -174,7 +174,7 @@ Im Grundaufbau funktionieren alle Strategien gleich. Die Parameter $\elems p 0 {
 Abweichend von bisherigen Algorithmen wird von hier an im Pseudocode nicht mehr jede tatsächlich notwendige Information explizit übergeben. Als Beispiel muss $v_p$ nach wie vor von jedem Funktionsaufruf aktualisiert werden, ist aber im Pseudocode der Algorithmen \ref{findMatch}, \ref{findPermutation}, \ref{findDilation}, etc. nicht länger explizit in Parameterliste oder als Rückgabewert erwähnt.
 Anstelle der konkreten Zuweisung eines Wertes zu einem Namen, dargestellt duch den Pfeil nach links \glqq $\leftarrow$\grqq{}, wird die Veränderung einer solchen nicht explizit erwähnten Datenstruktur nur mit dem Wort \glqq merke\grqq{} dargestellt.
 
-\subsubsection{findMatch und rematch}
+\subsection{findMatch und rematch}
 Algorithmus \ref{findMatch} ist in der Struktur ähnlich zu $\mathrm{simpleMatchAlgorithm}$. Neben dem Auslagern der Rekursionsaufrufe in die verschiedenen Matchstrategien, besteht ein Unterschied im Umgang mit Mustervariablen. Für $\mathrm{simpleMatchAlgorithm}$ wird getestet, ob der Funktionswert $v_p~\mathbf x$ für eine Mustervariable $\mathbf x$ bereits definiert ist, wenn $\mathbf x$ angetroffen wird und herausgefunden werden muss ob die Instanz bindend oder gebunden ist. Das reicht für $\mathrm{findMatch}$ nicht, da dieser Algorithmus auch funktionieren muss, wenn die verschiedenen Matchstrategien ein Backtracking beinhalten, d.h., $\mathrm{rematch}$ aufrufen.
 Der Algorithmus $\mathrm{rematch}$ ist fast identisch zur unteren Hälfte von $\mathrm{findMatch}$, ruft die verschiedenen Matchstrategien allerdings mit $\mathrm{true}$ als letzen Parameter auf, was bedeutet, dass direkt zum Backtracking gesprungen wird.
 
@@ -343,7 +343,7 @@ wobei jede Mustervariable $\mathbf x_i$ Nachfolger einer Multi-Matchvariable ist
 %.........................................................................
 %.........................................................................
 %.........................................................................
-\subsection{Bessere Laufzeit für kommutative Muster} \label{subsecCMuster}
+\section{Bessere Laufzeit für kommutative Muster} \label{subsecCMuster}
 
 Benanav zeigte 1987, dass auch das Matchproblem mit einem kommutativen Funktionssymbol NP-vollständig ist \cite{NPHardMatching}. Dennoch kann die Laufzeit von $\mathrm{findPermutation}$ für bestimmte Arten von Mustern verbessert werden. In diesem Abschnitt wird das versucht, indem a priori ausgeschlossen wird, dass bestimmte Reihenfolgen von Musterparametern erfolgreich matchen können. Diese Reihenfolgen müssen dann im Algorithmus nicht mehr geprüft werden.
 Vorraussetzung dafür wird sein, dass sowohl Muster als auch Literal mit $\mathrm{normalize}$ aus Kapitel \ref{secErsteNormalform} normalisiert werden. Insbesondere die Sortierung ist relevant.
@@ -403,13 +403,13 @@ $\prec$ und $\preceq$ sind transitiv $(1)$ und für $p, q, r \in M$  gilt $p \pr
 \textbf{Beweis}~\\
 \BFred{TODO: beweise Lemma \ref{lemTransitivStark}}
 
-\subsection{Value-Matchvariablen}
+\section{Value-Matchvariablen}
 \BFred{Je nachdem, wie schnell ich den Rest zu einer Runden Gesamtstruktur bekomme, werde ich auch noch ein Wort über Muster verlieren, die den combine Teil von normalize zumindest teilweise berücksichtigen.}
 
 
 
 
-\subsection{Termersetzungssystem} \label{subsecTermersetzungssystem}
+\section{Termersetzungssystem} \label{subsecTermersetzungssystem}
 
 Das Ziel dieses Abschnittes ist erneut die Normalisierung eines Terms. Im Unterschied zu Kapitel \ref{secErsteNormalform} werden die Ersetzungsregeln hier nicht im Algorithmus festgelegt, sondern erst als Parameter mit übergeben. 
 
@@ -428,7 +428,7 @@ Das ist an dieser Stelle allerdings nicht neu: Algorithmus \ref{rematch} ($\math
 
 
 
-\subsubsection{Strategien}
+\subsection{Strategien}
 Eine besondere Eigenschaft der Normalisierung aus Kapitel \ref{secErsteNormalform} ist, dass die dadurch definierte Normalform eines Terms eindeutig ist. Gemeint ist damit, dass nicht nur die Funktion $\mathrm{normalize}$ deterministisch ist, sondern dass sie immer das selbe Ergebnis produziert, wie eine beliebige andere Strategie, die so lange die erläuterten drei Regeln Sortieren kommutativer Funktionsanwendungen, Zusammenfassen assoziativer Funktionsanwendungen und Auswerten auswertbarer Teile auf jeden Teilterm anwendet, bis keine Anwendung mehr zu einer Veränderung führt. Dies ist allerdings nicht für beliebige Mengen von Ersetzungsregeln der Fall. Das einfachste Gegenbeispiel sind zwei Regeln mit gleicher linker Seite aber unterschiedlicher rechter Seite.
 
 

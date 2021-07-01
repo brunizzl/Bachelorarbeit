@@ -1,11 +1,11 @@
 
 
-\section{Umsetzung in C\texttt{++}} \label{secKernUmsetzungInCpp}
+\chapter{Umsetzung in C\texttt{++}} \label{secKernUmsetzungInCpp}
 
 %.........................................................................
 %.........................................................................
 %.........................................................................
-\subsection{Konzeptionelle Unterschiede}
+\section{Konzeptionelle Unterschiede}
 Die in diesem Kapitel vergestellte Umsetzung implementiert nicht exakt die bisher beschriebenen Strukturen. Der erste Unterschied ist, dass die Konzepte \emph{Funktionssymbol} und \emph{Konstantensymbol} hier nicht unterschieden werden. Da der Zweck der Implementierung zudem alleine in der Vereinfachung von Ausdrücken über den Komplexen Zahlen $\mathbb C$ liegt, ist die Menge an Symbolen zudem im Code nicht generisch gehalten. Die beiden wichtigsten Arten von Symbolen für Literale sind Komplexe Zahlen $z \in \mathbb C$, sowie Zeichenketten $c_1 c_2\dots c_n$ beliebiger Länge $n$. Die einzelnen Zeichen $c_i$ stammen dabei aus dem Alphabet $\Sigma$, welches aus Klein-und Großbuchstaben des lateinischen Alphabetes, Ziffern von $0$ bis $9$, den Abostroph \verb|'| und dem Unterstrich \verb|_| besteht. Die Ausname bildet das erste Zeichen $c_1$, welches ein Klein-oder Großbuchstabe des Lateinischen Alphabetes sein muss. Zu den Zeichenketten gehören insbesondere auch die Funktionssymbole. Mit der dadurch entstehenden Möglichkeit Funktionssymbole als Werte zu behandeln, ergibt es Sinn auch Funktionsanwendungen von dynamisch bestimmten Funktionssymbolen zuzulassen. Das erste Element $f$ des Funktionsanwendungstupels $(f, \elems t 0 {n-1})$ ist in der Umsetzung also kein Symbol, sondern ein Term. Mit den bis hier diskutierten Änderungen und $\Sigma^+$ als Bezeichnung für die Menge von Zeichenketten über dem beschriebenen Alphabet $\Sigma$ sähe die idealisierte Menge aller Literale in der Umsetzung im Kontrast zu Definition \ref{defTerm} so aus:
 
 $$T \coloneqq \Sigma^+ \cup \mathbb C \cup \curl*{(\elems t 0 n)~|~ \elems t 0 n \in T)}.$$
@@ -36,18 +36,20 @@ mit
 %.........................................................................
 %.........................................................................
 %.........................................................................
-\subsection{Lambdafunktionen} \label{subsecLambdafunktionen}
+\section{Lambdafunktionen} \label{subsecLambdafunktionen}
 Die umgesetzten Funktionen erweitern die Definition von Church, indem die selbe Lambdaabstraktion auch mehrere Parameter erlaubt. Während der Ausdruck $\lambda x y . x(y)$ für Church also nur eine vereinfachte Schreibweise\footnote{Die Klammern um $y$ werden in der Literatur oft weggelassen, für diese Arbeit sind sie allerdings notwendig.} für den Ausdruck $\lambda x .\lambda y .x(y)$ darstellt, handelt es sich für die hier berschriebende Umsetzung um zwei verschiedene Funktionen. 
-Ein Lambdaparameter ist in der Syntax nicht von anderen Symbolen unterscheidbar\footnote{siehe \ref{subsubsecLambdaSyntax}}, wird intern allerdings mit einer Variante der De Bruijn Indices dargestellt \cite{deBruijn}.
- Jeder neu gebundene Parameter bekommt als Index die Anzahl der weiter außen bzw. in der selben Abstraktion vor ihm gebundenen Parameter. Zur Veranschaulichung wird hier der Index im Tiefsatz mitgeschrieben\footnote{Der Umsetzung sind ausschließlich die Indices bekannt, Namen der Lambdaparameter werden intern nicht gespeichert.}. 
+Ein Lambdaparameter ist in der Syntax nicht von anderen Symbolen unterscheidbar\footnote{siehe \ref{subsubsecLambdaSyntax}}, wird intern allerdings durch einen Index dargestellt. Die Darstellung unterscheidet sich von De Bruijn Indizierung \cite{deBruijn} darin, dass jedes Vorkommen einer Variable immer den selben Index hat.
+ Jeder neu gebundene Parameter bekommt als Index die Anzahl der weiter außen bzw. in der selben Abstraktion vor ihm gebundenen Parameter. Zur Veranschaulichung wird hier der Index im Tiefsatz mitgeschrieben. Wichtig ist hervorzuheben, dass die nach wie vor dargestellten Namen ausschließlich der Übersichtlichkeit dienen und in der Umsetzung nicht gespeichert sind.
  Als Beispiel dient $\lambda x_0 y_1 .\lambda z_2 .x_0 + y_1 + z_2$. Das Zeichen $x$ wird in der äußersten Abstraktion zuerst gebunden, hat also keine Vorgänger und dementsprechend Index $0$. In der selben Abstraktion wird als zweiter Parameter weiter $y$ gebunden. Als Nachfolger von $x$ wird $y$ Index $1$ zugewiesen. Die Bindung von $z$ liegt Innerhalb der Abbildungsvorschrift des äußeren Lambdas, $x$ und $y$ können also referenziert werden. Dementsprechend hat $z$ zwei Vorgänger und Index $2$. 
  
  Die Auswertung der Funktionsanwendung einer Lambdafunktion $f$ entspricht der $\beta$-Reduktion (von Church \cite{ChurchLambda36} als \emph{operation II} bezeichnet). Parameter von $f$ werden dafür durch die übergebenen Argumente ersetzt. Enthält die Definition von $f$ selbst weitere Lambdaabstraktionen, so werden die Indices derer Parameter um die Stelligkeit von $f$ erniedrigt.
  Der Ausdruck $(\lambda x_0 y_1 .\lambda z_2 .x_0 + y_1 + z_2)(3, 6)$ wird damit zum Ausdruck $\lambda z_0 .3 + 6 + z_0$ ausgewertet.
  
- Enthält ein Argument $a$ der Funktionsanwendung einer Lambdafunktion $f$ allerdings selbst eine Lambdafunktion $g$, so reicht es für die Auswertung von $f$ mit bisher diskutierten Konzepten im allgemeinen Fall nicht aus, den entsprechenden Lambdaparameter von $f$ einfach durch $a$ zu ersetzen: Sollte diese Ersetzung innerhalb einer Lambdaabstraktion $f'$ stattfinden, müssen alle Lambdaparameter von $g$ im Index um die Anzahl der weiter außen gebundenen Parameter erhöht werden. Als Beispiel ist $a = g = \lambda x_0 .x_0$ die Identität, welche der Funktion $f = \lambda x_0 .\lambda y_1 .x_0(y_1)$ übergeben wird. Teil der Definition von $f$ ist $f' = \lambda y_1 .x_0(y_1)$.
+ Die gewählte Indizierung hat ein Problem, welches die De Bruijn Indizierung nicht besitzt. Der Index eines Lambdaparameters ist abhängig vom Kontext der bindenden Abstraktion. Ändert sich dieser Kontext, stimmt die bisherige Indizierung möglicherweise nicht mehr:
+ Enthält ein Argument $a$ der Funktionsanwendung einer Lambdafunktion $f$ selbst eine Lambdafunktion $g$, so reicht es für die Auswertung von $f$ mit bisher diskutierten Konzepten nicht aus, den entsprechenden Lambdaparameter von $f$ einfach durch $a$ zu ersetzen. Sollte diese Ersetzung innerhalb einer Lambdaabstraktion $f'$ stattfinden, müssen alle Lambdaparameter von $g$ im Index um die Anzahl der weiter außen gebundenen Parameter erhöht werden. Als Beispiel ist $a = g = \lambda x_0 .x_0$ die Identität, welche der Funktion $f = \lambda x_0 .\lambda y_1 .x_0(y_1)$ übergeben wird. Teil der Definition von $f$ ist $f' = \lambda y_1 .x_0(y_1)$.
  $$(\lambda x_0 .\lambda y_1 .x_0(y_1))(\lambda x_0 .x_0)$$
- An dieser Stelle muss angemerkt werden, dass durch die De Bruijn Indizierung die explizite Bindung eines Lambdaparameters in der Lambdaabstraktion nicht länger notwendig macht. Dem System ist tatsächlich nur die Anzahl der Parameter einer Abstraktion bekannt. Ehrlicher ist die Darstellung einer Lambdaabstraktionen mit $n$ Parametern als $\lambda [n] .\textit{<Definition>}$. Mit den Parametern geschrieben als Prozentzeichen gefolgt von ihrem De Bruijn Index, ist der problematische Ausdruck geschrieben als
+ Alternativ kann der selbe Audruck dargestellt werden, ohne Information zu benutzen
+ An dieser Stelle wird zudem eine alternative Notation eingeführt, die nur Information benutzt, die der Implementierung tatsächlich bekannt ist. Ehrlicher ist die Darstellung einer Lambdaabstraktionen mit $n$ Parametern als $\lambda [n] .\textit{<Definition>}$. Mit den Parametern geschrieben als Prozentzeichen gefolgt von ihrem Index, ist der problematische Ausdruck geschrieben als
  
  $$(\lambda [1] .\lambda [1] .\%0(\%1))(\lambda [1] .\%0)$$.
  Die Naive Ersetzung von $x_0$ in $f$ durch $g$ würde im folgenden Ausdruck resultieren.
@@ -76,23 +78,26 @@ Bemerkenswert ist, dass mit den soeben formulierten Bedingungen der Ausdruck nic
 %.........................................................................
 %.........................................................................
 %.........................................................................
-\subsection{Mustervariablen} \label{subsecMustervariablen}
+\section{Mustervariablen} \label{subsecMustervariablen}
 In der Umsetzung wird zwischen drei Arten von Mustervariablen unterschieden. Die Sonderform der Multi-Mustervariable ist bereits aus Kapitel \ref{subsecMulti} bekannt, die Wert-Mustervariable ist allerdings neu. Als drittes ist die normale Mustervariable nach wie vor vorhanden. Wert-Mustervariable und normale Mustervariable können zudem durch Bedingungen eingeschränkt werden.
 
-\subsubsection{Wert-Mustervariable} \label{subsubsecWertMustervariable}
+\subsection{Wert-Mustervariable} \label{subsubsecWertMustervariable}
 Nach Definition \ref{defMatch} ist Match $v_p$ für ein Paar $(p, t)$ aus Muster $p$ und Literal $t$ dann gültig, wenn die Normalform von $p$ mit den Mustervariablen ersetzt duch die Funktionswerte von $v_p$ identisch zu $t$ ist. In Kapitel \ref{secPattermatching} nicht diskutiert wurde die Möglichkeit Zahlen mit Rechenausdrücken zu matchen. Ein Muster $p = (\texttt{prod}, 2, \mathbf k)$ würde für das Literal $t = 12$ etwa ein Match $v_p$ mit $v_p~\mathbf k = 6$ besitzen. Um die Matchsuche nicht zu kompliziert zu gestalten, besitzt die Umsetzung zwei Einschränkungen. Zum einen ist eine solche Dekonstruktion des Musters zu einem Wert nur dann möglich, wenn das entsprechende Teilmuster exakt eine Instanz $w$ einer Wert-Mustervariable enthält. Zum anderen werden nur bijektive Funktionen\footnote{bzw. sonst Mehrdeutigkeiten ignoriert} dekonstruiert, wie im Beispiel die Multiplikation mit $2$. 
 
 
 Vor einem Matchversuch muss ein Muster mit Wert-Mustervariablen zuerst entsprechend transformiert werden. Ziel der Transformation ist, das für den Matchalgorithmus direkt klar ist, ab wo das Muster einen Wert repräsentieren soll. Der Teilbaum des Musters, der eine Wert-Mustervariable $w$ enthält und als ganzes einen Wert matchen soll, ist idealerweise also direkt gekennzeichnet. Um den Wert $v_p~w$ zu identifizieren, ist \BFred{TODO}
 
-%.........................................................................
-%.........................................................................
-%.........................................................................
-\subsection{Syntax} \label{subsecSyntax}
-In der Umsetzung wird der Termbaum immer aus einer ASCII Zeichenkette gebaut.
-Solche Zeichenketten sind von hier an in \texttt{monospace} gesetzt.
+\subsection{Bedingungen} \label{subsubsecBedingungen}
+\BFred{TODO}
 
-\subsubsection{Funktionsanwendungen}
+%.........................................................................
+%.........................................................................
+%.........................................................................
+\section{Syntax} \label{subsecSyntax}
+In der Umsetzung wird der Termbaum immer aus einer ASCII Zeichenkette gebaut.
+Solche Zeichenketten sind von hier an in \texttt{monospace} gesetzt. Auf eine formale Definition der genutzten Grammatik wird verzichtet.
+
+\subsection{Funktionsanwendungen}
 \begin{figure}
     \label{tabZucker}
     \centering
@@ -100,51 +105,63 @@ Solche Zeichenketten sind von hier an in \texttt{monospace} gesetzt.
         \hline
         Normale Schreibweise & Alternative Syntax\\
         \hline \hline
-        \verb|sum(x, y)|           & \verb|x + y|\\
-        \verb|sum(x, prod(-1, y))| & \verb|x - y|\\
         \verb|prod(-1, x)|         & \verb|-x|\\
+        \verb|not(x)|              & \verb|!x|\\
+        \verb|pow(x, y)|           & \verb|x^y|\\
         \verb|prod(x, y)|          & \verb|x * y|\\
         \verb|prod(x, y)|          & \verb|x y|\\
         \verb|prod(x, pow(y, -1))| & \verb|x / y|\\
-        \verb|pow(x, y)|           & \verb|x^y|\\
-        \verb|cons(x, y)|           & \verb|x :: y|\\
-        \verb|and(x, y)|           & \verb|x && y|\\
-        \verb|or(x, y)|            & \verb!x || y!\\
-        \verb|not(x)|              & \verb|!x|\\
+        \verb|sum(x, y)|           & \verb|x + y|\\
+        \verb|sum(x, prod(-1, y))| & \verb|x - y|\\
+        \verb|cons(x, y)|          & \verb|x :: y|\\
         \verb|eq(x, y)|            & \verb|x == y|\\
         \verb|neq(x, y)|           & \verb|x != y|\\
         \verb|greater(x, y)|       & \verb|x > y|\\
         \verb|smaller(x, y)|       & \verb|x < y|\\
         \verb|greater_eq(x, y)|    & \verb|x >= y|\\
         \verb|smaller_eq(x, y)|    & \verb|x <= y|\\
+        \verb|and(x, y)|           & \verb|x && y|\\
+        \verb|or(x, y)|            & \verb!x || y!\\
         \verb|of_type__(x, y)|     & \verb|x :y|\\
         \hline
     \end{tabular}
     \caption{alternative Syntax für bestimmte Funktionssymbole}
 \end{figure}
 
-Die bisher genutzte Schreibweise $(f, x, y, z)$ für die Funktionsanwendung des Funktionssymbols $f$ auf die Parameter $x, y, z$ wurde in Abschnitt \ref{subsecTerm} eingeführt, um den Term syntaktisch von anderen Ideen zu differenzieren. Dies ist für die Umsetzung in C\texttt{++} nicht notwendig, da von vorne herein klar ist, ob eine Zeichenkette in einen Term übersetzt wird. Aus dem Grund werden Funktionsanwendungen in der Syntax \verb|f(x, y, z)| geparst. Weiter können Funktionsanwendungen bestimmter Funktionen auch mit fest definierten Infixoperatoren geschrieben werden, siehe Tabelle \ref{tabZucker}. hervorzuheben sind dabei zwei Dinge: Zum einen wird ein Leerzeichen zwischen zwei Termen als Multiplikation interpretiert, Funktionsanwendungen dürfen also kein Leerzeichen zwischen Funktion und Parametertupel setzen. \verb|f (x)| ist dementsprechend gleichbedeutend zu \verb|prod(f, x)|, während \verb|f (x, y)| einen Syntaxfehler darstellt. Die zweite Besonderheit ist das Fehlen von Funktionssymbolen für die Darstellung des additiven Inversen und des multiplikativen Inversen. Dies reduziert die Anzahl der Ersetzungsregeln, die benötigt werden um eine Gesetzmäßigkeit, die Summen oder Produkte involviert, abzubilden. 
+Die bisher genutzte Schreibweise $(f, x, y, z)$ für die Funktionsanwendung des Funktionssymbols $f$ auf die Parameter $x, y, z$ wurde in Abschnitt \ref{subsecTerm} eingeführt, um den Term syntaktisch von anderen Ideen zu differenzieren. Dies ist für die Umsetzung in C\texttt{++} nicht notwendig, da von vorne herein klar ist, ob eine Zeichenkette in einen Term übersetzt wird. Aus dem Grund werden Funktionsanwendungen in der Syntax \verb|f(x, y, z)| geparst. 
+Weiter können Funktionsanwendungen bestimmter Funktionen auch mit fest definierten Infixoperatoren geschrieben werden, siehe Tabelle \ref{tabZucker}. Die Bidekraft der Operatoren nimmt in der Tabelle von oben nach unten ab.
+Aus der Tabelle hervorzuheben sind zwei Dinge: Zum einen wird ein Leerzeichen zwischen zwei Termen als Multiplikation interpretiert, Funktionsanwendungen dürfen also kein Leerzeichen zwischen Funktion und Parametertupel setzen. \verb|f (x)| ist dementsprechend gleichbedeutend zu \verb|prod(f, x)|, während \verb|f (x, y)| einen Syntaxfehler darstellt. Die zweite Besonderheit ist das Fehlen von Funktionssymbolen für die Darstellung des additiven Inversen und des multiplikativen Inversen. Dies reduziert die Anzahl der Ersetzungsregeln, die benötigt werden um eine Gesetzmäßigkeit, die Summen oder Produkte involviert, abzubilden. 
 
-\subsubsection{Lambdafunktionen} \label{subsubsecLambdaSyntax}
+\subsection{Lambdafunktionen} \label{subsubsecLambdaSyntax}
 Da der ASCII Zeichensatz keine griechischen Buchstaben enthält, wird anstelle des kleinen Lambdas $\lambda$ der umgekehrte Schrägstrich \verb~\ ~genutzt. Die Identitätsfunktion $\lambda x.x$ wird dementsprechend \verb~\x .x~ geschrieben. Mehrere Parameter werden durch Leerzeichen getrennt: \verb~\x y .pow(x, y)~ ist eine Lambdafunktion mit identischem Verhalten zum Funktionssymbol \verb|pow|.
 
-\subsubsection{Symbole}
+\subsection{Symbole}
 Komplexe Zahlen auf der reellen Achse sind in der Syntax vergleichbar mit Darstellungen für Integer und Fließkommazahlen erlaubt in C. Möglich sind etwa \verb|42|, \verb|3.1415|, \verb|1.337e3|, \verb|1.602e-19| oder \verb|1e+10|. Komplexe Zahlen auf der imaginären Achse sind in der Struktur identisch, allerdings immer direkt gefolgt vom Zeichen \verb|i|. 
 
 Die verschiedenen Mustervariablen werden auch unterschiedliche Weise identifiziert. Eine normale Mustervariable muss mit einem Unterstrich beginnen (\verb|_x|), eine Wert-Mustervariable mit einem Dollar (\verb|$x|) und eine Multi-Mustervariable endet in drei Punkten (\verb|xs...|). Besitzt ein Name keiner dieser besonderen Merkmale, wird daraus kontextabhängig ein Lambdaparameter oder ein Symbol aus $\Sigma^+$. Ist der umgebende Name bereits in einem umschließenden Lambda gebunden, wird die innerste solche Bindung gewählt. Als Beispiel ist im Ausdruck \verb|\x .x + y| das Symbol \verb|x| als Lambdaparameter interpretiert, während \verb|y| Als Zeichenkette erhalten bleibt.
 Im Ausdruck \verb|\x .\x .2 - x| kann der Parameter \verb|x| des äußeren Lambdas in der Definition des inneren Lambdas nicht mehr referenziert werden, der Gesamtausdruck ist damit identisch zu \verb|(\x .(\y .2 - y))|.
 
 
+\subsection{Ersetzungsregel}
+Es gibt zwei Varianten Ersetzungsregeln zu schreiben.
+\begin{align*}
+	~&~&~&~&\textit{<linke Seite>}&~ ~                       &= \textit{<rechte Seite>}&~&~&~&~\\
+	~&~&~&~&\textit{<linke Seite>}&~|~\textit{<Bedingungen>} &= \textit{<rechte Seite>}&~&~&~&~
+\end{align*}
+In der zweiten Variante ist \textit{<Bedingungen>} eine kommaseparierte Liste von Bedingungen and die vorkommenden Mustervariablen, wie in Abschnitt \ref{subsubsecBedingungen} diskutiert. 
+
+
+
 %.........................................................................
 %.........................................................................
 %.........................................................................
-\subsection{Datenstruktur}
+\section{Datenstruktur}
 \BFred{TODO}
 
 %.........................................................................
 %.........................................................................
 %.........................................................................
-\subsection{Algorithmen} \label{subsecCppAlgos}
+\section{Algorithmen} \label{subsecCppAlgos}
 \BFred{TODO}
 
 

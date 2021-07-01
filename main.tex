@@ -71,9 +71,9 @@ fancyheadings, % headings with seplines and logo
 \usepackage{amsthm}
 \theoremstyle{definition} %keine kursiven theoreme
 
-%subsubsections nicht im Inhaltsverzeichniss
-\setcounter{tocdepth}{2}
-\setcounter{secnumdepth}{3}
+%subsections nicht im Inhaltsverzeichniss
+\setcounter{tocdepth}{1}
+\setcounter{secnumdepth}{2}
 
 %.........................................................................
 %................................ Macros .................................
@@ -112,7 +112,7 @@ fancyheadings, % headings with seplines and logo
 
 
 %theorem umgebungen
-\newtheorem{beispiel}{Beispiel}[section] %zähler zweistellig mit section
+\newtheorem{beispiel}{Beispiel}[chapter] %zähler zweistellig mit chapter
 \newtheorem{definition}[beispiel]{Definition} %selber zähler wie beispiel
 \newtheorem{lemma}[beispiel]{Lemma}           %selber zähler wie beispiel
 

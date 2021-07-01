@@ -1,6 +1,6 @@
 
 
-\section{Einleitung} \label{secEinleitung}
+\chapter{Einleitung} \label{secEinleitung}
 \textcolor{red} {
 \begin{itshape}
 Anmerkung: Hier kommt hin, was halt in eine Einleitung soll:
@@ -24,7 +24,7 @@ Oft ist für zwei Ausdrücke bekannt, dass sie gleichbedeutend sind, wenn beide 
 
 Die Idee Computer zu nutzen um symbolische Ausdrücke zu manipulieren ist fast so alt wie der Computer selbst.  LISP ist als eine der ersten höheren Programmiersprachen bereits für diesen Zweck geschaffen worden \cite{lisp}. 
 
-\subsection{Zielsetzung}
+\section{Zielsetzung}
 Ziel der Arbeit ist Design und Umsetzung eines Termersetzungssystems zur Vereinfachung algebraischer Ausdrücke. Der Kern des Termersetzungssystems ist ein Algorithmus zur Erkennung eines bestimmten Musters in einem Term. 
 Der Algorithmus soll ein Muster dabei möglichst nicht nur erkennen, wenn der Term die exakt identische Struktur aufweist. Bestimmte Äquivalenzklassen, wie etwa alle Permutationen der Parameter in einer kommutativen Funktion sollen bereits auf der Mustererkennungsebende berücksichtig werden. Die Formulierung einer Menge von Ersetzungsregeln für das Termersetzungssystem muss also möglichst kompakt möglich sein. 
 Damit ist das Ziel die Mustererkennung möglichst schnell durchführen zu können beim Treffen von Designentscheidungen in der Musterstruktur nicht ausschlaggebend, eine polinomielle Laufzeitkomplexität ist allerdings angestrebt.\\
@@ -53,7 +53,7 @@ Der folgende Ausdruck kann durch Ersetzung der Struktur der linken Seite einer V
 Hervorzuheben ist dabei, dass Variablennamen wie $a$ oder $b$ in den Vereinfachungsregeln eine andere Bedeutung haben, als die Variablen $x$ und $y$ im zu vereinfachenden Ausdruck. Erstere sind Platzhalter in der Ersetzungsregel, stehen damit also representativ für einen Teil des Ausdrucks, der transformiert wird, während zweitere ihre Bedeutung außerhalb des Ersetzungssystems haben. Formalisiert wird dieser Unterschied in Abschnitt \ref{subsecMuster}. Als Beispiel gilt für die erste Umformung $b = \sin(x + y)^2$ mit $b$ aus Regel $(1)$.
 \end{beispiel}
 
-\subsection{Aufbau der Arbeit}
+\section{Aufbau der Arbeit}
 In Abschnitt \ref{secGrundlegendeDefinitionen} werden die Begriffe eingeführt, die zur Beschreibung eines zu transformierenden Ausdrucks, aber auch zur Beschreibung der Transformation selbst notwendig sind. Mit den dann etablierten Begriffen werden die Algorithmen zur Normalisierung ohne Mustererkennung aus Kapitel \ref{secErsteNormalform} und die Algorithmen zur Mustererkennung in Abschnitt \ref{secPattermatching} erläutert. Aufbauend auf Patternmatching tut dann Kapitel \ref{secTermersetzungssystem}, wo die Transformation eines Terms durch vordefinierte Muster beschrieben wird.
 Die tatsächliche Umsetzung und ihre Abweichungen von vorhergehenden Ideen ist in den Kapitel \ref{secKernUmsetzungInCpp} behandelt. 
 Kapitel \ref{secZusammenfassung} fasst die Arbeit zusammen.

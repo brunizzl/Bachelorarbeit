@@ -52,7 +52,7 @@ Die Funktion $u_n \colon T_C \rightharpoonup C$ kann hier und in den weiteren Al
 \Return {$t$}
 \end{algorithm}
 
-\subsection{Kommutative Funktionsanwendungen} \label{subsecNormalSortieren}
+\section{Kommutative Funktionsanwendungen} \label{subsecNormalSortieren}
 Eine Normalform für kommutative Funktionsanwendungen erfordert eine totale Ordnung auf der Menge aller Terme $T(F, C)$. Aufbauend auf einer totalen Ordnung von $F$ sowie $C$, kann eine lexikographische Ordnung $<$ von $T$ frei nach \cite{LexikografischeOrdnung} wie folgt definiert werden. 
 \begin{enumerate}
 	\item{sind $c, \tilde{c} \in T$ Konstantensymbole, so ist die Ordnung identisch zu der Ordnung in $C$}
@@ -67,7 +67,7 @@ Eine Normalform für kommutative Funktionsanwendungen erfordert eine totale Ordn
 \end{enumerate}
 Zur Normalisierung einer kommutativen Funktionsanwendung werden zuerst alle Parameter normalisiert, dann können die Parameter nach der lexikographischen Ordnung $<$ von $T$ sortiert werden. 
 
-\subsection{Teilweise Auswertung} \label{subsecNormalKombinieren}
+\section{Teilweise Auswertung} \label{subsecNormalKombinieren}
 
 \begin{algorithm}
 \DontPrintSemicolon
@@ -101,7 +101,7 @@ $$\mathrm{eval}(u_n, \mathrm{id})~(f, a, b) = c \in C \implies (f, xs..., a, ys.
 Eine normalisierte Funktionsanwendung enthält keine zwei auf diese Art ersetzbare Parameter $a$ und $b$ mehr. Weiter ist jede Funktionsanwendung, die als ganzes zu einer Konstante $c \in C$ auswertbar ist, ausgewertet.\\
 Als Algorithmus dargestellt sind die Überlegungen in Algorithmus \ref{combine}. Die Verfahren zur Normalisierung assoziativer und kommutativer Funktionssymbole werden auch von Eker \cite{BipartiteGraphMatching} beschrieben.
 
-\subsection{Kombination der einzelnen Vereinfachungen} \label{subsecKomboNormal}
+\section{Kombination der einzelnen Vereinfachungen} \label{subsecKomboNormal}
 
 \begin{algorithm}
 \DontPrintSemicolon
