@@ -53,18 +53,24 @@ Die Funktion $u_n \colon T_C \rightharpoonup C$ kann hier und in den weiteren Al
 \end{algorithm}
 
 \section{Kommutative Funktionsanwendungen} \label{subsecNormalSortieren}
-Eine Normalform für kommutative Funktionsanwendungen erfordert eine totale Ordnung auf der Menge aller Terme $T(F, C)$. Aufbauend auf einer totalen Ordnung von $F$ sowie $C$, kann eine lexikographische Ordnung $<$ von $T$ frei nach \cite{LexikografischeOrdnung} wie folgt definiert werden. 
+Eine Normalform für kommutative Funktionsanwendungen erfordert eine totale Ordnung auf der Menge aller Terme $T(F, C)$. 
+
+\begin{definition}~\\ \label{defOrdnungKleiner}
+Aufbauend auf einer totalen Ordnung von $F$ sowie $C$, kann eine lexikographische Ordnung $<$ von $T$ frei nach \cite{LexikografischeOrdnung} wie folgt definiert werden. 
 \begin{enumerate}
 	\item{sind $c, \tilde{c} \in T$ Konstantensymbole, so ist die Ordnung identisch zu der Ordnung in $C$}
 	\item{sind $c, a, \in T$ sowie $c$ ein Konstantensymbol und $a$ eine Funktionsanwendung gilt $c < a$ }
 	\item{sind $a = (f, ts...), b = (g, rs...) \in T$ Funktionsanwendungen und ist $f \neq g$ gilt $a < b \iff f < g $}
 	\item{sind $a = (f, t_1, \dots, t_n), b = (f, r_1, \dots, r_m) \in T$ Funktionsanwendungen ist die Ordnung wie folgt}
-	\begin{itemize}
+	\begin{enumerate}
 		\item{wenn $\exists k \leq \min{(n, m)} \colon \forall i < k ~ t_i = r_i ,~ t_k \neq r_k $ gilt ${a < b \iff t_k < r_k}$}
 		\item{ist $n < m$ und $\forall i < n\colon t_i = r_i$ gilt $a < b$}
 		\item{ist $n = m$ und $\forall i \leq n\colon t_i = r_i$ gilt $a = b$}
-	\end{itemize}
+	\end{enumerate}
 \end{enumerate}
+
+\end{definition}
+
 Zur Normalisierung einer kommutativen Funktionsanwendung werden zuerst alle Parameter normalisiert, dann können die Parameter nach der lexikographischen Ordnung $<$ von $T$ sortiert werden. 
 
 \section{Teilweise Auswertung} \label{subsecNormalKombinieren}

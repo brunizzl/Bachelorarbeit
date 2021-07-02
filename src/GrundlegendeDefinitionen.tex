@@ -140,8 +140,9 @@ $v_p$ muss die Mustervariablen in $p$ so durch Literale ersetzen, dass ein Term 
 Im vorangegangenen Beispiel \ref{bMuster} gilt damit $v_p~ \mathbf a = (\texttt{sin}, 3)$.
 
 Im Folgenden wird der Begriff des Matches noch etwas weiter gefasst. Es werden nach wie vor die Mustervariablen durch Literale ersetzt, allerdings muss nicht direkt das Ergebnis der Ersetzung, sondern nur eine normalisierte Form des Ergebnisses mit dem Literal $t$ übereinstimmen:
-$$\mathrm{normalize}~(\mathrm{eval}(u_c, \tilde v_p)~ p) = t$$
-Aus der Definition ist bereits klar, dass $\mathrm{normalize} \colon T(F, C) \rightarrow T(F, C)$ Terme auf Terme abbildet und ein Match $v_p$ nur dann gefunden werden kann, wenn $t$ im Bild von $\mathrm{normalize}$ liegt. 
+$$\mathrm{lit}~(v_p, p) \coloneqq \mathrm{normalize}~(\mathrm{eval}(u_c, \tilde v_p)~ p) = t$$
+Die Funktion $\mathrm{lit} \colon \paren*{X \rightarrow T} \times M \rightarrow T$ wird als \emph{Musterinterpretation} bezeichnet.
+Aus der Definition ist bereits klar, dass $\mathrm{normalize} \colon T \rightarrow T$ Terme auf Terme abbildet und ein Match $v_p$ nur dann gefunden werden kann, wenn $t$ im Bild von $\mathrm{normalize}$ liegt. 
 Gedacht ist $\mathrm{normalize}$ als Mittel, um Unterschiede zwischen Termen zu reduzieren, die die Auswertung für eine gebebende Interpretation $(u, v)$ nicht ändern. Da das Ergebnis von $\mathrm{normalize}$ aber nur von dem übergebenen Term abhängig ist, können nie direkt Unterschiede zwischen mehreren Termen verglichen und beseitigt werden. Ist die normalisierte Form $t'$ eines Terms $t$ ein Fixpunkt von $\mathrm{normalize}$, ist in dem Kontext klar, dass $t$ und $t'$ die gleiche Auswertung mit der Interpretation $(u, v)$ besitzen, da auch $\mathrm{normalize}~t' = \mathrm{normalize}~t$ gilt. Wäre $\mathrm{normalize}~t' \neq t'$, würde die Funktion nicht die ihr zugedachte Aufgabe erfüllen. Deshalb muss $\mathrm{normalize}$ eine Projektion sein, also eine Funktion, für die jeder Bildpunkt gleichzeitig ein Fixpunkt ist. 
 
 Welche Unterschiede $\mathrm{normalize}$ beseitigt soll hier nicht festgelegt werden. Klar ist aber, dass je nach Wahl von $\mathrm{normalize}$ zwar ein einzelnes Muster sehr mächtig werden kann, also ein Match mit sehr vielen Termen möglich ist, das Finden des Matches dann im allgemeinen Fall allerdings immer aufwändiger wird. 

@@ -364,39 +364,58 @@ Trotz der vorgegebenden Reihenfolge der Matches von Musterparametern im Literal,
 \section{Bessere Laufzeit für kommutative Muster} \label{subsecCMuster}
 
 Benanav zeigte 1987, dass auch das Matchproblem mit einem kommutativen Funktionssymbol NP-vollständig ist \cite{NPHardMatching}. Dennoch kann die Laufzeit von $\mathrm{findPermutation}$ für bestimmte Arten von Mustern verbessert werden. In diesem Abschnitt wird das versucht, indem a priori ausgeschlossen wird, dass bestimmte Reihenfolgen von Musterparametern erfolgreich matchen können. Diese Reihenfolgen müssen dann im Algorithmus nicht mehr geprüft werden.
-Vorraussetzung dafür wird sein, dass sowohl Muster als auch Literal mit $\mathrm{normalize}$ aus Kapitel \ref{secErsteNormalform} normalisiert werden. Insbesondere die Sortierung ist relevant.
-Bestimmte Muster mit kommutativen Funktionssymbolen können mit dieser einfachen Maßname bereits in linearer Zeit mit einem Literal abgeglichen werden. Besteht ein Muster etwa aus der Anwendung eines komutativen Funktionssymbols $f$ auf $m$ Parameter $\elems p 1 m$ und sind die Parameter $p_i$ ausschließlich Funktionsanwendungen paarweise verschiedener Funktionssymbole, ist garantiert, dass die Parameter eines normalisierten Literals für ein Match in der selben Reihenfolge liegen müssen. Wenn auch alle Teilmuster $p_i$ dieser Struktur folgen, bzw. nicht kommutativ sind, wird ein Match zuverlässig bereits mit Algorithmus \ref{simpleMatchAlgorithmShell} gefunden\footnote{unter der Annahme, dass keine assoziativen Funktionssymbole im Muster enthalten sind}. Das liegt daran, dass für alle $i, j \in \{1, \dots, m\}, i < j$ gilt, dass $p_i$ ausschließlich Literale matchen kann, die vor jedes Literal sortiert werden, welches mit $p_j$ gematcht werden könnte. Diese Idee der Ordnung von Mustern wird im Folgenden ausgeführt.
+Vorraussetzung dafür wird sein, dass sowohl Muster als auch Literal mit $\mathrm{normalize}$ aus Kapitel \ref{secErsteNormalform} normalisiert werden. Insbesondere die Sortierung nach der Relation $<$ aus Definition \ref{defOrdnungKleiner} ist relevant.
+Bestimmte Muster mit kommutativen Funktionssymbolen können mit dieser einfachen Maßname bereits in linearer Zeit mit einem Literal abgeglichen werden. Besteht ein Muster etwa aus der Anwendung eines komutativen Funktionssymbols $f$ auf $m$ Parameter $\elems p 1 m$ und sind die Parameter $p_i$ ausschließlich Funktionsanwendungen paarweise verschiedener Funktionssymbole, ist garantiert, dass die Parameter eines normalisierten Literals für ein Match in der selben Reihenfolge liegen müssen. Wenn auch alle Teilmuster $p_i$ dieser Struktur folgen, bzw. nicht kommutativ sind, wird ein Match zuverlässig bereits mit $\mathrm{findIdentic}$ (Algorithmus \ref{findIdentic}) gefunden\footnote{ohne Berücksichtigung von Matches, welche durch Assoziativität ermöglicht würden}. Das liegt daran, dass für alle $i, j \in \{1, \dots, m\}, i < j$ gilt, dass $p_i$ ausschließlich Literale matchen kann, die vor jedes Literal sortiert werden, welches mit $p_j$ gematcht werden könnte. Diese Idee der Ordnung von Mustern wird im Folgenden ausgeführt.
 
 
 \begin{definition}~\\
-Gilt für zwei Muster $p_1, p_2 \in M(F, C)$, dass alle Literale $t_1, t_2 \in T(F, C)$ für die es jeweilige Matchfunktionen $v_{p_1}, v_{p_2} \colon X \rightarrow T(F, C)$ gibt, $t_1 < t_2$ erfüllen, so ist $p_1$ \emph{stark kleiner} als $p_2$, geschrieben $p_1 \prec p_2$. Mit  $t_1 \leq t_2$ ist $p_1$ \emph{stark kleiner gleich} als $p_2$, geschrieben $p_1 \preceq p_2$.
+Man sagt zwei Muster $p_1$ und $p_2$ sind zueinander \emph{stark geordnet} oder $p_1 \prec p_2$, wenn jedes Literal $t_1$, dass mit $p_1$ gematcht werden kann, kleiner ist, als jedes Literal $t_2$, dass mit $p_2$ gematcht werden kann. 
+
+Gilt für zwei Muster $p_1, p_2 \in M(F, C)$, dass alle Literale $t_1, t_2 \in T(F, C)$ die mit $p_1$ bzw. $p_2$ gematcht werden können, $t_1 < t_2$ erfüllen, so ist $p_1$ \emph{stark kleiner} als $p_2$, geschrieben $p_1 \prec p_2$. Mit  $t_1 \leq t_2$ ist $p_1$ \emph{stark kleiner gleich} als $p_2$, geschrieben $p_1 \preceq p_2$.
 \end{definition}
 
 \begin{beispiel}~\\
-Wenn $\texttt{sin} < \texttt{cos}$, gilt $p_1 \prec p_2$ für $p_1 = (\texttt{pow}, (\texttt{sin}, \mathbf x), 2)$ und $p_2 = (\texttt{pow}, (\texttt{cos}, \mathbf x), 2)$. Im Kontrast sind die Muster $\hat p_1 = (\texttt{sum}, \mathbf x, (\texttt{sin}, 1))$ und $\hat p_2 = (\texttt{sum}, \mathbf x, (\texttt{cos}, 1))$ zueinander nicht stark geordnet. Gezeigt werden kann das mit Literalten $t_1$, $t_2$ und $t_3$, wenn ${t_1 < t_2 < t_3}$ gilt, aber $\hat p_1$ sowohl $t_1$ als auch $t_3$ matchen kann und $\hat p_2$ das Literal $t_2$ matchen kann. Mit $1 < 2 < 3$ erfüllen $t_1 = (\texttt{sum}, 1, (\texttt{sin}, 1))$, $t_2 = (\texttt{sum}, 2, (\texttt{cos}, 1))$ und $t_1 = (\texttt{sum}, 3, (\texttt{sin}, 1))$ die Bedingungen.
+Wenn $\texttt{sin} < \texttt{cos}$, gilt $p_1 \prec p_2$ für $p_1 = (\texttt{pow}, (\texttt{sin}, \mathbf x), 2)$ und $p_2 = (\texttt{pow}, (\texttt{cos}, \mathbf x), 2)$. Im Kontrast sind die Muster $\hat p_1 = (\texttt{pow}, \mathbf x, 2)$ und $\hat p_2 = (\texttt{pow}, \mathbf x, 3)$ zueinander nicht stark geordnet. Gezeigt werden kann das mit Literalten $t_1$, $t_2$ und $t_3$, wenn ${t_1 < t_2 < t_3}$ gilt, aber $\hat p_1$ sowohl $t_1$ als auch $t_3$ matchen kann und $\hat p_2$ das Literal $t_2$ matchen kann. Mit $1 < 2 < 3$ erfüllen $t_1 = (\texttt{pow}, 1, 2)$, $t_2 = (\texttt{pow}, 2, 3)$ und $t_3 = (\texttt{pow}, 3, 2)$ die Bedingungen.
 \end{beispiel}
 
+\BFred{TODO: rede über Abschnitt \ref{subsecNormalKombinieren} und wie es (scheinbar) diese Ordnung kaputtmacht}
 
 \begin{lemma}~\\
-Für folgende Formen von Mustern $p$ und $q$ gilt $p \prec q$:
+Für folgende Formen von normalisierten Mustern $p$ und $q$ gilt $p \prec q$:
 \begin{enumerate}
-	\item{$p$ und $q$ enthalten keine Mustervariablen und $p \neq q$}
+	\item{$p$ und $q$ enthalten keine Mustervariablen und $p < q$} \label{itemStarkKleiner1}
 	
-	\item{$p$ ist ein Konstantensymbol aber keine Mustervariable und $q$ ist eine Funktionsanwendung}
+	\item{$p$ ist ein Konstantensymbol aber keine Mustervariable und $q$ ist eine Funktionsanwendung}  \label{itemStarkKleiner2}
 	
-	\item{$p$ und $q$ sind Funktionsanwendungen verschiedener Funktionssymbole $f$ und $g$ mit $f < g$}
+	\item{$p$ und $q$ sind Funktionsanwendungen verschiedener Funktionssymbole $f$ und $g$ mit $f < g$}  \label{itemStarkKleiner3}
+		
+	\item{$p = (f, \elems p 0 {m-1})$ und $q = (f, \elems q 0 {n-1})$ sind Funktionsanwendungen des selben nicht-kommutativen Funktionssymbols $f$ und einer der folgenden Punkte trifft zu.
+	\begin{enumerate}
+		\item{$m < n$, $\forall j \in \{0, \dots, m-1\} \colon p_j = q_j$, $p$ hat keine Multi-Mustervariablen in seinen Argumenten und wenn $q$, dann erst nach $q_m$}
+		\item{$\exists i < min\{n, m\} \colon p_i \prec q_i$, $\forall j \in \{0, \dots, i  - 1\} \colon p_j = q_j$ und weder $p$ noch $q$ haben Multi-Mustervariablen in ihren Argumenten vor $p_i$ bzw. $q_i$}
+	\end{enumerate}
+	} \label{itemStarkKleiner4}
 	
-	\item{$p = (f, \elems p 1 m)$ und $q = (f, \elems q 1 n)$ sind Funktionsanwendungen des selben nicht-kommutativen Funktionssymbols $f$ und $m < n \land \forall j \in \{1, \dots, m\} \colon p_j = q_j$}
+	\item{$p = (f, \elems p 0 {m-1})$ und $q = (f, \elems q 0 {n-1})$ sind Funktionsanwendungen des selben kommutativen Funktionssymbols $f$, keine mit Multi-Mustervariablen unter ihren Argumenten und einer der folgenden Punkte trifft zu.
+	\begin{enumerate}
+		\item{$m < n$ und $\forall j \in \{0, \dots, m-1\} \colon p_j = q_j$}
+		\item{$\forall i \in \{0, \dots, m-1\}, j \in \{0, \dots, n-1\} \colon p_i \prec q_j \lor p_i = q_j$}
+	\end{enumerate}
+	} \label{itemStarkKleiner5}
 	
-	\item{$p = (f, \elems p 1 m)$ und $q = (f, \elems q 1 n)$ sind Funktionsanwendungen des selben nicht-kommutativen Funktionssymbols $f$ und $\exists i \leq min\{n, m\} \colon p_i \prec q_i \land \forall j \in \{1, \dots, i  - 1\} \colon p_j = q_j$}
-	
-	\item{$p = (g, \elems p 1 m)$ und $q = (g, \elems q 1 n)$ sind Funktionsanwendungen des selben kommutativen Funktionssymbols $g$ und $\forall i \in \{1, \dots, m\}, j \in \{1, \dots, n\} \colon p_i \prec q_j \lor p_i = q_j$}
-	
-	\item{\BFred{TODO: was ist mit kommutativen Funktionssymbolen? (die Regel hier drüber ist SEHR konservativ)}}
 \end{enumerate}
 \end{lemma}
 
-\BFred{TODO: Beweise $p \prec q$ in beschriebenen Fällen}
+\textbf{Beweis}~\\
+In allen Fällen wird eine Mustervariable nur an Punkten erlaubt, die nicht zur Bestimmung der Ordnung von $p$ und $q$ unter der Relation $<$ beitragen, bzw die für kein Literal anstelle der Mustervariable die Ordnung der normalisierten Terme beeinflussen würden. Trivial ist das für Fall \ref{itemStarkKleiner1} und Fall \ref{itemStarkKleiner2}. In Fall \ref{itemStarkKleiner3} sind Mustervariablen als Argumente von sowohl $p$ als auch $q$ erlaubt, da die Relation der beiden nur durch die unterschiedlichen Funktionssymbole $f$ und $g$ bestimmt ist. Auch wenn $f$ oder $g$ assoziativ oder kommutativ sind, bleiben sie nach einer Musterauswertung erhalten. Kommutativität ändert höchstens die Reihenfolge der Argumente, nicht aber das Funktionssymbol einer Funktionsanwendung. Assoziative Funktionsanwendungen können allerdings von $\mathit{normalize}$ entfernt werden. Dafür müssen sie allerdings Argument einer Funktionsanwendung des selben Symbols sein. Für $p$ und $q$ sind $f$ unf $g$ aber jeweils die Funktionssymbole der äußersten Funktionsanwendung, bleiben dementsprechend immer erhalten. 
+
+Mit der selben Argumentation bleibt $f$ auch in den Fällen \ref{itemStarkKleiner4} und \ref{itemStarkKleiner5} immer das äußerste Funktionssymbol. Eine Mustervariable ist zudem für sich nie stark geordnet zu einem anderen Muster, weswegen Assoziativität auch in dem Fall, dass eine Variable mit einer Funktion
+
+Dann kann auch keine Ersetzung der Mustervariablen mit beliebigen anderen Termen die Relation beeinflussen.
+Zu bemerken ist, dass eine Mustervariable alleine zu keinem anderen Muster stark geordnet ist. Dementsprechend kann auch das Vorkommen einer Mustervariable  
+Für Fall \ref{itemStarkKleiner1} ist das trivial. 
+Die Fälle \ref{itemStarkKleiner1}, \ref{itemStarkKleiner2} und \ref{itemStarkKleiner3} folgen direkt aus der Definition der Ordung in Abschnitt \ref{subsecNormalSortieren}. Fall \ref{itemStarkKleiner4}
+\hfill $\square$\\
 
 
 Für folgende Formen von Mustern $p$ und $q$ gilt $p \preceq q$:
