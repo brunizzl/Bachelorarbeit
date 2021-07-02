@@ -15,7 +15,7 @@ Die wichtigste Erweiterung der Implementierung ist allerdings die der anoymen Fu
 Muster sind in der Umsetzung auch entsprechend flexibler, schließlich sind sie eine Obermenge der Literale. Dazu kommt die Fähigkeit, Bedingungen an Mustervariablen zu stellen, um mögliche Matches weiter einzuschränken. Eine spezielle Form dieser Einschränkung ist dabei die der \emph{Wert-Mustervariable} $w \in W$, welche versucht Matches zu finden, die in Unterkapitel \ref{subsecNormalKombinieren} erlaubt werden, also Komplexe Zahlen wieder in Rechenausdrücke zu dekonstruieren. Näher behandelt wird die Wert-Mustervariable noch im folgenden Abschnitt \ref{subsecMustervariablen}. 
 Zuletzt kann die Multi-Mustervariable aus Abschnitt \ref{subsecMulti} von hier an nicht mehr nur als abstrakte Idee gehandelt werden. Die Menge der Multi-Mustervariablen wird $X^*$ genannt. 
 
-\begin{definition}
+\begin{definition} \label{defKnotentypenMathe}
 Die Menge der Terme $T$ ist in diesem Kapitel definiert als
 $$T \coloneqq \Sigma^+ \cup \mathbb C \cup X \cup X' \cup X^* \cup W \cup V \cup \Lambda \cup \curl*{(\elems t 0 n)~|~ \elems t 0 n \in T, n > 0)}$$
 mit
@@ -136,9 +136,9 @@ Aus der Tabelle hervorzuheben sind zwei Dinge: Zum einen wird ein Leerzeichen zw
 Da der ASCII Zeichensatz keine griechischen Buchstaben enthält, wird anstelle des kleinen Lambdas $\lambda$ der umgekehrte Schrägstrich \verb~\ ~genutzt. Die Identitätsfunktion $\lambda x.x$ wird dementsprechend \verb~\x .x~ geschrieben. Mehrere Parameter werden durch Leerzeichen getrennt: \verb~\x y .pow(x, y)~ ist eine Lambdafunktion mit identischem Verhalten zum Funktionssymbol \verb|pow|.
 
 \subsection{Symbole}
-Komplexe Zahlen auf der reellen Achse sind in der Syntax vergleichbar mit Darstellungen für Integer und Fließkommazahlen erlaubt in C. Möglich sind etwa \verb|42|, \verb|3.1415|, \verb|1.337e3|, \verb|1.602e-19| oder \verb|1e+10|. Komplexe Zahlen auf der imaginären Achse sind in der Struktur identisch, allerdings immer direkt gefolgt vom Zeichen \verb|i|. 
+Komplexe Zahlen auf der reellen Achse sind in der Syntax vergleichbar mit Darstellungen für Integer und Fließkommazahlen erlaubt in C. Möglich sind etwa \verb|3.1415|, \verb|42|, \verb|1.337e3| oder \verb|1.602e-19|. Komplexe Zahlen auf der imaginären Achse sind in der Struktur identisch, allerdings immer direkt gefolgt vom Zeichen \verb|i|. 
 
-Die verschiedenen Mustervariablen werden auch unterschiedliche Weise identifiziert. Eine normale Mustervariable muss mit einem Unterstrich beginnen (\verb|_x|), eine Wert-Mustervariable mit einem Dollar (\verb|$x|) und eine Multi-Mustervariable endet in drei Punkten (\verb|xs...|). Besitzt ein Name keiner dieser besonderen Merkmale, wird daraus kontextabhängig ein Lambdaparameter oder ein Symbol aus $\Sigma^+$. Ist der umgebende Name bereits in einem umschließenden Lambda gebunden, wird die innerste solche Bindung gewählt. Als Beispiel ist im Ausdruck \verb|\x .x + y| das Symbol \verb|x| als Lambdaparameter interpretiert, während \verb|y| Als Zeichenkette erhalten bleibt.
+Die verschiedenen Mustervariablen werden auf unterschiedliche Weise identifiziert. Eine normale Mustervariable muss mit einem Unterstrich beginnen (\verb|_x|), eine Wert-Mustervariable mit einem Dollar (\verb|$x|) und eine Multi-Mustervariable endet in drei Punkten (\verb|xs...|). Besitzt ein Name keiner dieser besonderen Merkmale, wird daraus kontextabhängig ein Lambdaparameter oder ein Symbol aus $\Sigma^+$. Ist der umgebende Name bereits in einem umschließenden Lambda gebunden, wird die innerste solche Bindung gewählt. Als Beispiel ist im Ausdruck \verb|\x .x + y| das Symbol \verb|x| als Lambdaparameter interpretiert, während \verb|y| Als Zeichenkette erhalten bleibt.
 Im Ausdruck \verb|\x .\x .2 - x| kann der Parameter \verb|x| des äußeren Lambdas in der Definition des inneren Lambdas nicht mehr referenziert werden, der Gesamtausdruck ist damit identisch zu \verb|(\x .(\y .2 - y))|.
 
 
@@ -156,6 +156,24 @@ In der zweiten Variante ist \textit{<Bedingungen>} eine kommaseparierte Liste vo
 %.........................................................................
 %.........................................................................
 \section{Datenstruktur}
+Die Knoten des Termbaumes liegen in einem Array, dem sogenannten \verb|Store|. Während eine Komplexe Zahl oder ein Lambdaparameter immer ein Arrayelement besetzen, kann die Funktionsanwendung auch mehrere direkt hintereinanderliegende Arrayelemente nutzen, je nachdem, wie viele Argumente referenziert werden müssen. Referenziert wird ein Knoten aus einem Paar aus Arrayindex und Knotentyp, ebendfalls dargestellt als natürliche Zahl. Dieses Paar wird \verb|NodeIndex| genannt. Der Knotentyp wird als \verb|NodeType| bezeichnet und kann 12 verschiedene Werte annehmen, eng verwandt mit Definition \ref{defKnotentypenMathe}:
+\begin{enumerate}
+	\setcounter{enumi}{-1} %beginne aufzählung bei 0
+	\item {$\Sigma^+$.}
+	\item {Komplexe Fließkommazahl, zusammengesetzt aus zwei 64-bit Fließkommazahlen für Realteil und Imaginärteil}
+	\item {$\Lambda$}
+	\item {$V$}
+	\item {Funktionsanwendung in einem Literal}
+	\item {Funktionsanwendung in einem Muster}
+	\item {Hilfsyp benötigt in der Konstruktion eines Musters mit Wert-Mustervariablen}
+	\item {bindende Instanz einer Mustervariable $\mathbf x \in X$ an die im Muster Bedingungen geknüpft sind}
+	\item {bindene Instanz einer Mustervariable $\mathbf x \in X$ ohne weitere Bedingungen}
+	\item {gebundene Instanz einer Mustervariable $\mathbf x \in X$}
+	\item {$X^*$}
+	\item {$W$}
+\end{enumerate}
+Manche der hier aufgezählten Knoten müssen neben ihrem Typen nur eine einzige natürliche Zahl kennen. Bereits diekutiert wurde das für Knoten von Typ $3$, den Lambdaparametern. Für ein Knoten dieser Art ist es nicht notwendig, die Information als eigenens Arrayelement des \verb|Store| zu speichern, der Index des Paares aus Index und Typ von \verb|NodeType| enthält direkt den erforderlichen Wert. Alle Knoten dieser Art
+
 \BFred{TODO}
 
 %.........................................................................

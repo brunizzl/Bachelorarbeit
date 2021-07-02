@@ -333,12 +333,30 @@ Konnte $p_i$ nicht gematcht werden, wird  $i$ im Bereich \texttt{\ref{dilationRe
 
 
 \begin{lemma}\label{lemKomplexitaetDilation}~\\
-Die Laufzeitkomplexität von Algorithmus \ref{findDilation} bei der Suche eines Matches für ein Muster $p$  mit einem Literal $t = (f, \elems t 0 {n-1})$ ist in \BFred{TODO}, wenn jeder Parameter $t_k$ von $t$ nur $\mathcal O(1)$ Konstantensymbole und Funktionssymbole besitzt und $p$ eine Funktionsanwendung von $f$ auf $m$ Mustervariablen $\elems {\mathbf x} 0 {m-1}$, 
+Die Laufzeitkomplexität von Algorithmus \ref{findDilation} bei der Suche eines Matches für ein Muster $p$  mit einem Literal $t = (f, \elems t 0 {n-1})$ ist in $\mathcal O(n^m)$, wenn jeder Parameter $t_k$ von $t$ nur $\mathcal O(1)$ Konstantensymbole und Funktionssymbole besitzt und $p$ eine Funktionsanwendung von $f$ auf $m$ Mustervariablen $\elems {\mathbf x} 0 {m-1}$, 
 wobei jede Mustervariable $\mathbf x_i$ Nachfolger einer Multi-Matchvariable ist und auf $x_{m-1}$ eine Multi-Matchvariable folgt. Für $m = 3$ gilt also $p = (f, \mathbf{as...}, \mathbf x_0, \mathbf{bs...}, \mathbf x_1, \mathbf{cs...}, \mathbf x_2, \mathbf{ds...})$.
 \end{lemma}
 
 \textbf{Beweis}.\\
-\BFred{TODO: beweise Lemma \ref{lemKomplexitaetDilation}}
+Sei $D(m, n)$ die asymptotische Laufzeit von Algorithmus \ref{findDilation}. Erneut wird ein Induktionsbeweis über $m$ beschrieben.
+Mit $m = 1$ ist der Fall identisch zu dem Indunktionsanfang des Beweises von Lemma \ref{lemKomplexitaetFindPermutation}, es gilt $D(1, n) = \mathcal O(n)$. 
+
+Für $m > 1$ wird $D(m, n)$ auf $D(m-1, n)$ zurückgeführt. Für jedes $k$ muss nach erfolgreichem Match von $\mathbf x_0$ mit $t_k$ versucht werden, die restlichen Mustervariablen $\elems {\mathbf x} 1 {m-1}$ in den restlichen Argumenten $\elems {t} {k+1} {n-1}$ des Literals $t$ zu matchen. Das entspricht einem erneuten Aufruf von $\mathrm{findDilation}$ mit neuem Muster $p'$ ohne $\mathbf x_0$ und neuem Liteal $t' = (f, \elems t {k+1}, {n-1})$.
+Im rechenaufwändigsten Fall passiert das für jedes $k$.
+$$D(m, n) = \sum_{k = 0}^{n-1} \paren*{\mathcal O(1) + D(m-1, n - k - 1)}$$
+Trotz der vorgegebenden Reihenfolge der Matches von Musterparametern im Literal, folgt die selbe Komplexitätsabschätzung wie für $\mathrm{findPermutation}$.
+\begin{equation*}
+	\begin{split} 
+		D(m, n) 
+		&= \sum_{k = 0}^{n-1} \paren*{\mathcal O(1) + D(m-1, n - k - 1)}\\ 
+		&< \sum_{k = 0}^{n-1} \paren*{\mathcal O(1) + D(m-1, n)}\\
+		&= \mathcal O(n) + \mathcal O(n) \cdot D(m-1, n)\\
+		&= \mathcal O(n) \cdot D(m-1, n)\\
+		&= \mathcal O(n^m)
+	\end{split}
+\end{equation*}
+\hfill $\square$\\
+
 
 %.........................................................................
 %.........................................................................
@@ -360,7 +378,7 @@ Wenn $\texttt{sin} < \texttt{cos}$, gilt $p_1 \prec p_2$ für $p_1 = (\texttt{po
 
 
 \begin{lemma}~\\
-Für folgende Formen von Mustern ohne Multi-Matchvariablen $p$ und $q$ gilt $p \prec q$:
+Für folgende Formen von Mustern $p$ und $q$ gilt $p \prec q$:
 \begin{enumerate}
 	\item{$p$ und $q$ enthalten keine Mustervariablen und $p \neq q$}
 	
