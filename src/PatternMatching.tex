@@ -377,15 +377,17 @@ Wenn $\texttt{sin} < \texttt{cos}$, gilt $p_1 \prec p_2$ für $p_1 = (\texttt{po
 \end{beispiel}
 
 \begin{lemma}~\\
-Sei $p$ ein Muster, welches mindestens die Mustervariable $\mathbf x$ enthält und $q$ ein Muster bestehend nur aus der Mustervariable $\mathbf y$.
-Wenn es zwei Konstantensymbole $c_1 \neq c_2 \in C$ ohne Auswertung gibt, gilt weder $p \preceq q$, noch $q \preceq p$.
+Sei $p$ ein beliebiges Muster ohne die Mustervariable $\mathbf x$, $q$ ein Muster, welches nur aus der Mustervariable $\mathbf x$ besteht und die Menge der Konstantensymbole $C$ ohne Minimum.
+Es gilt $p \not\preceq q$, und $q \not\preceq p$.
 \end{lemma}
 
 \textbf{Beweis}.\\
-Sei $v_p^{(i)}$ eine Matchfunktion mit $v_p^{(i)}~\mathrm x = c_i$ und sonst von $i$ unabhängigen Funktionswerten. Die Literale $t_1 = \mathrm{lit}~(p, v_p^{(1)})$ und $t_2 = \mathrm{lit}~(p, v_p^{(2)})$ sind von einander verschieden und können beide sowohl $p$ als auch $q$ matchen. 
+Mit beliebiger Matchfunktion $v_p$ sei $t_2 = \mathrm{lit}~(p, v_p)$. Nach Lemma \ref{lemMinMax} gibt es die Literale $t_1 < t_2$ und $t_3 > t_2$. 
+Mit $v_p'$ identisch zu $v_p$, nur $v_p'~\mathrm x = t_1$, gilt 
+$$\mathrm{lit}~(p, v_p') = t_2 > t_1 = \mathrm{lit}~(q, v_p') \implies p \not\preceq q.$$
+Mit $v_p''$ identisch zu $v_p$, nur $v_p''~\mathrm x = t_3$, gilt 
+$$\mathrm{lit}~(p, v_p'') = t_2 < t_3 = \mathrm{lit}~(q, v_p'') \implies q \not\preceq p.$$
 \hfill $\square$\\
-
-Mit ähnlichen Argumenten 
 
 
 Einfach zu sehen ist, dass nur sehr wenige Muster zueinander stark geordnet sind, wenn die allgemeinste Form des Matches erlaubt ist. Problematisch ist dabei vor allem $\mathrm{combine}$ (Algorithmus \ref{combine}) als Teil von $\mathrm{normalize}$. Dadurch wird es möglich Muster mit Funktionsanwendungen und Literale bestehend nur aus einer Konstanten zu matchen. Da es aufwändig ist überhaupt erst zu bestimmen, welche Muster Matches dieser Art erlauben, wird $\mathrm{normalize}$ hier abweichend von Kapitel \ref{secErsteNormalform} ohne $\mathrm{combine}$ angenommen. Nur Assoziativität und Kommutativität werden berücksichtigt.
