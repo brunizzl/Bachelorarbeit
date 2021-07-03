@@ -369,16 +369,26 @@ Bestimmte Muster mit kommutativen Funktionssymbolen können mit dieser einfachen
 
 
 \begin{definition}~\\
-Man sagt zwei Muster $p_1$ und $p_2$ sind zueinander \emph{stark geordnet} oder $p_1 \prec p_2$, wenn jedes Literal $t_1$, dass mit $p_1$ gematcht werden kann, kleiner ist, als jedes Literal $t_2$, dass mit $p_2$ gematcht werden kann. 
-
-Gilt für zwei Muster $p_1, p_2 \in M(F, C)$, dass alle Literale $t_1, t_2 \in T(F, C)$ die mit $p_1$ bzw. $p_2$ gematcht werden können, $t_1 < t_2$ erfüllen, so ist $p_1$ \emph{stark kleiner} als $p_2$, geschrieben $p_1 \prec p_2$. Mit  $t_1 \leq t_2$ ist $p_1$ \emph{stark kleiner gleich} als $p_2$, geschrieben $p_1 \preceq p_2$.
+Man sagt dass Muster $p_1$ ist \emph{stark kleiner} als das Muster $p_2$ oder $p_1 \prec p_2$, wenn für alle Matchfunktionen $v_p$ gilt, dass $\mathrm{lit}~(p_1, v_p) < \mathrm{lit}~(p_2, v_p)$. Gilt immer $\mathrm{lit}~(p_1, v_p) \leq \mathrm{lit}~(p_2, v_p)$, sagt man $p_1$ ist \emph{stark kleiner-gleich} als $p_2$ oder $p_1 \preceq p_2$.
 \end{definition}
 
 \begin{beispiel}~\\
-Wenn $\texttt{sin} < \texttt{cos}$, gilt $p_1 \prec p_2$ für $p_1 = (\texttt{pow}, (\texttt{sin}, \mathbf x), 2)$ und $p_2 = (\texttt{pow}, (\texttt{cos}, \mathbf x), 2)$. Im Kontrast sind die Muster $\hat p_1 = (\texttt{pow}, \mathbf x, 2)$ und $\hat p_2 = (\texttt{pow}, \mathbf x, 3)$ zueinander nicht stark geordnet. Gezeigt werden kann das mit Literalten $t_1$, $t_2$ und $t_3$, wenn ${t_1 < t_2 < t_3}$ gilt, aber $\hat p_1$ sowohl $t_1$ als auch $t_3$ matchen kann und $\hat p_2$ das Literal $t_2$ matchen kann. Mit $1 < 2 < 3$ erfüllen $t_1 = (\texttt{pow}, 1, 2)$, $t_2 = (\texttt{pow}, 2, 3)$ und $t_3 = (\texttt{pow}, 3, 2)$ die Bedingungen.
+Wenn $\texttt{sin} < \texttt{cos}$, gilt $p_1 \prec p_2$ für $p_1 = (\texttt{pow}, (\texttt{sin}, \mathbf x), 2)$ und $p_2 = (\texttt{pow}, (\texttt{cos}, \mathbf y), 2)$. Im Kontrast sind die Muster $\hat p_1 = (\texttt{pow}, \mathbf x, 2)$ und $\hat p_2 = (\texttt{pow}, \mathbf y, 3)$ zueinander nicht stark geordnet. Gezeigt werden kann das mit Literalten $t_1$, $t_2$ und $t_3$, wenn ${t_1 < t_2 < t_3}$ gilt, aber $\hat p_1$ sowohl $t_1$ als auch $t_3$ matchen kann und $\hat p_2$ das Literal $t_2$ matchen kann. Mit $1 < 2 < 3$ erfüllen $t_1 = (\texttt{pow}, 1, 2)$, $t_2 = (\texttt{pow}, 2, 3)$ und $t_3 = (\texttt{pow}, 3, 2)$ die Bedingungen.
 \end{beispiel}
 
-\BFred{TODO: rede über Abschnitt \ref{subsecNormalKombinieren} und wie es (scheinbar) diese Ordnung kaputtmacht}
+\begin{lemma}~\\
+Sei $p$ ein Muster, welches mindestens die Mustervariable $\mathbf x$ enthält und $q$ ein Muster bestehend nur aus der Mustervariable $\mathbf y$.
+Wenn es zwei Konstantensymbole $c_1 \neq c_2 \in C$ ohne Auswertung gibt, gilt weder $p \preceq q$, noch $q \preceq p$.
+\end{lemma}
+
+\textbf{Beweis}.\\
+Sei $v_p^{(i)}$ eine Matchfunktion mit $v_p^{(i)}~\mathrm x = c_i$ und sonst von $i$ unabhängigen Funktionswerten. Die Literale $t_1 = \mathrm{lit}~(p, v_p^{(1)})$ und $t_2 = \mathrm{lit}~(p, v_p^{(2)})$ sind von einander verschieden und können beide sowohl $p$ als auch $q$ matchen. 
+\hfill $\square$\\
+
+Mit ähnlichen Argumenten 
+
+
+Einfach zu sehen ist, dass nur sehr wenige Muster zueinander stark geordnet sind, wenn die allgemeinste Form des Matches erlaubt ist. Problematisch ist dabei vor allem $\mathrm{combine}$ (Algorithmus \ref{combine}) als Teil von $\mathrm{normalize}$. Dadurch wird es möglich Muster mit Funktionsanwendungen und Literale bestehend nur aus einer Konstanten zu matchen. Da es aufwändig ist überhaupt erst zu bestimmen, welche Muster Matches dieser Art erlauben, wird $\mathrm{normalize}$ hier abweichend von Kapitel \ref{secErsteNormalform} ohne $\mathrm{combine}$ angenommen. Nur Assoziativität und Kommutativität werden berücksichtigt.
 
 \begin{lemma}~\\
 Für folgende Formen von normalisierten Mustern $p$ und $q$ gilt $p \prec q$:
@@ -407,14 +417,13 @@ Für folgende Formen von normalisierten Mustern $p$ und $q$ gilt $p \prec q$:
 \end{lemma}
 
 \textbf{Beweis}~\\
-In allen Fällen wird eine Mustervariable nur an Punkten erlaubt, die nicht zur Bestimmung der Ordnung von $p$ und $q$ unter der Relation $<$ beitragen, bzw die für kein Literal anstelle der Mustervariable die Ordnung der normalisierten Terme beeinflussen würden. Trivial ist das für Fall \ref{itemStarkKleiner1} und Fall \ref{itemStarkKleiner2}. In Fall \ref{itemStarkKleiner3} sind Mustervariablen als Argumente von sowohl $p$ als auch $q$ erlaubt, da die Relation der beiden nur durch die unterschiedlichen Funktionssymbole $f$ und $g$ bestimmt ist. Auch wenn $f$ oder $g$ assoziativ oder kommutativ sind, bleiben sie nach einer Musterauswertung erhalten. Kommutativität ändert höchstens die Reihenfolge der Argumente, nicht aber das Funktionssymbol einer Funktionsanwendung. Assoziative Funktionsanwendungen können allerdings von $\mathit{normalize}$ entfernt werden. Dafür müssen sie allerdings Argument einer Funktionsanwendung des selben Symbols sein. Für $p$ und $q$ sind $f$ unf $g$ aber jeweils die Funktionssymbole der äußersten Funktionsanwendung, bleiben dementsprechend immer erhalten. 
+In allen Fällen wird eine Mustervariable nur an Punkten erlaubt, die nicht zur Bestimmung der Ordnung von $p$ und $q$ unter der Relation $<$ beitragen, bzw die für kein Literal anstelle der Mustervariable die Ordnung der normalisierten Terme beeinflussen würden. Trivial ist das für Fall \ref{itemStarkKleiner1}.
 
-Mit der selben Argumentation bleibt $f$ auch in den Fällen \ref{itemStarkKleiner4} und \ref{itemStarkKleiner5} immer das äußerste Funktionssymbol. Eine Mustervariable ist zudem für sich nie stark geordnet zu einem anderen Muster, weswegen Assoziativität auch in dem Fall, dass eine Variable mit einer Funktion
+Für die restlichen Fälle muss klar sein, dass ein Literal der Form $(f, xs...)$ auch nach Normalisierung diese Form behält. Die Reihenfolge der Argumente und damit auch ob $f$ kommutativ ist, spielen keine Rolle. Das Normalisieren mehrerer geschachtelter Anwendungen des selben assoziativen Funktionssymbols $f$ entfernt nie die äußerste Funktionsanwendung, die Struktur bleibt also auch so erhalten.
+Fall \ref{itemStarkKleiner2} und Fall \ref{itemStarkKleiner3} sind ist damit bewiesen.
 
-Dann kann auch keine Ersetzung der Mustervariablen mit beliebigen anderen Termen die Relation beeinflussen.
-Zu bemerken ist, dass eine Mustervariable alleine zu keinem anderen Muster stark geordnet ist. Dementsprechend kann auch das Vorkommen einer Mustervariable  
-Für Fall \ref{itemStarkKleiner1} ist das trivial. 
-Die Fälle \ref{itemStarkKleiner1}, \ref{itemStarkKleiner2} und \ref{itemStarkKleiner3} folgen direkt aus der Definition der Ordung in Abschnitt \ref{subsecNormalSortieren}. Fall \ref{itemStarkKleiner4}
+Mit der selben Argumentation bleibt $f$ auch in den Fällen \ref{itemStarkKleiner4} und \ref{itemStarkKleiner5} immer das äußerste Funktionssymbol erhalten. Da die Reihenfolge der Argumente in Fall \ref{itemStarkKleiner4} auch nach Auswertung der Musterinterpretation gleich bleibt, 
+
 \hfill $\square$\\
 
 

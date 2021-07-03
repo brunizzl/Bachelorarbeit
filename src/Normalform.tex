@@ -2,7 +2,7 @@
 
 
 
-\section {Normalform} \label{secErsteNormalform}
+\chapter {Normalform} \label{secErsteNormalform}
 
 Das Kernthema dieser Arbeit ist die Vereinfachung von Termen. Eine Vereinfachung ist allerdings nur gültig, sofern sich die Bedeutung des vereinfachten Terms gegenüber der des ursprünglichen Terms nicht geändert hat. Da ein Term in sich keine Bedeutung trägt, muss eine Vereinfachung immer in Bezug auf eine Interpretation $(u, v)$ gesehen werden. Etwa kann der Ausdruck $X A X^{-1}$ zu $A$ vereinfacht werden, wenn $X, A \in \mathbb{C} \setminus \{0\}$, allerdings ist die Vereinfachung allgemein nicht möglich, sollten die Symbole $X$ und $A$ für Matritzen stehen. \\
 Im Folgenden wird von der Assoziativität oder Kommutativität bestimmter Funktionssymbole gesprochen. Diese ist immer im Kontext der Interpretation $(u, v)$ zu sehen. Gleichzeitig ist aber auch klar, dass unabhängig von der Interpretation verschiedene Funktionssymbole die Rolle der Multiplikation übernehmen müssen, sollte sowohl skalare Multiplikation als auch Matrixmultiplikation im selben Term möglich sein. $X A X^{-1}$ als Matrixmultiplikation könnte der Term $(\texttt{prod'}, X, A, (\texttt{pow}, X, -1))$ darstellen. Sind $A$ und $X$ Skalare, wäre der Ausdruck als $(\texttt{prod}, X, A, (\texttt{pow}, X, -1))$ schreibbar. Das Funktionssymbol $\texttt{prod'}$ steht dann für ein nicht-kommutatives Produkt, während die Reihenfolge der Parameter in einer Funktionsanwendung von $\texttt{prod}$ keine Rolle spielt.\\
@@ -16,7 +16,7 @@ Weiteres Ziel dieses Kapitels ist, dass möglichst viele Literale mit identische
 
 In diesem Kapitel werden häufig Abschnitte der Parameter einer Funktionsanwendung beliebiger Länge der Form $\elems t i k$ vorkommen. Kompakt wird $ts...$ für den (möglicher\-weise leeren) Abschnitt des Funktionsanwendungstupels geschrieben. Das $s$ in $ts...$ ist dann nicht als einzelnes Symbol zu lesen, sondern als Suffix um $t$ in den Plural zu setzen. \\$(f, \elems t 1 k, a, \elems t {k+2} n)$ kann also äquivalent $(f, ts..., a, rs...)$ geschrieben werden, mit $(\elems t 1 k) = (ts...)$ und $(\elems t {k+2} n) = (rs...)$.\\
 
-\subsection {Assoziative Funktionsanwendungen}
+\section {Assoziative Funktionsanwendungen}
 Die geschachtelte Anwendung einer assoziativen Funktion führt je nach Klammersetzung zu verschiedenen mathematisch equivalenten Termen. Als Beispiel dient hier die Addition, dargestellt als Anwendung des Funktionssymbols $\texttt{sum}$. Die folgenden Ausdrücke sind paarweise verschiedene Terme, jedoch in ihrer Interpretation als Summe von $a$, $b$, $c$ und $d$ alle mathematisch äquivalent.
 \begin{equation*}
 	\begin{split}
@@ -60,7 +60,7 @@ Aufbauend auf einer totalen Ordnung von $F$ sowie $C$, kann eine lexikographisch
 \begin{enumerate}
 	\item{sind $c, \tilde{c} \in T$ Konstantensymbole, so ist die Ordnung identisch zu der Ordnung in $C$}
 	\item{sind $c, a, \in T$ sowie $c$ ein Konstantensymbol und $a$ eine Funktionsanwendung gilt $c < a$ }
-	\item{sind $a = (f, ts...), b = (g, rs...) \in T$ Funktionsanwendungen und ist $f \neq g$ gilt $a < b \iff f < g $}
+	\item{sind $a = (f, ts...), b = (g, rs...) \in T$ Funktionsanwendungen und ist $f < g$, gilt $a < b$}
 	\item{sind $a = (f, t_1, \dots, t_n), b = (f, r_1, \dots, r_m) \in T$ Funktionsanwendungen ist die Ordnung wie folgt}
 	\begin{enumerate}
 		\item{wenn $\exists k \leq \min{(n, m)} \colon \forall i < k ~ t_i = r_i ,~ t_k \neq r_k $ gilt ${a < b \iff t_k < r_k}$}
@@ -70,6 +70,16 @@ Aufbauend auf einer totalen Ordnung von $F$ sowie $C$, kann eine lexikographisch
 \end{enumerate}
 
 \end{definition}
+
+\begin{lemma}
+$T$ hat genau dann ein Minimum, wenn $C$ ein Minimum hat $(1)$. $T$ hat kein endlich großes Maximum $(2)$.
+\end{lemma}
+
+\textbf{Beweis}.\\
+Teil $(1)$ folg daraus, dass die Konstantensymbole selbst bereits Terme sind und kleiner als jede Funktionsanwendung sind. Ein Minimum von $C$ ist damit gleichzeitig Minimum von $T$.
+
+Teil $(2)$ folgt aus einem Wiederspruch. Angenommen es gäbe einen endlichen Term $\hat t$ größer als jeder andere Term. Der Term $\hat t'$ ist identisch zu $\hat t$, nur die Konstantensymbole von $\hat t$ sind durch beliebige Funktionsanwendungen ersetzt. Der neue Term $\hat t'$ ist größer als $\hat t$.
+\hfill $\square$\\
 
 Zur Normalisierung einer kommutativen Funktionsanwendung werden zuerst alle Parameter normalisiert, dann können die Parameter nach der lexikographischen Ordnung $<$ von $T$ sortiert werden. 
 
