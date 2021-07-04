@@ -85,7 +85,28 @@ In der Umsetzung wird zwischen drei Arten von Mustervariablen unterschieden. Die
 Nach Definition \ref{defMatch} ist Match $v_p$ für ein Paar $(p, t)$ aus Muster $p$ und Literal $t$ dann gültig, wenn die Normalform von $p$ mit den Mustervariablen ersetzt duch die Funktionswerte von $v_p$ identisch zu $t$ ist. In Kapitel \ref{secPattermatching} nicht diskutiert wurde die Möglichkeit Zahlen mit Rechenausdrücken zu matchen. Ein Muster $p = (\texttt{prod}, 2, \mathbf k)$ würde für das Literal $t = 12$ etwa ein Match $v_p$ mit $v_p~\mathbf k = 6$ besitzen. Um die Matchsuche nicht zu kompliziert zu gestalten, besitzt die Umsetzung zwei Einschränkungen. Zum einen ist eine solche Dekonstruktion des Musters zu einem Wert nur dann möglich, wenn das entsprechende Teilmuster exakt eine Instanz $w$ einer Wert-Mustervariable enthält. Zum anderen werden nur bijektive Funktionen\footnote{bzw. sonst Mehrdeutigkeiten ignoriert} dekonstruiert, wie im Beispiel die Multiplikation mit $2$. 
 
 
-Vor einem Matchversuch muss ein Muster mit Wert-Mustervariablen zuerst entsprechend transformiert werden. Ziel der Transformation ist, das für den Matchalgorithmus direkt klar ist, ab wo das Muster einen Wert repräsentieren soll. Der Teilbaum des Musters, der eine Wert-Mustervariable $w$ enthält und als ganzes einen Wert matchen soll, ist idealerweise also direkt gekennzeichnet. Um den Wert $v_p~w$ zu identifizieren, ist \BFred{TODO}
+Vor einem Matchversuch muss ein Muster mit Wert-Mustervariablen zuerst entsprechend transformiert werden. Ziel der Transformation ist, das für den Matchalgorithmus direkt klar ist, ab wo das Muster einen Wert repräsentieren soll. Der Teilbaum des Musters, der eine Wert-Mustervariable $w$ enthält und als ganzes einen Wert matchen soll, ist idealerweise also direkt gekennzeichnet. In der Umsetzung ist das realisiert, indem eine Wert-Mustervariable im zu matchenden Muster kein Blatt darstellt, sondern einen Teilbaum markiert. Dieser entspricht allerdings nicht der ursprünglichen Umgebung um die Wert-Mustervariable, sondern der Inversen. 
+
+\begin{figure}
+\begin{verbatim}
+value_match__(_i, _dom, _match) + _a + cs... | _a :complex 
+    = value_match__(_i, _dom, _match - _a) + cs...
+        
+value_match__(_i, _dom, _match) * _a * cs... | _a :complex 
+    = value_match__(_i, _dom, _match / _a) * cs...
+        
+value_match__(_i, _dom, _match) ^ 2                        
+    = value_match__(_i, _dom, sqrt(_match))
+        
+sqrt(value_match__(_i, _dom, _match))                           
+    = value_match__(_i, _dom, _match ^ 2)
+\end{verbatim}
+\label{figWertMusterBau}
+\caption{Transformationsregeln von Mustern mit Wert-Mustervariable}
+\end{figure}
+
+Die Transformation in diese Form erfolgt über Anwendung von Ersetzungsregeln. Die Wert-Mustervariable wird dazu als Funktionsanwendung des Symbols \verb|value_match__| gespeichert. Die Regeln sind in Abbildung \ref{figWertMusterBau} aufgeführt. Das Funktionssymbol erwartet drei Argumente, hier die Mustervariablen \verb|_i| für den identifikationsindex, \verb|_dom| für den erlauben Raum (kurz für \emph{domain}) und \verb|_match| für den Teilterm, der im Matchalgorithmus den Wert bestimmt. 
+
 
 \subsection{Bedingungen} \label{subsubsecBedingungen}
 \BFred{TODO}
