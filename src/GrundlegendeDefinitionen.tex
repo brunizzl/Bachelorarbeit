@@ -105,7 +105,8 @@ Mit einem beliebigen $v \colon C \rightarrow C'$ ändert die Auswertung $\mathrm
 
 Die Interpretation $u_c$ reicht für bestimmte Funktionssymbole aus, etwa kann so das Funktionssymbol $\texttt{pair}$ ein Paar als Term darstellen.
 $$u_c~\texttt{pair} \colon T^2 \rightarrow T, ~(a, b) \mapsto (\texttt{pair}, a, b)$$
-Äquivalent ist die Darstellung endlicher Mengen und Tupel mit variadischen Funktionssymbolen \texttt{set} und \texttt{tup} möglich\footnote{Da eine Menge ihren Elementen keine Reihenfolge gibt, muss $u_c~\texttt{set}$ im Unterschied zu $u_c~\texttt{tup}$ prinzipiell nicht die ursprüngliche Parameterreihenfolge erhalten. In Kapitel \ref{subsecNormalSortieren} wird eine Größenrelation zur möglichen Umordung diskutiert.}.
+Äquivalent ist die Darstellung endlicher Mengen und Tupel mit variadischen Funktionssymbolen \texttt{set} und \texttt{tup} möglich\footnote{Da eine Menge ihren Elementen keine Reihenfolge gibt, muss $u_c~\texttt{set}$ im Unterschied zu $u_c~\texttt{tup}$ prinzipiell nicht die ursprüngliche Parameterreihenfolge erhalten. In Kapitel \ref{subsecNormalSortieren} wird eine Größenrelation zur möglichen Umordung diskutiert.}. 
+Hoffmann und O'Donnell \cite{hoffmann1982programming} definieren den Konstruktor im selben Kontext.
 \end{definition}
 
 
@@ -141,7 +142,7 @@ Im vorangegangenen Beispiel \ref{bMuster} gilt damit $v_p~ \mathbf a = (\texttt{
 
 Im Folgenden wird der Begriff des Matches noch etwas weiter gefasst. Es werden nach wie vor die Mustervariablen durch Literale ersetzt, allerdings muss nicht direkt das Ergebnis der Ersetzung, sondern nur eine normalisierte Form des Ergebnisses mit dem Literal $t$ übereinstimmen:
 $$\mathrm{lit}~(v_p, p) \coloneqq \mathrm{normalize}~(\mathrm{eval}(u_c, \tilde v_p)~ p) = t$$
-Die Funktion $\mathrm{lit} \colon \paren*{X \rightarrow T} \times M \rightarrow T$ wird als \emph{Musterinterpretation} bezeichnet.
+Die Funktion $\mathrm{lit} \colon \paren*{X \rightarrow T} \times M \rightarrow T$ wird als \emph{Musterauswertung} bezeichnet.
 Aus der Definition ist bereits klar, dass $\mathrm{normalize} \colon T \rightarrow T$ Terme auf Terme abbildet und ein Match $v_p$ nur dann gefunden werden kann, wenn $t$ im Bild von $\mathrm{normalize}$ liegt. 
 Gedacht ist $\mathrm{normalize}$ als Mittel, um Unterschiede zwischen Termen zu reduzieren, die die Auswertung für eine gebebende Interpretation $(u, v)$ nicht ändern. Da das Ergebnis von $\mathrm{normalize}$ aber nur von dem übergebenen Term abhängig ist, können nie direkt Unterschiede zwischen mehreren Termen verglichen und beseitigt werden. Ist die normalisierte Form $t'$ eines Terms $t$ ein Fixpunkt von $\mathrm{normalize}$, ist in dem Kontext klar, dass $t$ und $t'$ die gleiche Auswertung mit der Interpretation $(u, v)$ besitzen, da auch $\mathrm{normalize}~t' = \mathrm{normalize}~t$ gilt. Wäre $\mathrm{normalize}~t' \neq t'$, würde die Funktion nicht die ihr zugedachte Aufgabe erfüllen. Deshalb muss $\mathrm{normalize}$ eine Projektion sein, also eine Funktion, für die jeder Bildpunkt gleichzeitig ein Fixpunkt ist. 
 
