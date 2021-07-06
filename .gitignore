@@ -21,4 +21,8 @@
 _minted-main/
 
 
-main.loa
+*.ist
+*.glo
+*.glg
+*.gls
+*.loa

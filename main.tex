@@ -8,8 +8,8 @@ fancyheadings, % headings with seplines and logo
 %%%%% Printing, Color and Binding
 %a4paper, 
 %a5paper,
-%twoside, % single sided printout
-%oneside, % duplex printout (default)
+%twoside, % duplex printout (default)
+oneside, % single sided printout
 %% binding correction is used to compensate for the paper lost during binding
 %% of the document
 %BCOR=0.7cm, % binding correction
@@ -21,6 +21,7 @@ fancyheadings, % headings with seplines and logo
 %
 %%%%% expert options: your mileage may vary
 %baseclass=..., % special option to use a different document baseclass
+bibliography=totoc %inhaltsverzeichnis enthaelt literatur
 ]{stsreprt}
 
 \usepackage[utf8]{inputenc}
@@ -62,9 +63,16 @@ fancyheadings, % headings with seplines and logo
 
 \usepackage{xcolor} %\textcolor{blue}{This is a sample text in blue.}
 
-\usepackage{minted}
-\renewcommand{\listingscaption}{Quelltext}
-\usemintedstyle{friendly}
+%\usepackage{minted}
+%\renewcommand{\listingscaption}{Quelltext}
+%\usemintedstyle{friendly}
+
+%toc fügt eintrag in inhaltsverzeichnis ein
+%nopostdot setzt keinen Punkt nach beschreibung
+%altlist setzt \n nach name
+\usepackage[style = altlist, toc, nopostdot]{glossaries} %glossar
+\renewcommand*\glspostdescription{\hfill} %seiten rechtsbuendig
+\input{glossar.tex}
 
 \setlength{\parindent}{0pt} %keine Einrückung nach absatz
 
@@ -74,6 +82,8 @@ fancyheadings, % headings with seplines and logo
 %subsections nicht im Inhaltsverzeichniss
 \setcounter{tocdepth}{1}
 \setcounter{secnumdepth}{2}
+
+
 
 %.........................................................................
 %................................ Macros .................................
@@ -116,7 +126,6 @@ fancyheadings, % headings with seplines and logo
 \newtheorem{definition}[beispiel]{Definition} %selber zähler wie beispiel
 \newtheorem{lemma}[beispiel]{Lemma}           %selber zähler wie beispiel
 
-
 %.........................................................................
 %................................ Body ...................................
 %.........................................................................
@@ -135,6 +144,8 @@ fancyheadings, % headings with seplines and logo
 \include{src/PatternMatching}
 \include{src/CppCore}
 \include{src/Zusammenfassung}
+
+\printglossaries
 
 \printbibliography
 
