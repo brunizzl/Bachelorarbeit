@@ -7,12 +7,12 @@
 Das Kernthema dieser Arbeit ist die Vereinfachung von Termen. Eine Vereinfachung ist allerdings nur gültig, sofern sich die Bedeutung des vereinfachten Terms gegenüber der des ursprünglichen Terms nicht geändert hat. Da ein Term in sich keine Bedeutung trägt, muss eine Vereinfachung immer in Bezug auf eine Interpretation $\mathrm{eval}(u, v)$ gesehen werden. Etwa kann der Ausdruck $X A X^{-1}$ zu $A$ vereinfacht werden, wenn $X, A \in \mathbb{C} \setminus \{0\}$, allerdings ist die Vereinfachung allgemein nicht möglich, sollten die Symbole $X$ und $A$ für Matritzen stehen. \\
 Im Folgenden wird von der Assoziativität oder Kommutativität bestimmter Funktionssymbole gesprochen. Diese ist immer im Kontext der Interpretation $\mathrm{eval}(u, v)$ zu sehen. Gleichzeitig ist aber auch klar, dass unabhängig von der Interpretation verschiedene Funktionssymbole die Rolle der Multiplikation übernehmen müssen, sollte sowohl skalare Multiplikation als auch Matrixmultiplikation im selben Term möglich sein. $X A X^{-1}$ als Matrixmultiplikation könnte der Term $(\texttt{prod'}, X, A, (\texttt{pow}, X, -1))$ darstellen. Sind $A$ und $X$ Skalare, wäre der Ausdruck als $(\texttt{prod}, X, A, (\texttt{pow}, X, -1))$ schreibbar. Das Funktionssymbol $\texttt{prod'}$ steht dann für ein nicht-kommutatives Produkt, während die Reihenfolge der Parameter in einer Funktionsanwendung von $\texttt{prod}$ keine Rolle spielt.\\
 
-In diesem Abschnitt werden einfache Termumformungen beschrieben, die isolierte Eingenschaften einzelner Funktionen ausnutzen. Ziel ist es Äquivalenzklassen für die Erkennung von Mustern zu schaffen, die über die Austauschbarkeit jeder Mustervariable mit einem beliebigen Literal hinausgehen. Als Beispiel dient die Regel der Faktorisierung, normal geschrieben $a \cdot b + a \cdot c = a \cdot (b + c)$. In der in Unterkapitel \ref{subsecMuster} etablierten Musterschreibweise, mit Mustervariablen \textbf{fett} geschrieben, wird daraus:
-$$(\texttt{sum}, (\texttt{prod}, \mathbf a, \mathbf b), (\texttt{prod}, \mathbf a, \mathbf c)) \mapsto (\texttt{prod}, \mathbf a, (\texttt{sum}, \mathbf b, \mathbf c))$$
-Ziel ist es, die Regel auf das Literal $(\texttt{sum}, (\texttt{prod}, x, y), (\texttt{prod}, w, x, z))$ anwendbar zu machen, bzw eine Regel schreiben zu können, die eine ähnliche Struktur hat und anwendbar ist. 
-Würde das Literal geschrieben sein als $(\texttt{sum}, (\texttt{prod}, x, y), (\texttt{prod}, x, (\texttt{prod}, w, z)))$, gäbe es ein Match $v_p$ der linken Regelseite mit dem Literal, mit $v_p~\mathbf a = x$, $v_p~\mathbf b = y$ und $v_p~\mathbf c = (\texttt{prod}, w, z)$. Ergebnis dieses Kapitels wird eine in Abschnitt \ref{subsecMuster} genutzte Projektion ${\mathrm{normalize} \colon T \rightarrow T}$ sein, welche die Beispielregel in leicht abgewandelter auf das Beispielliteral in seiner ursprünglichen Form anwendbar macht.\\
+In diesem Abschnitt werden einfache Termumformungen beschrieben, die isolierte Eingenschaften einzelner Funktionen ausnutzen. Ziel ist es Äquivalenzklassen für die Erkennung von Mustern zu schaffen, die über die Austauschbarkeit jeder Mustervariable mit einem beliebigen Literal hinausgehen. Als Beispiel dient die Regel der Faktorisierung, normal geschrieben $x \cdot y + x \cdot z = x \cdot (y + z)$. In der in Unterkapitel \ref{subsecMuster} etablierten Musterschreibweise, mit Mustervariablen \textbf{fett} geschrieben, wird daraus:
+$$(\texttt{sum}, (\texttt{prod}, \mathbf x, \mathbf y), (\texttt{prod}, \mathbf x, \mathbf z)) \mapsto (\texttt{prod}, \mathbf x, (\texttt{sum}, \mathbf y, \mathbf z))$$
+Ziel ist es, die Regel auf das Literal $(\texttt{sum}, (\texttt{prod}, a, b), (\texttt{prod}, a, c, d))$ anwendbar zu machen, bzw eine Regel schreiben zu können, die eine ähnliche Struktur hat und diesen Fall mit abdeckt. 
+Würde das Literal geschrieben sein als $$(\texttt{sum}, (\texttt{prod}, a, b), (\texttt{prod}, a, (\texttt{prod}, c, d))),$$ gäbe es ein Match $v_p$ der linken Regelseite mit dem Literal, mit $v_p~\mathbf x = a$, $v_p~\mathbf y = b$ und $v_p~\mathbf z = (\texttt{prod}, c, d)$. Ergebnis dieses Kapitels wird eine in Abschnitt \ref{subsecMuster} genutzte Projektion ${\mathrm{normalize} \colon T \rightarrow T}$ sein, welche die Beispielregel auf das Beispielliteral in seiner ursprünglichen Form anwendbar macht.\\
 
-Weiteres Ziel dieses Kapitels ist, dass möglichst viele Literale mit identischer Auswertung identische normalisierter Terme besitzen. So soll etwa die Normalisierung von $t_1 = (\texttt{sum}, a, b, c)$ identisch zur Normalisierung von $t_2 = (\texttt{sum}, b, a, c)$ identisch zur Normalisierung von $t_3 = (\texttt{sum}, (\texttt{sum}, b, a), c)$ sein. Je mehr Literale identischen Wertes auch zu identischen Termen normalisiert werden, desto besser können Muster erkannt werden, in denen dieselbe Mustervariable mehrfach vorkommt. Interessant ist dabei, dass derselbe Effekt auch erreicht werden würde, wenn man eine Menge von Ersetzungsregeln um entsprechende normalisierende Ersetzungsregeln ergänzt. Wo die Grenze in der Arbeitsteilung von einer fest implementierten $\mathrm{normalize}$ Funktion zu den Regeln in einem Termersetzungssystem liegt, ist prinzipiell fast beliebig und in erster Linie eine Frage des Aufwandes, sowohl in Programmierung als auch Laufzeit. Etwa würde eine Darstellung natürlicher Zahlen ähnlich der Church-Numerale, wie sie in der Fachliteratur, etwa bei Baader und Nipkow \cite{baader_nipkow_1998}, üblich ist, erlauben, Rechenoperationen auf den natürlichen Zahlen komplett mit einer endlichen Menge von Mustern auszuwerten. Nachteile dieser Vorgehensweise wären allerdings eine langsamere Auswertung, mehr Speicherbedarf und nur sehr schwierig zu lesende Ergebnisse. Andersherum wäre etwa die Anwendung der ersten binomischen Formel prinzipiell auch in der $\mathrm{normalize}$ Funktion möglich, allerdings steht der Aufwand manuell  auf das Muster zu testen nur möglicherweise minimalen Geschwindigkeitsvorteilen gegenüber. Die Transformationen, die in diesem Kapitel der $\mathrm{normalize}$ Funktion zugewiesen werden, sollen also idealerweise nicht einfacher mit Mustern implementierbar sein.\\
+Weiteres Ziel dieses Kapitels ist, dass möglichst viele Literale mit identischer Auswertung identische normalisierter Terme besitzen. So soll etwa die Normalisierung von $t_1 = (\texttt{sum}, a, b, c)$ identisch zur Normalisierung von $t_2 = (\texttt{sum}, b, a, c)$ identisch zur Normalisierung von $t_3 = (\texttt{sum}, (\texttt{sum}, b, a), c)$ sein. Je mehr Literale identischen Wertes auch zu identischen Termen normalisiert werden, desto besser können Muster erkannt werden, in denen dieselbe Mustervariable mehrfach vorkommt. Interessant ist dabei, dass derselbe Effekt auch erreicht werden würde, wenn man eine Menge von Ersetzungsregeln um entsprechende normalisierende Ersetzungsregeln ergänzt. Wo die Grenze in der Arbeitsteilung von einer fest implementierten $\mathrm{normalize}$ Funktion zu den Regeln in einem Termersetzungssystem liegt, ist prinzipiell fast beliebig und in erster Linie eine Frage des Aufwandes, sowohl in Programmierung als auch Laufzeit. Etwa würde eine Darstellung natürlicher Zahlen ähnlich der Church-Numerale, wie sie in der Fachliteratur, etwa bei Baader und Nipkow \cite{baader_nipkow_1998}, üblich ist, erlauben, Rechenoperationen auf den natürlichen Zahlen komplett mit einer endlichen Menge von Mustern auszuwerten. Nachteile dieser Vorgehensweise wären allerdings eine langsamere Auswertung, mehr Speicherbedarf und nur sehr schwierig zu lesende Ergebnisse. Andersherum wäre etwa die Anwendung der ersten binomischen Formel prinzipiell auch in der $\mathrm{normalize}$ Funktion möglich, allerdings steht der Aufwand manuell auf das Muster zu testen nur möglicherweise minimalen Geschwindigkeitsvorteilen des Gesamtsystems gegenüber. Die Transformationen, die in diesem Kapitel der $\mathrm{normalize}$ Funktion zugewiesen werden, sollen also idealerweise nicht einfacher mit Mustern implementierbar sein.\\
 
 In diesem Kapitel werden häufig Abschnitte der Parameter einer Funktionsanwendung beliebiger Länge der Form $\elems t i k$ vorkommen. Kompakt wird $ts...$ für den (möglicher\-weise leeren) Abschnitt des Funktionsanwendungstupels geschrieben. Das $s$ in $ts...$ ist dann nicht als einzelnes Symbol zu lesen, sondern als Suffix um $t$ in den Plural zu setzen. \\$(f, \elems t 1 k, a, \elems t {k+2} n)$ kann also äquivalent $(f, ts..., a, rs...)$ geschrieben werden, mit $(\elems t 1 k) = (ts...)$ und $(\elems t {k+2} n) = (rs...)$.\\
 
@@ -27,26 +27,26 @@ Die geschachtelte Anwendung einer assoziativen Funktion führt je nach Klammerse
 	&= \dots \\
 	\end{split}
 \end{equation*}
-Es gibt mehrere Optionen eine solche Schachtelung in einem Term zu normalisieren, also in eine eindeutige Form zu bringen. Die erste ist, festzulegen, dass in der normalisierten Form höchstens einer der beiden Parameter einer binären assoziativen Funktion wieder Anwendung des selben Funktionssymbols sein darf. Wählt man den zweiten Parameter dafür aus, wird die Summe in der Normalform dargestellt als $(\texttt{sum}, a, (\texttt{sum}, b, (\texttt{sum}, c, d)))$. Ein Problem der Methode ist, dass nicht immer alle Parameter eines assoziativen Funktionssymbols direkt vorliegen.\\
-Alternativ kann man die Summe von zwei Parametern auch als Spezialfall einer Summe von $n \in \mathbb{N}$ Parametern auffassen, gewohnt geschrieben als $\Sigma_{x \in \{a, b, c, d\}} x$. Dieser Weg wird im Folgenden gewählt, wobei die Darstellung als Term dann $(\texttt{sum}, a, b, c, d)$ ist. Assoziative Funktionen sind in der gewählten Darstellung damit variadisch. Eker (\cite{BipartiteGraphMatching}), Benanav (\cite{NPHardMatching}) und Kounalis (\cite{ACPatternCompiler}) wählen unter anderen ebenfalls diese Darstellung. 
+Es gibt mehrere Optionen eine solche Schachtelung in einem Term zu normalisieren, also in eine eindeutige Form zu bringen. Die erste ist, festzulegen, dass in der normalisierten Form höchstens eins der beiden Argumente einer binären assoziativen Funktion wieder Anwendung des selben Funktionssymbols sein darf. Wählt man das zweite Argument dafür aus, wird die Summe in der Normalform dargestellt als $(\texttt{sum}, a, (\texttt{sum}, b, (\texttt{sum}, c, d)))$. Ein Problem der Methode ist, dass nicht immer alle Argumente eines assoziativen Funktionssymbols direkt vorliegen.\\
+Alternativ kann man die Summe von zwei Argumenten auch als Spezialfall einer Summe von $n \in \mathbb{N}$ Argumenten auffassen, gewohnt geschrieben als $\Sigma_{x \in \{a, b, c, d\}} x$. Dieser Weg wird im Folgenden gewählt, wobei die Darstellung als Term dann $(\texttt{sum}, a, b, c, d)$ ist. Assoziative Funktionen sind in der gewählten Darstellung damit variadisch. Eker (\cite{BipartiteGraphMatching}), Benanav (\cite{NPHardMatching}) und Kounalis (\cite{ACPatternCompiler}) wählen unter anderen ebenfalls diese Darstellung. 
 Die Normalisierung von Funktionsanwendungen des assoziativen Funktionssymbols $f$ bedeutet dann geschachtelte Funktionsanwendungen in eine einzelne Funktionsanwendung zu übersetzen. 
 $$(f, as..., f(bs...), cs...) \mapsto (f, as..., bs..., cs...)$$
 Der Spezialfall ist eine assoziative Funktionsanwendung mit nur einem Parameter. Diese kann immer zu dem Parameter selbst normalisiert werden. 
 
 Als Algorithmus sind die Überlegungen dargestellt in Algorithmus \ref{flatten}.
-Die Funktion $u_n$ kann hier und in den weiteren Algorithmen dieses Kapitels als \glqq{natürliche}\grqq{} Interpretation der Menge von Funktionssymbolen gesehen werden, ähnlich $u$ in Beispiel \ref{bEval}. Prinzipiell ist für die Gültigkeit des Kapitel aber egal, in welchem Kontext die Abbildungsvorschrift von $u_n$ Sinn ergibt oder ob ein solcher Kontext überhaupt existiert. wichtig ist nur, das $u_n$ über das gesamte Kapitel hinweg eine einheitliche Abbildungsvorschrift hat.
+Die Funktion $\tilde u$ kann hier und in den weiteren Algorithmen dieses Kapitels als \glqq{natürliche}\grqq{} Interpretation der Menge von Funktionssymbolen gesehen werden, ähnlich $u$ in Beispiel \ref{bEval}. Prinzipiell ist für die Gültigkeit des Kapitel aber egal, in welchem Kontext die Abbildungsvorschrift von $\tilde u$ Sinn ergibt oder ob ein solcher Kontext überhaupt existiert. wichtig ist nur, das $\tilde u$ über das gesamte Kapitel hinweg eine einheitliche Abbildungsvorschrift hat.
 
 \begin{algorithm}
 \DontPrintSemicolon
 \caption{$\mathrm{flatten} \colon T \rightarrow T$}\label{flatten}
 \KwIn{$t \in T(F, C)$}
 
-\If{$t = (f, t_1)$ mit $u_n~f$ assoziativ}{
+\If{$t = (f, t_1)$ mit $\tilde u~f$ assoziativ}{
     \Return {$t_1$}
 }
-\ElseIf{$t = (f, t_1, \dots, t_n)$ mit $u_n~f$ assoziativ}{
-    \While{$t = (f, as..., (f, bs...), cs...)$}{
-        $t \leftarrow (f, as..., bs..., cs...)$\;
+\ElseIf{$t = (f, \elems t 0 {n-1})$ mit $\tilde u~f$ assoziativ}{
+    \While{$t = (f, xs..., (f, ys...), zs...)$}{
+        $t \leftarrow (f, xs..., ys..., zs...)$\;
     }
 }
 \Return {$t$}
@@ -74,11 +74,12 @@ Aufbauend auf einer totalen Ordnung von $F$ sowie $C$, kann eine lexikographisch
 \begin{lemma} \label{lemMinMax}
 $T$ hat genau dann ein Minimum, wenn $C$ ein Minimum hat $(1)$. $T$ hat kein endlich großes Maximum $(2)$.
 \end{lemma}
+\BFred{aktuell ungenutzt!}
 
 \textbf{Beweis}.\\
 Teil $(1)$ folgt daraus, dass die Konstantensymbole selbst bereits Terme sind und kleiner als jede Funktionsanwendung sind. Ein Minimum von $C$ ist damit gleichzeitig Minimum von $T$.
 
-Teil $(2)$ folgt aus einem Wiederspruch. Angenommen es gäbe einen endlichen Term $\hat t$ größer als jeder andere Term. Der Term $\hat t'$ ist identisch zu $\hat t$, nur die Konstantensymbole von $\hat t$ sind durch beliebige Funktionsanwendungen ersetzt. Der neue Term $\hat t'$ ist größer als $\hat t$.
+Teil $(2)$ folgt aus einem Wiederspruch. Angenommen es gäbe einen größten endlichen Term $t$. Der Term $t'$ ist identisch zu $t$, nur die Konstantensymbole von $t$ sind durch beliebige Funktionsanwendungen ersetzt. Der neue Term $t'$ ist größer als $t$.
 \hfill $\square$\\
 
 Zur Normalisierung einer kommutativen Funktionsanwendung werden zuerst alle Parameter normalisiert, dann können die Parameter nach der lexikographischen Ordnung $<$ von $T$ sortiert werden. 
@@ -90,31 +91,31 @@ Zur Normalisierung einer kommutativen Funktionsanwendung werden zuerst alle Para
 \caption{$\mathrm{combine} \colon T \rightarrow T$}\label{combine}
 \KwIn{$t \in T(F, C)$}
 
-\If{$\mathrm{eval}(u_n, \mathrm{id})~t = c \in C$}{
+\If{$\mathrm{eval}(\tilde u, \mathrm{id})~t = c \in C$}{
     \Return {$c$}
 }
-\ElseIf{$t = (f, t_1, \dots, t_n)$ und $u_n~f$ assoziativ}{
-    \If{$f~u_n$ kommutativ}{
-        \While{$t = (f, xs..., a, ys..., b, zs...) $ und $ u_n~f~(a, b) = c \in C$}{
-            $t \leftarrow (f, xs..., c, ys..., zs...)$\;
+\ElseIf{$t = (f, \elems t 0 {n-1})$ und $\tilde u~f$ assoziativ}{
+    \If{$\tilde u~f$ kommutativ}{
+        \While{$t = (f, us..., x, vs..., y, ws...) $ und $ \tilde u~f~(x, y) = z \in C$}{
+            $t \leftarrow (f, z, us..., vs..., ws...)$\;
         }
     }
     \Else{
-        \While{$t = (f, xs..., a, b, ys...) $ und $ u_n~f~(a, b) = c \in C$}{
-            $t \leftarrow (f, xs..., c, ys...)$\;
+        \While{$t = (f, us..., x, y, vs...) $ und $ \tilde u~f~(x, y) = z \in C$}{
+            $t \leftarrow (f, us..., z, vs...)$\;
         }
     }
 }
 \end{algorithm}
 
-Mit der Darstellung einer assoziativen Funktion mit einem variadischen Funktionssymbol $f \in F$, kann eine Funktionsanwendung von $f$ in bestimmen Fällen teilweise ausgewertet werden. Als Beispiel kann die Summe der Symbole $1$, $3$ und $\texttt{x}$ geschrieben als $(\texttt{sum}, 1, 3, \texttt{x})$ zur Summe $(\texttt{sum}, 4, \texttt{x})$ transformiert werden. 
-Gilt allgemein für ein Funktionssymbol $f \in F$, dass $u_n~f$ assoziativ ist, reicht es aus zwei aufeinander folgende Parameter $a$ und $b$ in einer Funktionsanwendung von $f$ zu finden, mit denen die Funktionsanwendung $(f, a, b)$ auswertbar wäre. $a$ und $b$ können dann entsprechend ersetzt werden.
-$$\mathrm{eval}(u_n, \mathrm{id})~(f, a, b) = c \in C \implies (f, xs..., a, b, ys...) \mapsto (f, xs..., c, ys...)$$
+Mit der Darstellung einer assoziativen Funktion mit einem variadischen Funktionssymbol $f \in F$, kann eine Funktionsanwendung von $f$ in bestimmen Fällen teilweise ausgewertet werden. Als Beispiel kann die Summe der Symbole $1$, $3$ und $\texttt{a}$ geschrieben als $(\texttt{sum}, 1, 3, \texttt{a})$ zur Summe $(\texttt{sum}, 4, \texttt{a})$ transformiert werden. 
+Gilt allgemein für ein Funktionssymbol $f \in F$, dass $\tilde u~f$ assoziativ ist, reicht es aus zwei aufeinander folgende Argumente $x$ und $y$ in einer Funktionsanwendung von $f$ zu finden, mit denen die Funktionsanwendung $(f, x, y)$ auswertbar wäre. $x$ und $y$ können dann entsprechend ersetzt werden.
+$$\mathrm{eval}(\tilde u, \mathrm{id})~(f, x, y) = z \in C \implies (f, us..., x, y, vs...) \mapsto (f, us..., z, vs...)$$
 
-Ist $u_n~f$ zudem kommutativ, müssen $a$ und $b$ nicht notwendigerweise direkt aufeinander folgen:
-$$\mathrm{eval}(u_n, \mathrm{id})~(f, a, b) = c \in C \implies (f, xs..., a, ys..., b, zs...) \mapsto (f, xs..., c, ys..., zs...)$$
+Ist $\tilde u~f$ zudem kommutativ, müssen $x$ und $y$ nicht notwendigerweise direkt aufeinander folgen:
+$$\mathrm{eval}(\tilde u, \mathrm{id})~(f, x, y) = z \in C \implies (f, us..., x, vs..., y, ws...) \mapsto (f, z, us..., vs..., ws...)$$
 
-Eine normalisierte Funktionsanwendung enthält keine zwei auf diese Art ersetzbare Parameter $a$ und $b$ mehr. Weiter ist jede Funktionsanwendung, die als ganzes zu einer Konstante $c \in C$ auswertbar ist, ausgewertet.\\
+Eine normalisierte Funktionsanwendung enthält keine zwei auf diese Art ersetzbare Argumente $x$ und $y$ mehr. Weiter ist jede Funktionsanwendung, die als ganzes zu einer Konstante $z \in C$ auswertbar ist, ausgewertet.\\
 Als Algorithmus dargestellt sind die Überlegungen in Algorithmus \ref{combine}. Die Verfahren zur Normalisierung assoziativer und kommutativer Funktionssymbole werden auch von Eker \cite{BipartiteGraphMatching} beschrieben.
 
 \section{Kombination der einzelnen Vereinfachungen} \label{subsecKomboNormal}
@@ -131,12 +132,12 @@ Als Algorithmus dargestellt sind die Überlegungen in Algorithmus \ref{combine}.
 }
 $t \leftarrow \mathrm{flatten}~t$\;
 $t \leftarrow \mathrm{combine}~t$\;
-\If {$t = (f, t_1, \dots, t_n)$ mit $u_n~f$ kommutativ}{
+\If {$t = (f, t_1, \dots, t_n)$ mit $\tilde u~f$ kommutativ}{
 	sortiere $t_1, \dots, t_n$ lexikographisch nach Ordnung $<$\;
 }
 \Return $t$ 
 \end{algorithm}
-Algorithmus \ref{normalize} kombiniert die einzelnen Überlegungen dieses Kapitels: Zuerst werden alle Parameter einer Funktionsanwendung normalisiert, dann die Funktionsanwendung selbst.
+Algorithmus \ref{normalize} kombiniert die einzelnen Überlegungen dieses Kapitels: Zuerst werden alle Argumente einer Funktionsanwendung normalisiert, dann die Funktionsanwendung selbst.
 
 \BFred{TODO: normalize ist eine Projektion}
 

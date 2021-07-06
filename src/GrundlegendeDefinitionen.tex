@@ -45,6 +45,10 @@ Eine \Gls{Funktionsanwendung} wird in der Literatur oft mit dem Funktionssymbol 
 Als Beispiel lässt sich der Ausdruck $\frac 3 {\sin 1}$ in der formalen Schreibweise als Term mittels der Funktionssymbole $\texttt{sin}$ und $\texttt{divide}$, sowie den Konstantensymbolen $3$ und $1$ darstellen als $(\texttt{divide}, 3, (\texttt{sin}, 1))$. Ein Term kann dabei auch immer als Baum\footnote{In der theoretischen Informatik auch Syntaxbaum oder AST (englisch für \textit{Abstract Syntax Tree})} aufgefasst werden, etwa das aktuelle Beispiel in in Abb. \ref{ersterBeispielBaum} .
 \end{beispiel}
 
+Mit dem Kontext der Baumdarstellung lassen sich nun die folgenden Begriffe auf Terme übertragen. In der Funktionsanwendung $t = (f, \tOneN)$ sind $\tOneN$ die \emph{Kinder} ihres \emph{Vaters} $t$. Kinder sind allgemeiner \emph{Nachkommen}. Nachkommen verhalten sich transitiv, also ein Nachkomme $z$ des Nachkommen $y$ von $x$ ist auch ein Nachkomme von $x$. Umgekehrt ist $x$ \emph{Ahne} von $y$ und $z$. \\
+
+
+
 
 \section{Funktionsauswertung}
 Die Erweiterung des Funktionssymbols zur Funktion, die von einem Raum $Y^n$ nach $Y$ abbildet, folgt mittels der $\mathrm{eval}$ Funktion frei nach O'Donnell \cite{buch1977}.
