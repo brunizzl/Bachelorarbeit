@@ -13,6 +13,3 @@ Der Textteil meiner Bachelorarbeit
 - Beweise in PatternMatching machen
 - Termersetzungsystem
 - Glossar
-
-##TODO (optional)
-- (code fertig schreiben (aka baue einfaches Computeralgebrasystem))

@@ -5,13 +5,43 @@
 \newglossaryentry{Funktionsanwendung}
 {
     name = {Funktionsanwendung},
-    description = {Art von Term: Tupel $(f, \elems t 0 {n-1})$ aus Funktionssymbol ${f \in F}$ und Parametern ${\elems t 0 {n-1} \in T}$. die Stelligkeit von $f$ beträgt $n$ oder $f$ ist variadisch.}
+    description = {Art von Term: Tupel $(f, \elems t 0 {n-1})$ aus Funktionssymbol ${f \in F}$ und Argumenten ${\elems t 0 {n-1} \in T}$. die Stelligkeit von $f$ beträgt $n$ oder $f$ ist variadisch.}
+}
+
+\newglossaryentry{Parameter}
+{
+    name = Parameter,
+    description = {Platzhalter für eine Koordinate des Definitionsbereiches einer Funktion}
+}
+
+\newglossaryentry{Argument}
+{
+    name = Argument,
+    description = {Koordinate des Definitionsbereiches einer Funktion}
 }
 
 \newglossaryentry{Interpretation}
 {
     name = Interpretation,
     description = {Funktion, die Termen oder Teilen von Termen eine Bedeutung zuweist}
+}
+
+\newglossaryentry{Konstantensymbol}
+{
+    name = Konstantensymbol,
+    description = {(nicht-rekursiver) Term, Element in $C$}
+}
+
+\newglossaryentry{Funktionssymbol}
+{
+    name = Funktionssymbol,
+    description = {Tag welches die Funktion in einer Funktionsanwendung repräsentiert, Element in $F$}
+}
+
+\newglossaryentry{Term}
+{
+    name = Term,
+    description = {Baumstruktur mit Funktionsanwendungen als innere Knoten und Konstantensymbolen als Blätter}
 }
 
 \newglossaryentry{Auswertung}
