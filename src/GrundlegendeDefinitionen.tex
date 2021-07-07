@@ -4,9 +4,9 @@
 \chapter{Grundlegende Definitionen} \label{secGrundlegendeDefinitionen}
 
 \section{Term} \label{subsecTerm}
-Eine Menge von Termen $T$ ist in dieser Arbeit immer  in Abhängigkeit der nicht-leeren Mengen $F$ und $C$, sowie der \emph{Stelligkeitsfunktion} $\mathrm{arity} \colon F \rightarrow \mathbb{N} \cup \{\omega\}$ definiert, ähnlich der Notation von Benanav et. al. in \cite{NPHardMatching}. $F$ enthält die sogenannten \emph{Funktionssymbole}. Beispiele für mögliche Elemente in $F$ sind \texttt{sin} und \texttt{sqrt}, zudem auch Operatoren wie die Division, etwa geschrieben als \texttt{divide}. Die Stelligkeitsfunktion $\mathrm{arity}$ gibt für jedes Funktionssymbol an, wie viele Argumente erwartet werden. Eine mögliche Stelligkeit der genannten Beispielsymbole ist die folgende.
+Eine Menge von Termen $T$ ist in dieser Arbeit immer  in Abhängigkeit der nicht-leeren Mengen $F$ und $C$, sowie der \emph{Stelligkeitsfunktion} $\Const{arity} \colon F \rightarrow \mathbb{N} \cup \{\omega\}$ definiert, ähnlich der Notation von Benanav et. al. in \cite{NPHardMatching}. $F$ enthält die sogenannten \emph{Funktionssymbole}. Beispiele für mögliche Elemente in $F$ sind \texttt{sin} und \texttt{sqrt}, zudem auch Operatoren wie die Division, etwa geschrieben als \texttt{divide}. Die Stelligkeitsfunktion $\Const{arity}$ gibt für jedes Funktionssymbol an, wie viele Argumente erwartet werden. Eine mögliche Stelligkeit der genannten Beispielsymbole ist die folgende.
 
-$$\mathrm{arity} f = \begin{cases}
+$$\Const{arity} f = \begin{cases}
 2 & f  = \texttt{divide}\\
 1 & f \in \{\texttt{sin}, \texttt{sqrt}\}\\
 \end{cases}$$
@@ -22,13 +22,13 @@ Die Menge $C$ enthält die \emph{Konstantensymbole}. Mit den genannten Beispiele
 Ein Term $t \in T(F, C)$ ist dann  {
 \begin{itemize}
 	\item{ein Konstantensymbol, also $t \in C$}
-	\item{oder eine \emph{Funktionsanwendung} des Funktionssymbols $f \in F$ mit $\mathrm{arity} f \in \{n, \omega\}$ 
+	\item{oder eine \emph{Funktionsanwendung} des Funktionssymbols $f \in F$ mit $\Const{arity}~f \in \{n, \omega\}$ 
 		auf die Terme ${\tOneN \in T(F, C)}$, geschrieben ${t = (f, \tOneN)}$}
 \end{itemize}}
 In Mengenschreibweise:
 $$T(F, C) \coloneqq C \cup \curl*{
 (f, \tOneN)~|
-~f\in F,~\mathrm{arity}(f) \in \{n, \omega\},~ \tOneN \in T(F, C)
+~f\in F,~\Const{arity}~f~ \in \{n, \omega\},~ \tOneN \in T(F, C)
 }$$ 
 \end{definition}
 
@@ -51,25 +51,25 @@ Mit dem Kontext der Baumdarstellung lassen sich nun die folgenden Begriffe auf T
 
 
 \section{Funktionsauswertung}
-Die Erweiterung des Funktionssymbols zur Funktion, die von einem Raum $Y^n$ nach $Y$ abbildet, folgt mittels der $\mathrm{eval}$ Funktion frei nach O'Donnell \cite{buch1977}.
+Die Erweiterung des Funktionssymbols zur Funktion, die von einem Raum $Y^n$ nach $Y$ abbildet, folgt mittels der $\Const{eval}$ Funktion frei nach O'Donnell \cite{buch1977}.
 
 \begin{equation*}
     \begin{split}
-	\mathrm{eval} &\colon \paren*{F \rightarrow \bigcup_{n \in \mathbb{N}} Y^n \rightarrow Y} \times (C \rightarrow Y) \rightarrow T \rightarrow Y\\
-	\mathrm{eval} &(u, v)~t = \begin{cases}
-		u~f~(\elems {\mathrm{eval}(u, v)~t} 1 n) & t = (f, \tOneN)\\
+	\Const{eval} &\colon \paren*{F \rightarrow \bigcup_{n \in \mathbb{N}} Y^n \rightarrow Y} \times (C \rightarrow Y) \rightarrow T \rightarrow Y\\
+	\Const{eval} &(u, v)~t = \begin{cases}
+		u~f~(\elems {\Const{eval}(u, v)~t} 1 n) & t = (f, \tOneN)\\
 		v~t                                      & t \in C\\
 		\end{cases}
     \end{split}
 \end{equation*}
-Gilt $\mathrm{arity} f = n \in N$ für ein $f \in F$, ist zudem die Funktion $u~f \colon Y^n \rightarrow Y$ in ihrer Definitionsmenge auf Dimension $n$ eingeschränkt. 
-Die Funktion $u$ wird als \emph{\Gls{Interpretation}} der Funktionssymbole $F$, die Funktion $v$ als Interpretation der Konstantensymbole $C$ und die Funktion $\mathrm{eval}(u, v) \colon T \rightarrow Y$ als Interpretation der Terme $T$ bezeichnet. 
+Gilt $\Const{arity}~f = n \in N$ für ein $f \in F$, ist zudem die Funktion $u~f \colon Y^n \rightarrow Y$ in ihrer Definitionsmenge auf Dimension $n$ eingeschränkt. 
+Die Funktion $u$ wird als \emph{\Gls{Interpretation}} der Funktionssymbole $F$, die Funktion $v$ als Interpretation der Konstantensymbole $C$ und die Funktion $\Const{eval}(u, v) \colon T \rightarrow Y$ als Interpretation der Terme $T$ bezeichnet. 
 Ein Element des Bildes einer Interpretation, bzw. die Abbildung dahin, wird als \emph{\Gls{Auswertung}} bezeichnet.
 \\~\\
 
 \begin{beispiel} \label{bEval}
-Sei $F = \{\texttt{sum}, \texttt{prod}, \texttt{neg} \}$ und $C = \mathbb{N}$ mit $\mathrm{arity}~ \texttt{sum} = \mathrm{arity}~ \texttt{prod} = \omega$ und $\mathrm{arity}~ \texttt{neg} = 1$.
-Für die Interpretation $\mathrm{eval}(u, v)$ können $u$ und $v$ so gewählt werden, dass jeder Term in $T$ zu einer ganzen Zahl $n \in \mathbb{Z}$ auswertbar ist.
+Sei $F = \{\texttt{sum}, \texttt{prod}, \texttt{neg} \}$ und $C = \mathbb{N}$ mit $\Const{arity}~ \texttt{sum} = \Const{arity}~ \texttt{prod} = \omega$ und $\Const{arity}~ \texttt{neg} = 1$.
+Für die Interpretation $\Const{eval}(u, v)$ können $u$ und $v$ so gewählt werden, dass jeder Term in $T$ zu einer ganzen Zahl $n \in \mathbb{Z}$ auswertbar ist.
 
 \begin{equation*}
     \begin{split}
@@ -85,9 +85,9 @@ Hervorzuheben ist dabei, dass $u~\texttt{neg} \colon \mathbb Z \rightarrow \math
 Der Term $t = (\texttt{sum}, 3, (\texttt{prod}, 2, 4), (\texttt{neg}, 1))$ kann dann ausgewertet werden zu 
 \begin{equation*}
     \begin{split}
-    \mathrm{eval}(u, v)~t &= \mathrm{eval}(u, v) (\texttt{sum}, 3, (\texttt{prod}, 2, 4), (\texttt{neg}, 1)) \\
-    &= u~\texttt{sum}~(\mathrm{eval}(u, v)~3, \mathrm{eval}(u, v)(\texttt{prod}, 2, 4),  \mathrm{eval}(u, v) (\texttt{neg}, 1)) \\
-    &= u~\texttt{sum}~(v~3, u~\texttt{prod}~(\mathrm{eval}(u, v)~2, \mathrm{eval}(u, v)~4), u~\texttt{neg}~ (v~1)) \\
+    \Const{eval}(u, v)~t &= \Const{eval}(u, v) (\texttt{sum}, 3, (\texttt{prod}, 2, 4), (\texttt{neg}, 1)) \\
+    &= u~\texttt{sum}~(\Const{eval}(u, v)~3, \Const{eval}(u, v)(\texttt{prod}, 2, 4),  \Const{eval}(u, v) (\texttt{neg}, 1)) \\
+    &= u~\texttt{sum}~(v~3, u~\texttt{prod}~(\Const{eval}(u, v)~2, \Const{eval}(u, v)~4), u~\texttt{neg}~ (v~1)) \\
     &= u~\texttt{sum}~(3, u~\texttt{prod}~(v~2, v~4), u~\texttt{neg}~ 1) \\
     &= u~\texttt{sum}~(3, u~\texttt{prod}~(2, 4), -1) \\
     &= u~\texttt{sum}~( 3, 8, -1) \\
@@ -102,12 +102,12 @@ Eine direkt aus der Struktur des Terms folgende Interpretation $u_c$ für Funkti
 
 \begin{definition}~\\
 Die Interpretation $u_c$ angewendet auf ein Funktionssymbol $f$ bildet das $n$ Tupel von Argumenten auf eine Funktionsanwendung von $f$ mit den selben $n$ Argumenten ab. 
- Mit $f \in F$ und $\mathrm{arity} f = n \in \mathbb N$ 
+ Mit $f \in F$ und $\Const{arity} f = n \in \mathbb N$ 
 gilt 
 $$u_c~f \colon T^n \rightarrow T, ~(\tOneN) \mapsto (f, \tOneN)$$
 \end{definition}
 
-Mit einem beliebigen $v \colon C \rightarrow C'$ ändert die Interpretation $\mathrm{eval}(u_c, v) \colon T(F, C) \rightarrow T(F, C')$ damit nur die Konstantensymbole eines Terms, lässt aber die sonstige Struktur unverändert. Insbesondere ist $\mathrm{eval}(u_c, v) \colon T \rightarrow T$ mit $v~y = y$ die Identität.
+Mit einem beliebigen $v \colon C \rightarrow C'$ ändert die Interpretation $\Const{eval}(u_c, v) \colon T(F, C) \rightarrow T(F, C')$ damit nur die Konstantensymbole eines Terms, lässt aber die sonstige Struktur unverändert. Insbesondere ist $\Const{eval}(u_c, v) \colon T \rightarrow T$ mit $v~y = y$ die Identität.
 Die Interpretation $u_c$ reicht für bestimmte Funktionssymbole aus, etwa kann so das Funktionssymbol $\texttt{pair}$ ein Paar als Term darstellen.
 $$u_c~\texttt{pair} \colon T^2 \rightarrow T, ~(a, b) \mapsto (\texttt{pair}, a, b)$$
 Äquivalent ist die Darstellung endlicher Mengen und Tupel mit variadischen Funktionssymbolen \texttt{set} und \texttt{tup} möglich\footnote{Da eine Menge ihren Elementen keine Reihenfolge gibt, muss $u_c~\texttt{set}$ im Unterschied zu $u_c~\texttt{tup}$ prinzipiell nicht die ursprüngliche Argumentreihenfolge erhalten. In Kapitel \ref{subsecNormalSortieren} wird eine Größenrelation zur möglichen Umordung diskutiert.}. 
@@ -136,7 +136,7 @@ Hervorzuheben ist dabei, dass die Mustervariable $\mathbf x$ selbst nicht mehr i
 
 \begin{definition} \label{defMatch}
 Für ein Paar $(p, t) \in M(F, C) \times T(F, C)$ ist eine Funktion $v_p \colon X \rightarrow T(F, C)$ ein \emph{Match}, wenn folgendes gilt:
-$$\mathrm{eval}(u_c, \tilde v_p)~ p = t$$
+$$\Const{eval}(u_c, \tilde v_p)~ p = t$$
 $$\tilde v_p~ c = \begin{cases}
 	v_p~ c & c \in X\\
 	c      & c \in C \setminus X
@@ -145,14 +145,14 @@ $v_p$ muss die Mustervariablen in $p$ so durch Literale ersetzen, dass ein Term 
 Im vorangegangenen Beispiel \ref{bMuster} gilt damit $v_p~ \mathbf a = (\texttt{sin}, 3)$.
 
 Im Folgenden wird der Begriff des Matches noch etwas weiter gefasst. Es werden nach wie vor die Mustervariablen durch Literale ersetzt, allerdings muss nicht direkt das Ergebnis der Ersetzung, sondern nur eine normalisierte Form des Ergebnisses mit dem Literal $t$ übereinstimmen:
-$$\mathrm{lit}(v_p, p)  = t$$
+$$\Const{lit}(v_p, p)  = t$$
 mit 
-$$\mathrm{lit}(v_p, p) \coloneqq \mathrm{normalize}~(\mathrm{eval}(u_c, \tilde v_p)~ p).$$
-Die Funktion $\mathrm{lit} \colon \paren*{X \rightarrow T} \times M \rightarrow T$ wird als \emph{Musterinterpretation} bezeichnet.
-Aus der Definition ist bereits klar, dass $\mathrm{normalize} \colon T \rightarrow T$ Terme auf Terme abbildet und ein Match $v_p$ nur dann gefunden werden kann, wenn $t$ im Bild von $\mathrm{normalize}$ liegt. 
-Gedacht ist $\mathrm{normalize}$ als Mittel, um Unterschiede zwischen Termen zu reduzieren, die die Auswertung für eine gegebene Interpretationen $u$ und $v$ nicht ändern. Da das Ergebnis von $\mathrm{normalize}$ aber nur von dem übergebenen Term abhängig ist, können nie direkt Unterschiede zwischen mehreren Termen verglichen und beseitigt werden. Ist die normalisierte Form $t'$ eines Terms $t$ ein Fixpunkt von $\mathrm{normalize}$, ist in dem Kontext klar, dass $t$ und $t'$ die gleiche Auswertung mit der Interpretation $(u, v)$ besitzen, da auch $\mathrm{normalize}~t' = \mathrm{normalize}~t$ gilt. Wäre $\mathrm{normalize}~t' \neq t'$, würde die Funktion nicht die ihr zugedachte Aufgabe erfüllen. Deshalb muss $\mathrm{normalize}$ eine Projektion sein, also eine Funktion, für die jeder Bildpunkt gleichzeitig ein Fixpunkt ist. 
+$$\Const{lit}(v_p, p) \coloneqq \Const{normalize}~(\Const{eval}(u_c, \tilde v_p)~ p).$$
+Die Funktion $\Const{lit} \colon \paren*{X \rightarrow T} \times M \rightarrow T$ wird als \emph{Musterinterpretation} bezeichnet.
+Aus der Definition ist bereits klar, dass $\Const{normalize} \colon T \rightarrow T$ Terme auf Terme abbildet und ein Match $v_p$ nur dann gefunden werden kann, wenn $t$ im Bild von $\Const{normalize}$ liegt. 
+Gedacht ist $\Const{normalize}$ als Mittel, um Unterschiede zwischen Termen zu reduzieren, die die Auswertung für eine gegebene Interpretationen $u$ und $v$ nicht ändern. Da das Ergebnis von $\Const{normalize}$ aber nur von dem übergebenen Term abhängig ist, können nie direkt Unterschiede zwischen mehreren Termen verglichen und beseitigt werden. Ist die normalisierte Form $t'$ eines Terms $t$ ein Fixpunkt von $\Const{normalize}$, ist in dem Kontext klar, dass $t$ und $t'$ die gleiche Auswertung mit der Interpretation $(u, v)$ besitzen, da auch $\Const{normalize}~t' = \Const{normalize}~t$ gilt. Wäre $\Const{normalize}~t' \neq t'$, würde die Funktion nicht die ihr zugedachte Aufgabe erfüllen. Deshalb muss $\Const{normalize}$ eine Projektion sein, also eine Funktion, für die jeder Bildpunkt gleichzeitig ein Fixpunkt ist. 
 
-Welche Unterschiede $\mathrm{normalize}$ beseitigt soll hier nicht festgelegt werden. Klar ist aber, dass je nach Wahl von $\mathrm{normalize}$ zwar ein einzelnes Muster sehr mächtig werden kann, also ein Match mit sehr vielen Termen möglich ist, das Finden des Matches dann im allgemeinen Fall allerdings immer aufwändiger wird. 
+Welche Unterschiede $\Const{normalize}$ beseitigt soll hier nicht festgelegt werden. Klar ist aber, dass je nach Wahl von $\Const{normalize}$ zwar ein einzelnes Muster sehr mächtig werden kann, also ein Match mit sehr vielen Termen möglich ist, das Finden des Matches dann im allgemeinen Fall allerdings immer aufwändiger wird. 
 
 \end{definition}
 

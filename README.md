@@ -13,5 +13,4 @@ Der Textteil meiner Bachelorarbeit
 - Einleitung
 - Beweise in PatternMatching machen
 - Termersetzungsystem
-- Funktionen nicht mit mathrm setzen
 - Glossar

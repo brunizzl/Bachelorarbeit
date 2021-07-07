@@ -103,7 +103,9 @@ bibliography=totoc %inhaltsverzeichnis enthaelt literatur
 \DeclarePairedDelimiter\paren{(}{)} 
 \DeclarePairedDelimiter\curl{\{}{\}}
 
-
+%mathekonstanten wie funktionsnahmen sollen so gedruckt werden
+%\newcommand{\Const}[1]{\mathrm{\underline{#1}}}
+\newcommand{\Const}[1]{\mathit{#1}}
 
 %befehle für algorithm2e
 
@@ -125,6 +127,7 @@ bibliography=totoc %inhaltsverzeichnis enthaelt literatur
 \newtheorem{beispiel}{Beispiel}[chapter] %zähler zweistellig mit chapter
 \newtheorem{definition}[beispiel]{Definition} %selber zähler wie beispiel
 \newtheorem{lemma}[beispiel]{Lemma}           %selber zähler wie beispiel
+
 
 %.........................................................................
 %................................ Body ...................................
