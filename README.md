@@ -9,8 +9,10 @@ Der Textteil meiner Bachelorarbeit
 - pdflatex + makeindex + bibtex main.tex baut finale pdf inklusive aller quellen
 
 ## TODO
-- C++ fertig schreiben (aka baue einfaches Computeralgebrasystem)
 - Einleitung
 - Beweise in PatternMatching machen
 - Termersetzungsystem
 - Glossar
+
+##TODO (optional)
+- (code fertig schreiben (aka baue einfaches Computeralgebrasystem))
