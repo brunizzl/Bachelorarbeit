@@ -13,7 +13,5 @@ Der Textteil meiner Bachelorarbeit
 - Einleitung
 - Beweise in PatternMatching machen
 - Termersetzungsystem
-- Parameter zu Argumente
 - Funktionen nicht mit mathrm setzen
-- Matchvariablen -> Mustervariablen
 - Glossar

@@ -72,7 +72,8 @@ Alternativ ohne Namen:
     ~           &~\{\lambda [1] .\lambda [1] .\%0(\%1)\}(\{\lambda [1] .\%0\}) \\
     \rightarrow &~\{\lambda [1] .(\{\lambda [1] .\%0\})(\%0)\}\\
 \end{align*}
-Bemerkenswert ist, dass mit den soeben formulierten Bedingungen der Ausdruck nicht weiter transformiert werden darf. Das liegt daran, dass die Funktionsanwendung von $g$ selbst noch vom Lambda $f'$ umschlossen ist. Es ist also nicht ausgeschlossen, dass Argumente von $g$ (hier nur $\%0$) direkt transparente Lambdas enthalten.
+Bemerkenswert ist, dass mit den soeben formulierten Bedingungen der Ausdruck nicht weiter transformiert werden darf. Das liegt daran, dass die Funktionsanwendung von $g$ selbst noch vom Lambda $f'$ umschlossen ist. Es ist also nicht ausgeschlossen, dass Argumente von $g$ (hier nur $\%0$) direkt transparente Lambdas enthalten\footnote{Eng verwandt ist der Grund, warum auch bei der Verwendung von De Bruijn Indices ohne weiteres nur die äußerste Funktionsanwendung abgebildet werden darf. In dem Fall könnte sich sonst die Anzahl der Abstraktionen zwischen einer Variable in einem Argument und ihrer eigenen Abstraktion ändern. Der alte De Bruijn Index würde die Variable dann der falschen Abstraktion zuordnen.}.
+
 
 
 %.........................................................................
