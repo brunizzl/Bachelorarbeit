@@ -1,60 +1,54 @@
 
 
 \chapter{Einleitung} \label{secEinleitung}
-\textcolor{red} {
-\begin{itshape}
-Anmerkung: Hier kommt hin, was halt in eine Einleitung soll:
-\begin{itemize}
-    \item was ist ein Termersetzungssystem?
-    \item Einsatz von Termersetzungssystemen
-    \begin{itemize}
-        \item Beweisprüfer /Beweisassistenten
-        \item Arithmetikausdrücke vereinfachen
-        \item Optimierender Compiler
-        \item Interpreter funktionaler Sprachen
-        \item bestimmt noch mehr
-    \end{itemize}
-\end{itemize}
-\end{itshape}
-}
 
 Die Manipulation symbolischer Ausdrücke ist in der Mathematik allgegenwärtig. Ist bekannt, dass ein Ausdruck $A$ gleichbedeutend zu einem zweiten Ausdruck $B$ ist, so kann in einem dritten Ausdruck $C$ jedes Vorkommen von $A$ durch $B$ ersetzt werden. Als Beispiel kann der Bruch $C = \frac{4}{2}$ auch als $C' = \frac{2 \cdot 2}{2}$ geschrieben werden, wenn bekannt ist, dass $A = 4$ und $B = 2 \cdot 2$ die gleiche Bedeutung haben. 
 
 Oft ist für zwei Ausdrücke bekannt, dass sie gleichbedeutend sind, wenn beide jeweils einer bestimmten Struktur folgen. Im Beispiel kann $C'$ auch als $C'' = 2$ geschrieben werden, da unabhängig konkreter Werte von $x$ und $y$ feststeht, dass der Ausdruck $\frac{x \cdot y}{x}$ auch als $y$ geschrieben werden kann.
 
-Die Idee Computer zu nutzen um symbolische Ausdrücke zu manipulieren ist fast so alt wie der Computer selbst.  LISP ist als eine der ersten höheren Programmiersprachen bereits für diesen Zweck geschaffen worden \cite{lisp}. 
+Solche Regeln von Hand anzuwenden ist sowohl zeitaufwändig als auch fehleranfällig. 
+Die Idee Computer zu nutzen um symbolische Ausdrücke zu manipulieren ist deshalb fast so alt wie der Computer selbst.  LISP ist als eine der ersten höheren Programmiersprachen bereits für diesen Zweck geschaffen worden \cite{lisp}. Rückblickend war die symbolische Berechnung sogar vor der Erfindung des Computers ein wichtiger Teil dessen, was heute theoretische Informatik genannt wird. Herausstechend ist die Idee des Lambdakalküls von Church \cite{ChurchLambda36}. 
 
-\section{Zielsetzung}
-Ziel der Arbeit ist Design und Umsetzung eines Termersetzungssystems zur Vereinfachung algebraischer Ausdrücke. Der Kern des Termersetzungssystems ist ein Algorithmus zur Erkennung eines bestimmten Musters in einem Term. 
-Der Algorithmus soll ein Muster dabei möglichst nicht nur erkennen, wenn der Term die exakt identische Struktur aufweist. Bestimmte Äquivalenzklassen, wie etwa alle Permutationen der Parameter in einer kommutativen Funktion sollen bereits auf der Mustererkennungsebende berücksichtig werden. Die Formulierung einer Menge von Ersetzungsregeln für das Termersetzungssystem muss also möglichst kompakt möglich sein. 
-Damit ist das Ziel die Mustererkennung möglichst schnell durchführen zu können beim Treffen von Designentscheidungen in der Musterstruktur nicht ausschlaggebend, eine polinomielle Laufzeitkomplexität ist allerdings angestrebt.\\
-Das Leistungsvermögen des entwickelten Termersetzungssystems wird in einer Anwendung zur Vereinfachung algebraischer Ausdrücke über den Komplexen Zahlen getestet. 
+Gegenwärtig gibt es eine Reihe etablierter Systeme zum symbolischen Rechnen. Wichtiger Bestandteil sind sie etwa in Mathematica \cite{MathematicaSymbolic}, Maple \cite{MapleSymbolic} oder Matlab \cite{MatlabSymbolic}.
+Konzeptionelle Grundlage dieser Anwendungen ist die des \emph{Termersetzungssystems}: Mit einer vom Nutzer oder Bibliotheksautor bestimmten Menge von Ersetzungsregeln wird ein gegebender Ausdruck so lange transformiert, bis keine Regel mehr anwendbar ist.
+
 
 \begin{beispiel}~\\
-Es werden vier Vereinfachungsregeln definiert:
+Es werden vier Ersetzungsregeln definiert:
 \begin{alignat*}{4}
-    ~& a \cdot b + a \cdot c & &= a \cdot (b + c) &~~~& (1) \\
-    ~& \sqrt{a}              & &= a^{\frac 1 2}   &~~~& (2) \\
-    ~& \paren{a^b}^c         & &= a^{b \cdot c}   &~~~& (3) \\
-    ~& \sin(a)^2 + \cos(a)^2 & &= 1               &~~~& (4)
+    ~& x \cdot y + x \cdot z & &= x \cdot (y + z) &~~~& (1) \\
+    ~& \sqrt{x}              & &= x^{\frac 1 2}   &~~~& (2) \\
+    ~& \paren{x^y}^z         & &= x^{y \cdot z}   &~~~& (3) \\
+    ~& \sin(x)^2 + \cos(x)^2 & &= 1               &~~~& (4)
 \end{alignat*}
-Der folgende Ausdruck kann durch Ersetzung der Struktur der linken Seite einer Verienfachungsregel durch die Struktur der rechten Seite vereinfacht werden. Desweiteren werden Ausdrücke ohne Unbekannte ausgewertet.
+Der folgende Ausdruck kann durch Ersetzung der Struktur der linken Seite einer Vereinfachungsregel durch die Struktur der rechten Seite vereinfacht werden. Weiter werden Ausdrücke ohne Unbekannte ausgewertet.
 \begin{equation*}
     \begin{split}
-	3 \cdot \sin(x + y)^2 + 3 \cdot \sqrt{\cos(x + y)^4}
-	&\stapel = {(1)} 3 \cdot \paren*{\sin(x + y)^2 + \sqrt{\cos(x + y)^4}} \\
-	&\stapel = {(2)} 3 \cdot \paren*{\sin(x + y)^2 + \paren*{{\cos(x + y)^4}}^{\frac 1 2}}\\
-	&\stapel = {(3)} 3 \cdot \paren*{\sin(x + y)^2 + {\cos(x + y)^{4 \cdot \frac 1 2}}}\\
-	& =              3 \cdot \paren*{\sin(x + y)^2 + {\cos(x + y)^2}}\\
+	3 \cdot \sin(a + b)^2 + 3 \cdot \sqrt{\cos(a + b)^4}
+	&\stapel = {(1)} 3 \cdot \paren*{\sin(a + b)^2 + \sqrt{\cos(a + b)^4}} \\
+	&\stapel = {(2)} 3 \cdot \paren*{\sin(a + b)^2 + \paren*{{\cos(a + b)^4}}^{\frac 1 2}}\\
+	&\stapel = {(3)} 3 \cdot \paren*{\sin(a + b)^2 + {\cos(a + b)^{4 \cdot \frac 1 2}}}\\
+	& =              3 \cdot \paren*{\sin(a + b)^2 + {\cos(a + b)^2}}\\
 	&\stapel = {(4)} 3 \cdot 1\\
     & = 3
     \end{split}
 \end{equation*}
-Hervorzuheben ist dabei, dass Variablennamen wie $a$ oder $b$ in den Vereinfachungsregeln eine andere Bedeutung haben, als die Variablen $x$ und $y$ im zu vereinfachenden Ausdruck. Erstere sind Platzhalter in der Ersetzungsregel, stehen damit also repräsentativ für einen Teil des Ausdrucks, der transformiert wird, während zweitere ihre Bedeutung außerhalb des Ersetzungssystems haben. Formalisiert wird dieser Unterschied in Abschnitt \ref{subsecMuster}. Als Beispiel gilt für die erste Umformung $b = \sin(x + y)^2$ mit $b$ aus Regel $(1)$.
+In der einzelnen Ersetzung wird eine Variable der Ersetzungsregel dabei an ein Teil des zu ersetzenden Ausdrucks gebunden, welcher dann im Einsetzen der rechten Regelseite im transformierten Ausdruck wieder an Stelle der Variablen gesetzt wird.
+ Formalisiert wird dieser Unterschied in Abschnitt \ref{subsecMuster}. Als Beispiel gilt für die erste Umformung $y = \sin(a + b)^2$ mit $y$ aus Regel $(1)$.
 \end{beispiel}
 
+~\\
+Der Einfluss von Termersetzungssystemen geht weit über die direkte Anwendung für den Mathematiker oder Ingenieur mit direktem Interesse am vereinfachten Ausdruck hinaus. Interessant ist etwa die Formulierung von Ersetzungsregeln im Kontext eines optimierenden Compilers \cite{HaskellCustomRewriteRules}, \cite{HaskellCoreOptimizer}. Termersetzungssysteme können weiter direkt die Grundlage der Auswertung eines funktionalen Programms sein \cite{Jones1987JanRewritingMiranda}.
+
+
+\section{Zielsetzung}
+Ziel der Arbeit ist Design und Umsetzung eines Termersetzungssystems zur Vereinfachung algebraischer Ausdrücke. Der Kern des Termersetzungssystems ist ein Algorithmus zur Erkennung eines bestimmten Musters in einem Term. 
+Der Algorithmus soll ein Muster dabei möglichst nicht nur erkennen, wenn der Term die exakt identische Struktur aufweist. Bestimmte Äquivalenzklassen, wie etwa alle Permutationen der Parameter in einer kommutativen Funktion sollen bereits auf der Mustererkennungsebende berücksichtigt werden. Die Formulierung einer Menge von Ersetzungsregeln für das Termersetzungssystem muss also möglichst kompakt möglich sein. 
+Damit ist das Ziel die Mustererkennung möglichst schnell durchführen zu können beim Treffen von Designentscheidungen in der Musterstruktur nicht ausschlaggebend, eine polynomielle Laufzeitkomplexität ist allerdings angestrebt.\\
+Das Leistungsvermögen des entwickelten Termersetzungssystems wird in einer Anwendung zur Vereinfachung algebraischer Ausdrücke über den Komplexen Zahlen getestet. 
+
 \section{Aufbau der Arbeit}
-In Abschnitt \ref{secGrundlegendeDefinitionen} werden die Begriffe eingeführt, die zur Beschreibung eines zu transformierenden Ausdrucks, aber auch zur Beschreibung der Transformation selbst notwendig sind. Mit den dann etablierten Begriffen werden die Algorithmen zur Normalisierung ohne Mustererkennung aus Kapitel \ref{secErsteNormalform} und die Algorithmen zur Mustererkennung in Abschnitt \ref{secPattermatching} erläutert. Aufbauend auf Patternmatching tut dann Kapitel \ref{secTermersetzungssystem}, wo die Transformation eines Terms durch vordefinierte Muster beschrieben wird.
+In Abschnitt \ref{secGrundlegendeDefinitionen} werden die Begriffe eingeführt, die zur Beschreibung eines zu transformierenden Ausdrucks, aber auch zur Beschreibung der Transformation selbst notwendig sind. Mit den dann etablierten Begriffen werden die Algorithmen zur Normalisierung ohne Mustererkennung aus Kapitel \ref{secErsteNormalform} und die Algorithmen zur Mustererkennung in Abschnitt \ref{secPattermatching} erläutert. 
 Die tatsächliche Umsetzung und ihre Abweichungen von vorhergehenden Ideen ist in den Kapitel \ref{secKernUmsetzungInCpp} behandelt. 
 Kapitel \ref{secZusammenfassung} fasst die Arbeit zusammen.
 

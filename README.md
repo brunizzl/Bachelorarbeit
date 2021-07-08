@@ -9,7 +9,10 @@ Der Textteil meiner Bachelorarbeit
 - pdflatex + makeindex + bibtex main.tex baut finale pdf inklusive aller quellen
 
 ## TODO
-- Einleitung
 - Beweise in PatternMatching machen
 - Termersetzungsystem
 - Glossar
+
+
+## Optional
+- über beweisassistenten reden
