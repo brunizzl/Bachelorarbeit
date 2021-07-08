@@ -122,7 +122,7 @@ Die Summe der linken Seite setzt sich für die folgenden Algorithmen dieses Kapi
 Die Algorithmen \ref{findMatch}, \ref{rematch}, \ref{findPermutation}, \ref{findDilation} und \ref{findIdentic} bilden zusammen die Grundlage des finalen Matchalgorithmus dieser Arbeit. Der Startpunkt einer Matchsuche ist der Aufruf von $\Const{findMatch}$. Hier wird allerdings im Kontrast zu $\Const{simpleMatchAlgorithm}$ nicht direkt ein Rekursionsaufruf durchgeführt, sondern abhändig von der Form der vorgefundenen Funktionsanwendung eine entsprechende Strategie für die Suche eines Matches gewählt. Die Algorithmen, die die entsprechenden Strategien implementieren sind $\Const{findPermutation}$, $\Const{findDilation}$ und $\Const{findIdentic}$. Alle hier vorgestellten Strategien nutzen dabei Backtracking um die verschiedenen Möglichkeiten zu testen. Sollte dabei die Notwendigkeit auftreten, für einen bereits gematchten Teil des Musters ein neues Match mit dem selben Literal zu finden, wird in allen drei Strategien $\Const{rematch}$ aufgerufen. Dieser Algorithmus ist ähnlich zu $\Const{findMatch}$, erwartet dementsprechend allerdings, dass das übergebende Muster $p$ bereits mit dem übergebenen Literal $t$ gematcht ist. Die eigentliche Arbeit wird bei $\Const{rematch}$ allerdings erneut an die Suchstrategien abgegeben. Da der Startpunkt dort allerdings davon abhängig ist, ob bereits eine bestimmte Zuordnung der Argumente als erfolgreich matchend festgehalten ist oder nicht, wird diese Information als letzter Parameter jeder Strategie mit übergeben.
 
 
-Im Grundaufbau funktionieren alle Strategien gleich. Die Argumente $\elems p 0 {m-1}$ des Musters $p$ werden in der vorliegenden Reihenfolge mit den Argumenten $\elems t 0 {n-1}$ des Literals $t$ gematcht. Kann für das aktelle Argument $p_i$ kein Match mehr gefunden werden, wird probiert die vorhergehenden Argumente $\elems p 0 {i-1}$ neu zu matchen, beginnend mit $p_{i-1}$. Mit welchen Argumenten $t_k$ ein Match dabei erlaubt ist, ist nach Strategie unterschiedlich. Am stärksten eingeschränkt ist $\Const{findIdentic}$. Musterargument $p_i$ kann dort nur mit $t_k$ gematcht werden, wenn $k = i$ gilt\footnote{Algorithmus \ref{simpleMatchAlgorithm} hat ausschließlich auf diese Weise nach einem Match gesucht}. Das andere Extrem stellt $\Const{findPermutation}$ da. Hier kann jedes $p_i$ mit jedem $t_k$ gematcht werden, vorrausgesetzt $t_k$ ist noch nicht mit einem Argument aus $\elems p 0 {i-1}$ gematcht. In der Freiheit dazwischen steht $\Const{findDilation}$, welche die Reihenfolge der $p_i$ untereinander gleich halten muss, jedoch eine Lücke beliebiger Länge zwischen $p_{i-1}$ und $p_i$ erlaubt, sofern im Muster an dieser Stelle eine Multi-Mustervariable steht\footnote{Wie in Abschnitt \ref{subsecMulti} erörtert, treten diese hier nicht als echte Argumente auf.}.
+Im Grundaufbau funktionieren alle Strategien gleich. Die Argumente $\elems p 0 {m-1}$ des Musters $p$ werden in der vorliegenden Reihenfolge mit den Argumenten $\elems t 0 {n-1}$ des Literals $t$ gematcht. Kann für das aktuelle Argument $p_i$ kein Match mehr gefunden werden, wird probiert die vorhergehenden Argumente $\elems p 0 {i-1}$ neu zu matchen, beginnend mit $p_{i-1}$. Mit welchen Argumenten $t_k$ ein Match dabei erlaubt ist, ist nach Strategie unterschiedlich. Am stärksten eingeschränkt ist $\Const{findIdentic}$. Musterargument $p_i$ kann dort nur mit $t_k$ gematcht werden, wenn $k = i$ gilt\footnote{Algorithmus \ref{simpleMatchAlgorithm} hat ausschließlich auf diese Weise nach einem Match gesucht}. Das andere Extrem stellt $\Const{findPermutation}$ da. Hier kann jedes $p_i$ mit jedem $t_k$ gematcht werden, vorausgesetzt $t_k$ ist noch nicht mit einem Argument aus $\elems p 0 {i-1}$ gematcht. In der Freiheit dazwischen steht $\Const{findDilation}$, welche die Reihenfolge der $p_i$ untereinander gleich halten muss, jedoch eine Lücke beliebiger Länge zwischen $p_{i-1}$ und $p_i$ erlaubt, sofern im Muster an dieser Stelle eine Multi-Mustervariable steht\footnote{Wie in Abschnitt \ref{subsecMulti} erörtert, treten diese hier nicht als echte Argumente auf.}.
 
 \begin{algorithm}
 \DontPrintSemicolon
@@ -408,13 +408,6 @@ Für folgende Formen von normalisierten Mustern $p$ und $q$ gilt $p \prec q$:
 	\end{enumerate}
 	} \label{itemStarkKleiner4}
 	
-	\item{$p = (f, \elems p 0 {m-1})$ und $q = (f, \elems q 0 {n-1})$ sind Funktionsanwendungen des selben kommutativen Funktionssymbols $f$, ohne Multi-Mustervariablen unter ihren Argumenten und einer der folgenden Punkte trifft zu.
-	\begin{enumerate}
-		\item{$m < n$ und $\forall j \in \{0, \dots, m-1\} \colon p_j = q_j$}
-		\item{$\forall i \in \{0, \dots, m-1\}, j \in \{0, \dots, n-1\} \colon p_i \prec q_j \lor p_i = q_j$}
-	\end{enumerate}
-	} \label{itemStarkKleiner5}
-	
 \end{enumerate}
 \end{lemma}
 
@@ -424,33 +417,12 @@ In allen Fällen wird eine Mustervariable nur an Punkten erlaubt, die nicht zur 
 Für die restlichen Fälle muss klar sein, dass ein Literal der Form $(f, xs...)$ auch nach Normalisierung diese Form behält. Die Reihenfolge der Argumente und damit auch ob $f$ kommutativ ist, spielen keine Rolle. Das Normalisieren mehrerer geschachtelter Anwendungen des selben assoziativen Funktionssymbols $f$ entfernt nie die äußerste Funktionsanwendung, die Struktur bleibt also auch so erhalten.
 Fall \ref{itemStarkKleiner2} und Fall \ref{itemStarkKleiner3} sind ist damit bewiesen.
 
-Mit der selben Argumentation bleibt $f$ auch in den Fällen \ref{itemStarkKleiner4} und \ref{itemStarkKleiner5} immer das äußerste Funktionssymbol erhalten. Da die Reihenfolge der Argumente in Fall \ref{itemStarkKleiner4} auch nach Auswertung der Musterinterpretation gleich bleibt.
+Mit der selben Argumentation bleibt $f$ auch in Fall \ref{itemStarkKleiner4} immer das äußerste Funktionssymbol erhalten. 
 Da $\Const{normalize}$ in Fall \ref{itemStarkKleiner4} die Argumentreihenfolge nicht ändern darf, können Mustervariablen auch nach Auswertung der Musterinterpretation nicht den vorderen Bereich der Funktionsanwendungen beeinflussen.  
 
 \hfill $\square$\\
 
 
-Für folgende Formen von Mustern $p$ und $q$ gilt $p \preceq q$:
-\begin{enumerate}
-	\item{$p \prec q$}
-	
-	\item{$p = q$}
-	
-	\item{kontextabhängig, wenn $p = \mathbf x$ und $q = \mathbf y$ Mustervariablen sind und das gesamte Muster $r$, in dem sowohl $p$ als auch $q$ sich befinden \emph{symmetrisch} zu $\mathbf x$ und $\mathbf y$ ist. Symmetrisch ist $r$ dann, wenn $\mathbf x$ und $\mathbf y$ in ganz $r$ getauscht werden können um $r'$ zu erhalten und die normalisierte Form von $r'$ identisch zu $r$ ist.}
-\end{enumerate}
-
-\BFred{TODO: Beweise $p \preceq q$ in beschriebenen Fällen}
-
-Beispiele für symmetrische Muster sind beide Seiten der ersten Binomischen Formel, wobei $\mathbf a$ symmetrisch zu $\mathbf b$ ist:
-$$(\texttt{sum}, (\texttt{pow}, \mathbf a, 2), (\texttt{prod}, 2, \mathbf a, \mathbf b), (\texttt{pow}, \mathbf b, 2), \mathbf {c...}) \mapsto (\texttt{sum}, (\texttt{pow}, (\texttt{sum}, \mathbf a, \mathbf b), 2), \mathbf {c...})$$
-
-
-\begin{lemma}\label{lemTransitivStark}~\\
-$\prec$ und $\preceq$ sind transitiv $(1)$ und für $p, q, r \in M$  gilt $p \prec q \preceq r \implies p \prec r$ sowie $p \preceq q \prec r \implies p \prec r$ $(2)$. 
-\end{lemma}
-
-\textbf{Beweis}~\\
-\BFred{TODO: beweise Lemma \ref{lemTransitivStark}}
 
 
 
