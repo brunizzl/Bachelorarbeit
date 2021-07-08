@@ -1,12 +1,14 @@
 
 
-\chapter{Umsetzung in C\texttt{++}} \label{secKernUmsetzungInCpp}
+\chapter{Umsetzung} \label{secKernUmsetzungInCpp}
+
+Der gesamte Quelltext der Umsetzung ist auf GitHub einsehbar \cite{brunizzl2021Jul}. Dieses Kapitel hat keinen Anspruch auf Vollständigkeit. Der Fokus liegt viel mehr darauf, die theoretisch ausführlich beschriebenen Konzepte in der Praxis zu zeigen und die wichtigsten bisher in dieser Arbeit unbehandelten Ideen vorzustellen. Aufgrund der gegenseitigen Abhängigkeit der verschiedenen Ideen sollten die Abschnitte \ref{subsecKonzeptionelleUnterschiede} und \ref{subsecSyntax} nicht direkt mit dem Anspruch eines lückenlosen Verständnisses gelesen werden.
 
 %.........................................................................
 %.........................................................................
 %.........................................................................
-\section{Konzeptionelle Unterschiede}
-Die in diesem Kapitel vorgestellte Umsetzung implementiert nicht exakt die bisher beschriebenen Strukturen. Der erste Unterschied ist, dass die Konzepte \emph{Funktionssymbol} und \emph{Konstantensymbol} hier nicht unterschieden werden. Da der Zweck der Implementierung zudem alleine in der Vereinfachung von Ausdrücken über den Komplexen Zahlen $\mathbb C$ liegt, ist die Menge an Symbolen zudem im Code nicht generisch gehalten. Die beiden wichtigsten Arten von Symbolen für Literale sind Komplexe Zahlen $z \in \mathbb C$, sowie Zeichenketten $c_1 c_2\dots c_n$ beliebiger Länge $n$. Die einzelnen Zeichen $c_i$ stammen dabei aus dem Alphabet $\Sigma$, welches aus Klein-und Großbuchstaben des lateinischen Alphabetes, Ziffern von $0$ bis $9$, den Apostroph \verb|'| und dem Unterstrich \verb|_| besteht. Die Ausnahme bildet das erste Zeichen $c_1$, welches ein Klein-oder Großbuchstabe des Lateinischen Alphabetes sein muss. Zu den Zeichenketten gehören insbesondere auch die Funktionssymbole. Mit der dadurch entstehenden Möglichkeit Funktionssymbole als Werte zu behandeln, ergibt es Sinn auch Funktionsanwendungen von dynamisch bestimmten Funktionssymbolen zuzulassen. Das erste Element $f$ des Funktionsanwendungstupels $(f, \elems t 0 {n-1})$ ist in der Umsetzung also kein Symbol, sondern ein Term. Mit den bis hier diskutierten Änderungen und $\Sigma^+$ als Bezeichnung für die Menge von Zeichenketten über dem beschriebenen Alphabet $\Sigma$ sähe die idealisierte Menge aller Literale in der Umsetzung im Kontrast zu Definition \ref{defTerm} so aus:
+\section{Konzeptionelle Unterschiede} \label{subsecKonzeptionelleUnterschiede}
+Die Umsetzung implementiert nicht exakt die bisher beschriebenen Strukturen. Der erste Unterschied ist, dass die Konzepte \emph{Funktionssymbol} und \emph{Konstantensymbol} hier nicht unterschieden werden. Da der Zweck der Implementierung zudem alleine in der Vereinfachung von Ausdrücken über den Komplexen Zahlen $\mathbb C$ liegt, ist die Menge an Symbolen zudem im Code nicht generisch gehalten. Die beiden wichtigsten Arten von Symbolen für Literale sind Komplexe Zahlen $z \in \mathbb C$, sowie Zeichenketten $c_1 c_2\dots c_n$ beliebiger Länge $n$. Die einzelnen Zeichen $c_i$ stammen dabei aus dem Alphabet $\Sigma$, welches aus Klein-und Großbuchstaben des lateinischen Alphabetes, Ziffern von $0$ bis $9$, den Apostroph \verb|'| und dem Unterstrich \verb|_| besteht. Die Ausnahme bildet das erste Zeichen $c_1$, welches ein Klein-oder Großbuchstabe des Lateinischen Alphabetes sein muss. Zu den Zeichenketten gehören insbesondere auch die Funktionssymbole. Mit der dadurch entstehenden Möglichkeit Funktionssymbole als Werte zu behandeln, ergibt es Sinn auch Funktionsanwendungen von dynamisch bestimmten Funktionssymbolen zuzulassen. Das erste Element $f$ des Funktionsanwendungstupels $(f, \elems t 0 {n-1})$ ist in der Umsetzung also kein Symbol, sondern ein Term. Mit den bis hier diskutierten Änderungen und $\Sigma^+$ als Bezeichnung für die Menge von Zeichenketten über dem beschriebenen Alphabet $\Sigma$ sähe die idealisierte Menge aller Literale in der Umsetzung im Kontrast zu Definition \ref{defTerm} so aus:
 
 $$T \coloneqq \Sigma^+ \cup \mathbb C \cup \curl*{(\elems t 0 n)~|~ \elems t 0 n \in T)}.$$
 
@@ -30,6 +32,104 @@ mit
 \end{align*}
 \end{definition}
 
+
+
+
+
+
+%.........................................................................
+%.........................................................................
+%.........................................................................
+\section{Syntax} \label{subsecSyntax}
+In der Umsetzung wird der Termbaum immer aus einer ASCII Zeichenkette gebaut.
+Solche Zeichenketten sind von hier an in \texttt{monospace} gesetzt. Auf eine formale Definition der genutzten Grammatik wird verzichtet.
+
+\subsection{Funktionsanwendungen}
+\begin{figure}
+    \label{tabZucker}
+    \centering
+    \begin{tabular}{l l}
+        \hline
+        Normale Schreibweise & Alternative Syntax\\
+        \hline \hline
+        \verb|prod(-1, x)|         & \verb|-x|\\
+        \verb|not(x)|              & \verb|!x|\\
+        \verb|pow(x, y)|           & \verb|x^y|\\
+        \verb|prod(x, y)|          & \verb|x * y|\\
+        \verb|prod(x, y)|          & \verb|x y|\\
+        \verb|prod(x, pow(y, -1))| & \verb|x / y|\\
+        \verb|sum(x, y)|           & \verb|x + y|\\
+        \verb|sum(x, prod(-1, y))| & \verb|x - y|\\
+        \verb|cons(x, y)|          & \verb|x :: y|\\
+        \verb|eq(x, y)|            & \verb|x == y|\\
+        \verb|neq(x, y)|           & \verb|x != y|\\
+        \verb|greater(x, y)|       & \verb|x > y|\\
+        \verb|smaller(x, y)|       & \verb|x < y|\\
+        \verb|greater_eq(x, y)|    & \verb|x >= y|\\
+        \verb|smaller_eq(x, y)|    & \verb|x <= y|\\
+        \verb|and(x, y)|           & \verb|x && y|\\
+        \verb|or(x, y)|            & \verb!x || y!\\
+        \verb|of_type__(x, y)|     & \verb|x :y|\\
+        \hline
+    \end{tabular}
+    \caption{alternative Syntax für bestimmte Funktionssymbole}
+\end{figure}
+
+Die bisher genutzte Schreibweise $(f, x, y, z)$ für die Funktionsanwendung des Funktionssymbols $f$ auf die Parameter $x, y, z$ wurde in Abschnitt \ref{subsecTerm} eingeführt, um den Term syntaktisch von anderen Ideen zu differenzieren. Dies ist für die Umsetzung in C\texttt{++} nicht notwendig, da von vorne herein klar ist, ob eine Zeichenkette in einen Term übersetzt wird. Aus dem Grund werden Funktionsanwendungen in der Syntax \verb|f(x, y, z)| geparst. 
+Weiter können Funktionsanwendungen bestimmter Funktionen auch mit fest definierten Infixoperatoren geschrieben werden, siehe Tabelle \ref{tabZucker}. Die Bindekraft der Operatoren nimmt in der Tabelle von oben nach unten ab.
+Aus der Tabelle hervorzuheben sind zwei Dinge: Zum einen wird ein Leerzeichen zwischen zwei Termen als Multiplikation interpretiert, Funktionsanwendungen dürfen also kein Leerzeichen zwischen Funktion und Parametertupel setzen. \verb|f (x)| ist dementsprechend gleichbedeutend zu \verb|prod(f, x)|, während \verb|f (x, y)| einen Syntaxfehler darstellt. Die zweite Besonderheit ist das Fehlen von Funktionssymbolen für die Darstellung des additiven Inversen und des multiplikativen Inversen. Dies reduziert die Anzahl der Ersetzungsregeln, die benötigt werden um eine Gesetzmäßigkeit, die Summen oder Produkte involviert, abzubilden. 
+
+\subsection{Lambdafunktionen} \label{subsubsecLambdaSyntax}
+Da der ASCII Zeichensatz keine griechischen Buchstaben enthält, wird anstelle des kleinen Lambdas $\lambda$ der umgekehrte Schrägstrich \verb~\ ~genutzt. Die Identitätsfunktion $\lambda x.x$ wird dementsprechend \verb~\x .x~ geschrieben. Mehrere Parameter werden durch Leerzeichen getrennt: \verb~\x y .pow(x, y)~ ist eine Lambdafunktion mit identischem Verhalten zum Funktionssymbol \verb|pow|.
+
+\subsection{Symbole}
+Komplexe Zahlen auf der reellen Achse sind in der Syntax vergleichbar mit Darstellungen für Integer und Fließkommazahlen erlaubt in C. Möglich sind etwa \verb|3.1415|, \verb|42|, \verb|1.337e3| oder \verb|1.602e-19|. Komplexe Zahlen auf der imaginären Achse sind in der Struktur identisch, allerdings immer direkt gefolgt vom Zeichen \verb|i|. 
+
+Die verschiedenen Mustervariablen werden auf unterschiedliche Weise identifiziert. Eine normale Mustervariable muss mit einem Unterstrich beginnen (\verb|_x|), eine Wert-Mustervariable mit einem Dollar (\verb|$x|) und eine Multi-Mustervariable endet in drei Punkten (\verb|xs...|). Besitzt ein Name keiner dieser besonderen Merkmale, wird daraus kontextabhängig ein Lambdaparameter oder ein Symbol aus $\Sigma^+$. Ist der umgebende Name bereits in einem umschließenden Lambda gebunden, wird die innerste solche Bindung gewählt. Als Beispiel ist im Ausdruck \verb|\x .x + y| das Symbol \verb|x| als Lambdaparameter interpretiert, während \verb|y| als Zeichenkette erhalten bleibt.
+Im Ausdruck \verb|\x .\x .2 - x| kann der Parameter \verb|x| des äußeren Lambdas in der Definition des inneren Lambdas nicht mehr referenziert werden, der Gesamtausdruck ist damit identisch zu \verb|(\x .(\y .2 - y))|.
+
+\subsection{Literale}
+Ein Literal kann Lambdafunktionen, Funktionsanwendungen, Komplexe Zahlen und Symbole aus $\Sigma^+$ enthalten. Abbildung \ref{figBspLit} enthält Beispiele.
+
+\begin{figure}
+\begin{verbatim}
+1 + a
+
+sin(3 pi / 2 t) + 5 cos(pi / 8 t)
+
+map(tup, \x .x^2, tup(1, 2, 3))
+\end{verbatim}
+\label{figBspLit}
+\caption{Beispiele für Literale}
+\end{figure}
+
+\subsection{Ersetzungsregeln}
+Es gibt zwei Varianten Ersetzungsregeln zu schreiben.
+\begin{align*}
+	~&~&~&~&\textit{<linke Seite>}&~ ~                       &\verb~=    ~ \textit{<rechte Seite>}&~&~&~&~\\
+	~&~&~&~&\textit{<linke Seite>}&~\verb~|~~\textit{<Bedingungen>} &\verb~=    ~ \textit{<rechte Seite>}&~&~&~&~
+\end{align*}
+In der zweiten Variante ist \textit{<Bedingungen>} eine kommaseparierte Liste von Bedingungen an die vorkommenden Mustervariablen, wie in Abschnitt \ref{subsubsecBedingungen} diskutiert. 
+Beispiele sind in Abbildung \ref{figBspRegeln} aufgeführt.
+
+\begin{figure}
+\begin{verbatim}
+id = \x .x
+
+0 xs... = 0
+
+cos(($k + 1/2) pi) | $k :int = 0
+
+change(_f, _g, _f(xs...)) = _g(xs...)
+
+$a^2 + 2 $a _b + _b^2 = ($a + _b)^2
+
+_aPow2 + _2a _b + _b^2 | 4 _aPow2 == _2a^2 = (1/2 _2a + _b)^2
+\end{verbatim}
+\label{figBspRegeln}
+\caption{Beispiele für Ersetzungsregeln}
+\end{figure}
+Die beiden letzten Regeln haben den exakt gleichen Effekt, wie noch in Abschnitten \ref{subsubsecWertMustervariable} und \ref{subsubsecBedingungen} erörtert. Während die vorletzte dafür aber die Wert-Mustervariable \verb|$a| einsetzt, bringt die letzte Regel die Mustervariablen \verb|_aPow2| und \verb|_2a| über die angestellte Bedingung in Beziehung zueinander.
 
 
 
@@ -76,6 +176,7 @@ Bemerkenswert ist, dass mit den soeben formulierten Bedingungen der Ausdruck nic
 
 
 
+
 %.........................................................................
 %.........................................................................
 %.........................................................................
@@ -83,7 +184,7 @@ Bemerkenswert ist, dass mit den soeben formulierten Bedingungen der Ausdruck nic
 In der Umsetzung wird zwischen drei Arten von Mustervariablen unterschieden. Die Sonderform der Multi-Mustervariable ist bereits aus Kapitel \ref{subsecMulti} bekannt, die Wert-Mustervariable ist allerdings neu. Als drittes ist die normale Mustervariable nach wie vor vorhanden. Wert-Mustervariable und normale Mustervariable können zudem durch Bedingungen eingeschränkt werden.
 
 \subsection{Wert-Mustervariable} \label{subsubsecWertMustervariable}
-Nach Definition \ref{defMatch} ist Match $v_p$ für ein Paar $(p, t)$ aus Muster $p$ und Literal $t$ dann gültig, wenn die Normalform von $p$ mit den Mustervariablen ersetzt duch die Funktionswerte von $v_p$ identisch zu $t$ ist. In Kapitel \ref{secPattermatching} nicht diskutiert wurde die Möglichkeit Zahlen mit Rechenausdrücken zu matchen. Ein Muster $p = (\texttt{prod}, 2, \mathbf k)$ würde für das Literal $t = 12$ etwa ein Match $v_p$ mit $v_p~\mathbf k = 6$ besitzen. Um die Matchsuche nicht zu kompliziert zu gestalten, besitzt die Umsetzung zwei Einschränkungen. Zum einen ist eine solche Dekonstruktion des Musters zu einem Wert nur dann möglich, wenn das entsprechende Teilmuster exakt eine Instanz $w$ einer Wert-Mustervariable enthält. Zum anderen werden nur bijektive Funktionen\footnote{bzw. sonst Mehrdeutigkeiten ignoriert} dekonstruiert, wie im Beispiel die Multiplikation mit $2$. 
+Nach Definition \ref{defMatch} ist Match $v_p$ für ein Paar $(p, t)$ aus Muster $p$ und Literal $t$ dann gültig, wenn $\Const{lit}(p, v_p) = t$ gilt. In Kapitel \ref{secPattermatching} nicht diskutiert wurde die Möglichkeit Zahlen mit Rechenausdrücken zu matchen. Ein Muster $p = (\texttt{prod}, 2, \mathbf k)$ würde für das Literal $t = 12$ etwa ein Match $v_p$ mit $v_p~\mathbf k = 6$ besitzen. Um die Matchsuche nicht zu kompliziert zu gestalten, besitzt die Umsetzung zwei Einschränkungen. Zum einen ist eine solche Dekonstruktion des Musters zu einem Wert nur dann möglich, wenn das entsprechende Teilmuster exakt eine Instanz $w$ einer Wert-Mustervariable enthält. Zum anderen werden nur bijektive Funktionen\footnote{bzw. sonst Mehrdeutigkeiten ignoriert} dekonstruiert, wie im Beispiel die Multiplikation mit $2$. 
 
 
 Vor einem Matchversuch muss ein Muster mit Wert-Mustervariablen zuerst entsprechend transformiert werden. Ziel der Transformation ist, das für den Matchalgorithmus direkt klar ist, ab wo das Muster einen Wert repräsentieren soll. Der Teilbaum des Musters, der eine Wert-Mustervariable $w$ enthält und als ganzes einen Wert matchen soll, ist idealerweise also direkt gekennzeichnet. In der Umsetzung ist das realisiert, indem eine Wert-Mustervariable im zu matchenden Muster kein Blatt darstellt, sondern einen Teilbaum markiert. Dieser entspricht allerdings nicht der ursprünglichen Umgebung um die Wert-Mustervariable, sondern der Inversen. 
@@ -106,71 +207,23 @@ sqrt(value_match__(_i, _dom, _match))
 \caption{Transformationsregeln von Mustern mit Wert-Mustervariable}
 \end{figure}
 
-Die Transformation in diese Form erfolgt über Anwendung von Ersetzungsregeln. Die Wert-Mustervariable wird dazu als Funktionsanwendung des Symbols \verb|value_match__| gespeichert. Die Regeln sind in Abbildung \ref{figWertMusterBau} aufgeführt. Das Funktionssymbol erwartet drei Argumente, hier die Mustervariablen \verb|_i| für den identifikationsindex, \verb|_dom| für den erlauben Raum (kurz für \emph{domain}) und \verb|_match| für den Teilterm, der im Matchalgorithmus den Wert bestimmt. 
+Die Transformation in diese Form erfolgt über Anwendung von Ersetzungsregeln. Die Wert-Mustervariable wird dazu temporär als Funktionsanwendung des Symbols \verb|value_match__| gespeichert. Die Regeln sind - jeweils zweizeilig -  in Abbildung \ref{figWertMusterBau} aufgeführt. Das Funktionssymbol erwartet drei Argumente, hier die Mustervariablen \verb|_i| für den Identifikationsindex, \verb|_dom| für den erlauben Raum (kurz für \emph{domain}) und \verb|_match| für den Teilterm, der im Matchalgorithmus den Wert bestimmt. 
+
+
+Die finale Repräsentation einer Wert-Mustervariablen entspricht in den gespeicherten Informationen fast exakt der Zwischenform als Funktionsanwendung von \verb|value_match__|. Ergänzt wird einzig, ob die jeweilige Instanz bindend oder gebunden ist.
+
+Im Match der Wert-Mustervariablen $w$ mit einer komplexen Zahl $z$ als Literal wird der in Abbildung \ref{figWertMusterBau} \verb|_match| genannte Teilbaum genutzt, um den Wert, den die Wert-Mustervariable an ihrem ursprünglichen Ort im Muster für ein Match besitzen müsste zu bestimmen. Dafür enthält die Startkonfiguration der Wert-Mustervariable als Funktionsanwendung von \verb|value_match__| als drittes Argument das besondere Symbol \verb|value_proxy__|. Dieses wird auch nach Transformation des Musters exakt ein Mal in \verb|_match| vorkommen und kann als Platzhalter für das zu matchende Literal $z$ genutzt werden. Die Auswertung von \verb|_match| mit $z$ an Stelle von \verb|value_proxy__| gibt damit den für $w$ gesuchten Wert zurück. Je nachdem, ob $w$ eine bindende oder eine gebundene Instanz ist, wird der berechnete Wert im Matchzustand \BFred{(TODO: ref abschnitt)} gespeichert oder mit dem bereits gespeicherten Wert verglichen.
 
 
 \subsection{Bedingungen} \label{subsubsecBedingungen}
-\BFred{TODO}
+Muster können durch Bedingungen an normale Mustervariablen in möglichen Matches weiter eingeschränkt werden.
 
-%.........................................................................
-%.........................................................................
-%.........................................................................
-\section{Syntax} \label{subsecSyntax}
-In der Umsetzung wird der Termbaum immer aus einer ASCII Zeichenkette gebaut.
-Solche Zeichenketten sind von hier an in \texttt{monospace} gesetzt. Auf eine formale Definition der genutzten Grammatik wird verzichtet.
-
-\subsection{Funktionsanwendungen}
-\begin{figure}
-    \label{tabZucker}
-    \centering
-    \begin{tabular}{l l}
-        \hline
-        Normale Schreibweise & Alternative Syntax\\
-        \hline \hline
-        \verb|prod(-1, x)|         & \verb|-x|\\
-        \verb|not(x)|              & \verb|!x|\\
-        \verb|pow(x, y)|           & \verb|x^y|\\
-        \verb|prod(x, y)|          & \verb|x * y|\\
-        \verb|prod(x, y)|          & \verb|x y|\\
-        \verb|prod(x, pow(y, -1))| & \verb|x / y|\\
-        \verb|sum(x, y)|           & \verb|x + y|\\
-        \verb|sum(x, prod(-1, y))| & \verb|x - y|\\
-        \verb|cons(x, y)|          & \verb|x :: y|\\
-        \verb|eq(x, y)|            & \verb|x == y|\\
-        \verb|neq(x, y)|           & \verb|x != y|\\
-        \verb|greater(x, y)|       & \verb|x > y|\\
-        \verb|smaller(x, y)|       & \verb|x < y|\\
-        \verb|greater_eq(x, y)|    & \verb|x >= y|\\
-        \verb|smaller_eq(x, y)|    & \verb|x <= y|\\
-        \verb|and(x, y)|           & \verb|x && y|\\
-        \verb|or(x, y)|            & \verb!x || y!\\
-        \verb|of_type__(x, y)|     & \verb|x :y|\\
-        \hline
-    \end{tabular}
-    \caption{alternative Syntax für bestimmte Funktionssymbole}
-\end{figure}
-
-Die bisher genutzte Schreibweise $(f, x, y, z)$ für die Funktionsanwendung des Funktionssymbols $f$ auf die Parameter $x, y, z$ wurde in Abschnitt \ref{subsecTerm} eingeführt, um den Term syntaktisch von anderen Ideen zu differenzieren. Dies ist für die Umsetzung in C\texttt{++} nicht notwendig, da von vorne herein klar ist, ob eine Zeichenkette in einen Term übersetzt wird. Aus dem Grund werden Funktionsanwendungen in der Syntax \verb|f(x, y, z)| geparst. 
-Weiter können Funktionsanwendungen bestimmter Funktionen auch mit fest definierten Infixoperatoren geschrieben werden, siehe Tabelle \ref{tabZucker}. Die Bidekraft der Operatoren nimmt in der Tabelle von oben nach unten ab.
-Aus der Tabelle hervorzuheben sind zwei Dinge: Zum einen wird ein Leerzeichen zwischen zwei Termen als Multiplikation interpretiert, Funktionsanwendungen dürfen also kein Leerzeichen zwischen Funktion und Parametertupel setzen. \verb|f (x)| ist dementsprechend gleichbedeutend zu \verb|prod(f, x)|, während \verb|f (x, y)| einen Syntaxfehler darstellt. Die zweite Besonderheit ist das Fehlen von Funktionssymbolen für die Darstellung des additiven Inversen und des multiplikativen Inversen. Dies reduziert die Anzahl der Ersetzungsregeln, die benötigt werden um eine Gesetzmäßigkeit, die Summen oder Produkte involviert, abzubilden. 
-
-\subsection{Lambdafunktionen} \label{subsubsecLambdaSyntax}
-Da der ASCII Zeichensatz keine griechischen Buchstaben enthält, wird anstelle des kleinen Lambdas $\lambda$ der umgekehrte Schrägstrich \verb~\ ~genutzt. Die Identitätsfunktion $\lambda x.x$ wird dementsprechend \verb~\x .x~ geschrieben. Mehrere Parameter werden durch Leerzeichen getrennt: \verb~\x y .pow(x, y)~ ist eine Lambdafunktion mit identischem Verhalten zum Funktionssymbol \verb|pow|.
-
-\subsection{Symbole}
-Komplexe Zahlen auf der reellen Achse sind in der Syntax vergleichbar mit Darstellungen für Integer und Fließkommazahlen erlaubt in C. Möglich sind etwa \verb|3.1415|, \verb|42|, \verb|1.337e3| oder \verb|1.602e-19|. Komplexe Zahlen auf der imaginären Achse sind in der Struktur identisch, allerdings immer direkt gefolgt vom Zeichen \verb|i|. 
-
-Die verschiedenen Mustervariablen werden auf unterschiedliche Weise identifiziert. Eine normale Mustervariable muss mit einem Unterstrich beginnen (\verb|_x|), eine Wert-Mustervariable mit einem Dollar (\verb|$x|) und eine Multi-Mustervariable endet in drei Punkten (\verb|xs...|). Besitzt ein Name keiner dieser besonderen Merkmale, wird daraus kontextabhängig ein Lambdaparameter oder ein Symbol aus $\Sigma^+$. Ist der umgebende Name bereits in einem umschließenden Lambda gebunden, wird die innerste solche Bindung gewählt. Als Beispiel ist im Ausdruck \verb|\x .x + y| das Symbol \verb|x| als Lambdaparameter interpretiert, während \verb|y| Als Zeichenkette erhalten bleibt.
-Im Ausdruck \verb|\x .\x .2 - x| kann der Parameter \verb|x| des äußeren Lambdas in der Definition des inneren Lambdas nicht mehr referenziert werden, der Gesamtausdruck ist damit identisch zu \verb|(\x .(\y .2 - y))|.
+Die in Bedingungen erlaubten Funktionssymbole sind fest eingebaut. Bis auf \verb|cons|, gehören alle Symbole aus Tabelle \ref{tabZucker} dazu. 
 
 
-\subsection{Ersetzungsregel}
-Es gibt zwei Varianten Ersetzungsregeln zu schreiben.
-\begin{align*}
-	~&~&~&~&\textit{<linke Seite>}&~ ~                       &= \textit{<rechte Seite>}&~&~&~&~\\
-	~&~&~&~&\textit{<linke Seite>}&~|~\textit{<Bedingungen>} &= \textit{<rechte Seite>}&~&~&~&~
-\end{align*}
-In der zweiten Variante ist \textit{<Bedingungen>} eine kommaseparierte Liste von Bedingungen and die vorkommenden Mustervariablen, wie in Abschnitt \ref{subsubsecBedingungen} diskutiert. 
+Ist eine Mustervariable $\mathbf x$ Argument eines Funktionssymbols $f$, welches als Funktion, die aus den Komplexen Zahlen abbildet interpretiert wird, muss der Teil des Literals, mit dem $\mathbf x$ gematcht ist, 
+
+
 
 
 
@@ -187,14 +240,30 @@ Die Knoten des Termbaumes liegen in einem Array, dem sogenannten \verb|Store|. W
 	\item {$V$}
 	\item {Funktionsanwendung in einem Literal}
 	\item {Funktionsanwendung in einem Muster}
-	\item {Hilfsyp benötigt in der Konstruktion eines Musters mit Wert-Mustervariablen}
+	\item {Hilfsyp genutzt in der Transformation eines Musters mit Wert-Mustervariablen}
 	\item {bindende Instanz einer Mustervariable $\mathbf x \in X$ an die im Muster Bedingungen geknüpft sind}
 	\item {bindene Instanz einer Mustervariable $\mathbf x \in X$ ohne weitere Bedingungen}
 	\item {gebundene Instanz einer Mustervariable $\mathbf x \in X$}
 	\item {$X^*$}
 	\item {$W$}
 \end{enumerate}
-Manche der hier aufgezählten Knoten müssen neben ihrem Typen nur eine einzige natürliche Zahl kennen. Bereits diekutiert wurde das für Knoten von Typ $3$, den Lambdaparametern. Für ein Knoten dieser Art ist es nicht notwendig, die Information als eigenens Arrayelement des \verb|Store| zu speichern, der Index des Paares aus Index und Typ von \verb|NodeType| enthält direkt den erforderlichen Wert. Alle Knoten dieser Art
+Manche der hier aufgezählten Knoten müssen neben ihrem Typen nur eine einzige natürliche Zahl kennen. Bereits diekutiert wurde das für Knoten von Typ $3$, den Lambdaparametern. Für ein Knoten dieser Art ist es nicht notwendig, die Information als eigenens Arrayelement des \verb|Store| zu speichern, der Index des Paares aus Index und Typ von \verb|NodeType| enthält direkt den erforderlichen Wert. Damit werden die entsprechenden Argumente ohne Indirektion direkt in einer Funktionsanwendung gespeichert. Knoten dieser Art sind Typ 0, 3, 6, 8 und 9. Für Symbole aus $\Sigma^+$ wird nicht der Name selbst gespeichert, sondern der Index in einem zentralen Namensspeicher. Nicht optimal ist damit, dass die Ordnung zweier Symbole aus $\Sigma^+$ zueinander von der Reihenfolge der Auflistung im Namensspeicher und damit von der Eingabereihenfolge abhängen, was aber nur ästhetische Nachteile birgt. Der Zugriff auf den Namensspeicher wird so auf die Eingabe und Ausgabe eines Terms beschränkt.
+
+\begin{beispiel}~\\ \label{bspREPLliteral}
+Das Literal \verb|tup(f(a, b)(c), 1, 2, 3)| wird in der folgenden Debugausgabe genutzt, um den Speicheraufbau zu veranschaulichen.
+\begin{verbatim}
+  head at index: 5
+   0 | application:     { 121,  92,  93 }    f(a, b)
+   1 | application:     {   0,  94 }         f(a, b)(c)
+   2 | value      :                          1
+   3 | value      :                          2
+   4 | value      :                          3
+   5 | application:     {  78,   1,   2,     tup(f(a, b)(c), 1, 2, 3)
+   6 |   ...           3,   4 }
+\end{verbatim}
+Die linke Spalte gibt den Arrayindex an. Nach der Art des gespeicherten Knotens folgt dann für Funktionsanwendungen die Auflistung der Funktion und Argumente. Ganz rechts ist der Teilbaum beginnend an dem entsprechenden Arrayindex angegeben. Bemerkenswert ist hierbei, dass die Symbole \verb|f|, \verb|tup|, \verb|a|, \verb|b| und \verb|c| als solche nicht im Array gespeichert sind. Die Funktionsanwendung von \verb|f| gespeichert an Index 0 verrät allerdings, dass das Programm vor dem Parsen von Symbol \verb|f| bereits 121 andere unbekannte Symbole eingelesen hat. Analog ist \verb|a| als Index 92, \verb|b| als Index 93 und \verb|c| als Index 94 gespeichert. 
+Interessant ist weiter, dass die Funktionsanwendung des Symbols \verb|tup| beginnend an Arrayindex 5 auch das darauffolgende Arrayelement okkupiert. Bis auf den Index von \verb|tup|, beziehen sich die restlichen Indices hier tatsächlich auf echte Elemente im Array. 
+\end{beispiel}
 
 \BFred{TODO}
 
