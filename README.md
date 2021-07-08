@@ -9,10 +9,12 @@ Der Textteil meiner Bachelorarbeit
 - pdflatex + makeindex + bibtex main.tex baut finale pdf inklusive aller quellen
 
 ## TODO
-- Beweise in PatternMatching machen
 - Termersetzungsystem
-- Glossar
+- cpp 
+- schluss
 
 
 ## Optional
 - über beweisassistenten reden
+- Glossar
+- beispiel patternmatching anwendung algo

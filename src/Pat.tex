@@ -392,7 +392,7 @@ $$\Const{lit}(p, v_p'') = t_2 < t_3 = \Const{lit}(q, v_p'') \implies q \not\prec
 
 Einfach zu sehen ist, dass nur sehr wenige Muster zueinander stark geordnet sind, wenn die allgemeinste Form des Matches erlaubt ist. Problematisch ist dabei vor allem $\Const{combine}$ (Algorithmus \ref{combine}) als Teil von $\Const{normalize}$. Dadurch wird es möglich Funktionsanwendungen als Muster mit Konstantensymbolen als Literal zu matchen. Da es aufwändig ist, überhaupt zu bestimmen, welche Muster Matches dieser Art erlauben, wird $\Const{normalize}$ hier abweichend von Kapitel \ref{secErsteNormalform} ohne $\Const{combine}$ angenommen. Nur Assoziativität und Kommutativität werden berücksichtigt.
 
-\begin{lemma}~\\
+\begin{lemma}~\\ \label{lemStarkKleinerFaelle}
 Für folgende Formen von normalisierten Mustern $p$ und $q$ gilt $p \prec q$:
 \begin{enumerate}
 	\item{$p$ und $q$ enthalten keine Mustervariablen und $p < q$} \label{itemStarkKleiner1}
@@ -424,52 +424,67 @@ Da $\Const{normalize}$ in Fall \ref{itemStarkKleiner4} die Argumentreihenfolge n
 
 
 
-
-
-
-
-
+%.........................................................................
+%.........................................................................
+%.........................................................................
 \section{Termersetzungssystem} \label{subsecTermersetzungssystem}
 
-Das Ziel dieses Abschnittes ist erneut die Normalisierung eines Terms. Im Unterschied zu Kapitel \ref{secErsteNormalform} werden die Ersetzungsregeln hier nicht im Algorithmus festgelegt, sondern erst als Parameter mit übergeben. 
+Das Ziel dieses Abschnittes ist erneut die Normalisierung eines Terms. Im Unterschied zu Kapitel \ref{secErsteNormalform} werden die Ersetzungsregeln hier nicht im Algorithmus festgelegt, sondern erst als Parameter mit übergeben. Die Thematik soll in dieser Arbeit allerdings nur angerissen werden.
 
-Ist eine Ersetzungsregel auf das übergebende Literal $l = l^{(0)}$ oder ein Teil dessen anwendbar, so wird das Ergebnis der Ersetzung $l^{(1)}$ genannt. Auf dem selben Weg kann aus $l^{(1)}$ der Term $l^{(2)}$ erzeugt werden oder allgemeiner aus $l^{(i)}$ der Term $l^{(i+1)}$. Ist auf keinen Teil von $l^{(n)}$ mehr eine Regel anwendbar, wird $l^{(n)}$ als \emph{Normalform} von $l$ zu den übergebenden Ersetzungsregeln bezeichnet. 
+\begin{algorithm}
+\DontPrintSemicolon
+\caption{$\Const{applyRuleset} \colon \mathit{Regelmenge} \times T \rightarrow T$ }\label{algoTES}
+\KwIn {$R \in \{M \times M\}$, $t \in T$}
+$t \leftarrow \Const{normalize}~t$\;
+\While {$\exists (p, p') \in R$, $r$ Nachkomme von $t$, $v_p$ Match von $p$ und $r$} {
+    ersetze $r$ in $t$ durch $r' = \Const{lit}(p', v_p)$\;
+    $t \leftarrow \Const{normalize}~t$\;
+}
+\Return {$t$}
+\end{algorithm}
 
-Es ist möglich, dass ein Literal $l$ mit einer bestimmten Regelmenge mehr als nur eine Normalform besitzt. Eine einfache Regelmenge mit dieser Eigenschaft besteht aus zwei Regeln mit identischer linker Seite aber unterschiedlicher rechter Seite. Bestimmte Regeln können allerdings auch in Isolation mehrere Normalformen produzieren. Ein Beispiel ist die folgende Regel, welche $\mathbf x$ ausklammert:
+Ist eine Ersetzungsregel auf das übergebende Literal $t = t^{(0)}$ oder ein Teil dessen anwendbar, so wird das Ergebnis der Ersetzung $t^{(1)}$ genannt. Auf dem selben Weg kann aus $t^{(1)}$ der Term $t^{(2)}$ erzeugt werden oder allgemeiner aus $t^{(i)}$ der Term $t^{(i+1)}$. Ist auf keinen Teil von $t^{(n)}$ mehr eine Regel anwendbar, wird $t^{(n)}$ als \emph{Normalform} von $t$ zu den übergebenden Ersetzungsregeln bezeichnet. 
+
+
+
+\subsection {Konfluenz} \label{subsubsecKonfluenz}
+Es ist möglich, dass ein Literal $t$ mit einer bestimmten Regelmenge mehr als nur eine Normalform besitzt. Eine einfache Regelmenge mit dieser Eigenschaft besteht aus zwei Regeln mit identischer linker Seite aber unterschiedlicher rechter Seite. Bestimmte Regeln können allerdings auch in Isolation mehrere Normalformen produzieren. Ein Beispiel ist die folgende Regel, welche $\mathbf x$ ausklammert:
 $$(\texttt{sum}, \mathbf x, (\texttt{prod}, \mathbf x, \mathbf{ys...}), \mathbf{zs...}) 
 \mapsto (\texttt{sum}, (\texttt{prod}, \mathbf x, (\texttt{sum}, 1, (\texttt{prod}, \mathbf{ys...})) , \mathbf{zs...})$$
 
-Für das Literal $l = (\texttt{sum}, a, b, (\texttt{prod}, a, b))$ existiert sowohl die Normalform 
-$$l' = (\texttt{sum}, b, (\texttt{prod}, a, (\texttt{sum}, 1, b))),$$ 
+Für das Literal $t = (\texttt{sum}, a, b, (\texttt{prod}, a, b))$ existiert sowohl die Normalform 
+$$t' = (\texttt{sum}, b, (\texttt{prod}, a, (\texttt{sum}, 1, b))),$$ 
 als auch 
-$$l'' = (\texttt{sum}, a, (\texttt{prod}, b, (\texttt{sum}, 1, a))).$$
+$$t'' = (\texttt{sum}, a, (\texttt{prod}, b, (\texttt{sum}, 1, a))).$$
 
 Das ist an dieser Stelle allerdings nicht neu: Algorithmus \ref{rematch} ($\Const{rematch}$) ist eine direkte Antwort auf Muster dieser Art. Die Fragestellung welche Mengen von Ersetzungsregeln eindeutige Normalformen unabhängig von der Reihenfolge ihrer Anwendung produzieren (\emph{konfluent} sind) ist im allgemeinen Fall nicht entscheidbar \cite{KonfluenzUnentscheidbar}.
+Einschränkungen einer Regelmenge die Konfluenz implizieren, werden etwa von Hoffmann und O'Donnell diskutiert \cite{hoffmann1982programming}. Diese sind hier allerdings nur sehr beschränkt anwendbar. Zum einen findet der Matchbegriff dort ausschließlich in seiner strengen Form Anwendung, zum anderen beinhalten die Einschränkungen etwa die Restriktion, dass jede Mustervariable höchstens ein Mal in der linken Seite einer Ersetzungsregel vorkommen darf.
+
+Ein Weg die Problematik teilweise zu umgehen ist, parallel alle möglichen Transformationen anzuwenden und erst am Ende mit einer entsprechenden Gewichtsfunktion die gewünschte Normalform zu wählen. Aufgrund der damit verbundenen hohen Laufzeitkosten wird dieser Ansatz in den meisten Fällen von Anfang ausgeschlossen.
 
 
+\subsection{Ersetzungsreihenfolge}
+Wird eine gegebene Regelmenge als nicht konfluent angenommen, kann die  Normalform eines Literals $t$ nicht nur davon abhängen, welche Regel zuerst auf ihre Anwendbarkeit getestet wird, sondern auch an welcher Stelle eine Ersetzung priorisiert ist. Weiter ist es möglich, dass für bestimmte Literale manche solche Strategien eine Normalform erzeugen, während andere nicht konvergieren.
 
-\subsection{Strategien}
-Eine besondere Eigenschaft der Normalisierung aus Kapitel \ref{secErsteNormalform} ist, dass die dadurch definierte Normalform eines Terms eindeutig ist. Gemeint ist damit, dass nicht nur die Funktion $\Const{normalize}$ deterministisch ist, sondern dass sie immer das selbe Ergebnis produziert, wie eine beliebige andere Strategie, die so lange die erläuterten drei Regeln Sortieren kommutativer Funktionsanwendungen, Zusammenfassen assoziativer Funktionsanwendungen und Auswerten auswertbarer Teile auf jeden Teilterm anwendet, bis keine Anwendung mehr zu einer Veränderung führt. Dies ist allerdings nicht für beliebige Mengen von Ersetzungsregeln der Fall. Das einfachste Gegenbeispiel sind zwei Regeln mit gleicher linker Seite aber unterschiedlicher rechter Seite.
+\begin{beispiel} \label{bspFakutaetTerminiert}
+Die Fakultätsfunktion, repräsentiert durch das Funktionssymbol $\texttt{fact}$, kann durch die folgende Menge von Ersetzungsregeln beschrieben werden, wenn die Funktionssymbole $\texttt{eq}$, $\texttt{prod}$ und $\texttt{sub}$ mit $\Const{normalize}$ ausgewertet werden. 
+\begin{align*}
+    (\texttt{cond}, \texttt{true}, \mathbf x, \mathbf y) 
+    &\mapsto \mathbf x 
+    &(1)\\        
+    (\texttt{cond}, \texttt{false}, \mathbf x, \mathbf y) 
+    &\mapsto \mathbf y 
+    &(2)\\        
+    (\texttt{fact}, \mathbf x) 
+    &\mapsto (\texttt{cond}, (\texttt{eq}, \mathbf x, 0), 1, (\texttt{prod}, \mathbf x, (\texttt{fact}, (\texttt{sub}, \mathbf x, 1)))) 
+    &(3)
+\end{align*}
+Offensichtlich ist, dass die Normalisierung nicht konvergiert, wenn entweder die Ersetzung von Regel $(3)$ an einer beliebigen Stelle Vorzug gegenüber Anwendung der anderen Regeln hat oder wenn immer der innerste transformierbare Teil eines Literals transformiert wird.
+\end{beispiel}
 
+Die Problematik ist eng verwandt mit der Auswertungsstrategie für funktionale Programme, wo zwischen \emph{strenger Auswertung} (engl. \emph{eager evaluation}) und \emph{fauler Auswertung} (engl. \emph{lazy evaluation}) unterschieden wird  \cite{EvalStrategien}. Die strenge Auswertung wählt immer die innerste Ersetzung zuerst aus. Vorteil ist die sehr einfache Umsetzung der Strategie: Ist ein Teilterm normalisiert, wird er es auch nach Anwendung von Ersetzungsregeln auf seine Ahnen bleiben. Nachteil ist, dass weniger Terme normalisiert werden können, siehe Beispiel \ref{bspFakutaetTerminiert}. Die falue Auswertung transformiert im Kontrast immer den äußeren Teil des Literals zuerst. 
 
-
-
-Es gibt verschiedene Strategien in einem Term nach Teiltermen zu suchen, die transformiert werden können. Die Funktion $\Const{normalize}$ aus Kapitel \ref{secErsteNormalform} geht von innen nach außen, normalisiert also zuerst die Argumente einer Funktionsanwendung, bevor die Funktionsanwendung selbst normalisiert wird. Das hat den Vorteil, dass $\Const{normalize}$ ein sehr einfachen Aufbau besitzen kann, schließlich bleiben die Argumente in ihrer Normalform, wenn die umschließende Funktionsanwendung selbst normalisiert wird. Jede Funktionsanwendung eines zu normalisierenden Terms muss also nur ein Mal besucht werden.
-
-
-Hier wird zuerst probiert Ersetzungsregeln auf das Literal als ganzes anzuwenden, dann, sollte das Literal eine Funktionsanwendung sein, auf seine Argumente. Der Vorteil besteht darin, dass mehr Terme normalisiert werden können \cite{EvalStrategien}. Der Nachteil besteht darin, dass der zur Umsetzung notwendige Algorithmus aufwendiger ist, da die Normalisierung eines Argumentes möglicherweise neue Transformationen für umschließende Terme eröffnet.
-
-Ein grundlegendes Problem ist, dass die Normalform eines Literals für entsprechend gewählte Regelsätze von der gewählten Normalisierungsstrategie abhängt. 
-
-
-
-
-
-
-
-
-
-
+Für die Umsetzung einer faulen Ersetzungsstrategie für ein Termersetzungssystem, ist es im allgemeinen Fall allerdings schwierig, schnell den den äußersten transformierbaren Teil zu finden, nachdem eine Ersetzung stattgefunden hat. In dieser Arbeit fällt das weniger ins Gewicht, da schon der einzelne Matchversuch je nach Muster exponentielle Laufzeitkosten aufweisen kann, Hoffman und O'Donnell haben deshalb allerdings einen Hybrid aus strenger und fauler Auswertung implementiert \cite{hoffmann1982programming}.
 
 
 
