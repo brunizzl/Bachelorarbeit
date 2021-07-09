@@ -3,11 +3,11 @@
 \chapter{Einleitung} \label{secEinleitung}
 
 Die Manipulation symbolischer Ausdrücke ist in der Mathematik allgegenwärtig. Ist bekannt, dass ein Ausdruck $A$ gleichbedeutend zu einem zweiten Ausdruck $B$ ist, so kann in einem dritten Ausdruck $C$ jedes Vorkommen von $A$ durch $B$ ersetzt werden. 
-Wenn bekannt ist, dass $A = 4$ und $B = 2 \cdot 2$ die gleiche Bedeutung haben, kann als Beispiel der Ausdruck $C = \frac{4}{2}$ auch als $C' = \frac{2 \cdot 2}{2}$ geschrieben werden.
+Wenn bekannt ist, dass $A = 4$ und $B = 2 \cdot 2$ die gleiche Bedeutung haben, kann beispielsweise der Ausdruck $C = \frac{4}{2}$ auch als $C' = \frac{2 \cdot 2}{2}$ geschrieben werden.
 
 Oft ist für zwei Ausdrücke bekannt, dass sie gleichbedeutend sind, wenn beide jeweils einer bestimmten Struktur folgen. Im Beispiel kann $C'$ auch als $C'' = 2$ geschrieben werden, da unabhängig konkreter Werte von $x$ und $y$ feststeht, dass der Ausdruck $\frac{x \cdot y}{x}$ auch als $y$ geschrieben werden kann.
 
-Solche Regeln von Hand anzuwenden ist sowohl zeitaufwändig als auch fehleranfällig. 
+Solche Regeln von Hand anzuwenden, ist sowohl zeitaufwändig als auch fehleranfällig. 
 Die Idee, Computer zu nutzen, um symbolische Ausdrücke zu manipulieren, ist deshalb fast so alt wie der Computer selbst.  LISP ist als eine der ersten höheren Programmiersprachen bereits für diesen Zweck geschaffen worden \cite{lisp}. Rückblickend war die symbolische Berechnung sogar vor der Erfindung des Computers ein wichtiger Teil dessen, was heute theoretische Informatik genannt wird. Herausstechend ist die Idee des Lambdakalküls von Church \cite{ChurchLambda36}. 
 
 Gegenwärtig gibt es eine Reihe etablierter Systeme zum symbolischen Rechnen. Wichtiger Bestandteil sind sie etwa in Mathematica \cite{MathematicaSymbolic}, Maple \cite{MapleSymbolic} oder Matlab \cite{MatlabSymbolic}.
@@ -39,12 +39,12 @@ In der einzelnen Ersetzung wird eine Variable der Ersetzungsregel dabei an einen
 \end{beispiel}
 
 ~\\
-Der Einfluss von Termersetzungssystemen geht weit über die Anwendung durch Mathematiker oder Ingenieure mit direktem Interesse am vereinfachten Ausdruck hinaus. Interessant ist etwa die Formulierung von Ersetzungsregeln im Kontext eines optimierenden Compilers \cite{HaskellCustomRewriteRules}, \cite{HaskellCoreOptimizer}. Termersetzungssysteme können weiter direkt die Grundlage der Auswertung eines funktionalen Programms sein \cite{Jones1987JanRewritingMiranda}.
+Der Einfluss von Termersetzungssystemen geht weit über die Anwendung durch Mathematiker oder Ingenieure mit direktem Interesse am vereinfachten Ausdruck hinaus. Interessant ist etwa die Formulierung von Ersetzungsregeln im Kontext eines optimierenden Compilers \cite{HaskellCustomRewriteRules, HaskellCoreOptimizer}. Termersetzungssysteme können weiter direkt die Grundlage der Auswertung eines funktionalen Programms sein \cite{Jones1987JanRewritingMiranda}.
 
 
 \section{Zielsetzung}
 Ziel der Arbeit ist Design und Umsetzung eines Termersetzungssystems zur Vereinfachung algebraischer Ausdrücke. Der Kern des Termersetzungssystems ist ein Algorithmus zur Erkennung eines bestimmten Musters in einem Term. 
-Der Algorithmus soll ein Muster dabei möglichst nicht nur erkennen, wenn der Term die exakt identische Struktur aufweist. Bestimmte Äquivalenzklassen, wie etwa alle Permutationen der Parameter in einer kommutativen Funktion sollen bereits auf der Mustererkennungsebende berücksichtigt werden. Die Formulierung einer Menge von Ersetzungsregeln für das Termersetzungssystem muss also möglichst kompakt möglich sein. 
+Der Algorithmus soll ein Muster dabei möglichst nicht nur erkennen, wenn der Term die exakt identische Struktur aufweist. Bestimmte Äquivalenzklassen, wie etwa alle Permutationen der Parameter in einer kommutativen Funktion, sollen bereits auf der Mustererkennungsebene berücksichtigt werden. Die Formulierung einer Menge von Ersetzungsregeln für das Termersetzungssystem muss also möglichst kompakt möglich sein. 
 Damit ist das Ziel, die Mustererkennung möglichst schnell durchführen zu können, beim Treffen von Designentscheidungen in der Musterstruktur nicht ausschlaggebend, eine polynomielle Laufzeitkomplexität ist allerdings angestrebt.\\
 Das Leistungsvermögen des entwickelten Termersetzungssystems wird in einer Anwendung zur Vereinfachung algebraischer Ausdrücke über den Komplexen Zahlen getestet. 
 

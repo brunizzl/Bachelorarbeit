@@ -17,6 +17,7 @@
 \newglossaryentry{Argument}
 {
     name = Argument,
+    plural = Argumente,
     description = {Koordinate des Definitionsbereiches einer Funktion}
 }
 
@@ -35,7 +36,7 @@
 \newglossaryentry{Funktionssymbol}
 {
     name = Funktionssymbol,
-    description = {Tag welches die Funktion in einer Funktionsanwendung repräsentiert, Element in $F$}
+    description = {Tag, welcher die Funktion in einer Funktionsanwendung repräsentiert, Element in $F$}
 }
 
 \newglossaryentry{Term}
@@ -48,6 +49,136 @@
 {
     name = Auswertung,
     description = {Funktionswert einer Interpretation}
+}
+
+\newglossaryentry{Stelligkeitsfunktion}
+{
+    name = Stelligkeitsfunktion,
+    description = {$\Const{arity} \colon F \rightarrow \mathbb N \cup \omega$ bildet ein Funktionssymbol $f$ auf die erwartete Anzahl seiner Argmente ab},
+}
+
+\newglossaryentry{variadisch}
+{
+    name = variadisch,
+    description = {Ist das Funktionssymbol $f$ variadisch, kann es auf beliebig viele Argumente angewendet werden. Schreibe dann $\Const{arity}~f = \omega$.},
+}
+
+\newglossaryentry{Nachkomme}
+{
+    name = Nachkomme,
+    description = {Kind des aktuellen Terms oder Kind eines Nachkommen des aktuellen Terms},
+}
+
+\newglossaryentry{Kind}
+{
+    name = Kind,
+    description = {Argument der aktuellen Funktionsanwendung},
+}
+
+
+\newglossaryentry{Vater}
+{
+    name = Vater,
+    description = {Funktionsanwendung, die den aktuellen Term als Argument enthält},
+}
+
+\newglossaryentry{Ahne}
+{
+    name = Ahne,
+    description = {Vater des aktuellen Terms oder Ahne des Vaters des aktuellen Terms},
+}
+
+\newglossaryentry{Konstruktor}
+{
+    name = Konstruktor,
+    description = {Interpretation $u_c$ eines Funktionssymbols als Tag des Argumenttupels},
+}
+
+
+\newglossaryentry{Literal}
+{
+    name = Literal,
+    description = {zu transformierender Term oder Teil davon},
+}
+
+\newglossaryentry{Muster}
+{
+    name = Muster,
+    description = {Term in $M(F, C)$ als Teil einer Ersetzungsregel},
+}
+
+\newglossaryentry{Mustervariable}
+{
+    name = Mustervariable,
+    plural = Mustervariablen,
+    description = {Konstantensymbol in $X$ mit Platzhalterrolle in einem Muster},
+}
+
+\newglossaryentry{Ersetzungsregel}
+{
+    name = Ersetzungsregel,
+    description = {Paar von Mustern. Das linke Muster soll in einem Literal durch das rechte Muster ersetzt werden},
+}
+
+\newglossaryentry{Match}
+{
+    name = Match,
+    description = {Interpretation $v_p \colon X \rightarrow T$ von Mustervariablen als Literale mit $\Const{lit}(p, v_p) = t$ für Muster $p$ und Literal $t$},
+}
+
+\newglossaryentry{Musterinterpretation}
+{
+    name = Musterinterpretation,
+    description = {Interpretation $\Const{lit} \colon \paren*{X \rightarrow T} \times M \rightarrow T$ von Mustern als Literale via Match $v_p$},
+}
+
+\newglossaryentry{Matchalgorithmus}
+{
+    name = Matchalgorithmus,
+    description = {Verfahren um ein Match zu finden},
+}
+
+\newglossaryentry{Normalform}
+{
+    name = Normalform,
+    description = {Element in Bild von $\Const{normalize}$ oder Literal, auf das keine Ersetzungsregel mehr angewendet werden kann},
+}
+
+\newglossaryentry{konfluent}
+{
+    name = konfluent,
+    description = {keine zwei linke Seiten unterschiedlicher Regeln können das selbe Literal matchen, wenn die rechten Seiten ungleich sind},
+}
+
+\newglossaryentry{Lambda}
+{
+    name = Lambda,
+    description = {auch Lambdafunktion oder Lambdaabstraktion, Funktion mit lokal definierter Abbildungsvorschrift},
+}
+
+\newglossaryentry{Lambdaparameter}
+{
+    name = Lambdaparameter,
+    description = {Parameter einer Lambdafunktion},
+}
+
+\newglossaryentry{Wert-Mustervariable}
+{
+    name = Wert-Mustervariable,
+    description = {spezielle Mustervariable, die erlaubt Funktionsanwendungen als Muster mit Konstantensymbolen zu matchen},
+}
+
+\newglossaryentry{Multi-Mustervariable}
+{
+    name = Multi-Mustervariable,
+    description = {spezielle Mustervariable, die mehrere Argumente einer Funktionsanwendung matchen kann},
+}
+
+\newglossaryentry{transparent}
+{
+    name = transparent,
+    plural = transparenten,
+    description = {Lambdafunktion hat möglicherweise nicht-eigene Lambdaparameter in Abbildungsvorschrift},
 }
 
 

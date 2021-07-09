@@ -30,7 +30,7 @@ bibliography=totoc %inhaltsverzeichnis enthaelt literatur
 \subject{Bachelorarbeit}
 \professor{PD Dr. Prashant Batra}
 \advisor{Prof. Dr. Siegfried Rump}
-\title{Entwicklung eines Termersetzungssystems für assoziative und kommutative Ausdrücke\\ \textit{Version 1.1}}
+\title{Entwicklung eines Termersetzungssystems für assoziative und kommutative Ausdrücke\\ \textit{Version 1.0.1}}
 \author{Bruno Borchardt}
 \date{\today}
 
@@ -71,8 +71,8 @@ bibliography=totoc %inhaltsverzeichnis enthaelt literatur
 %toc fügt eintrag in inhaltsverzeichnis ein
 %nopostdot setzt keinen Punkt nach beschreibung
 %altlist setzt \n nach name
-\usepackage[style = altlist, toc, nopostdot]{glossaries} %glossar
-\renewcommand*\glspostdescription{\hfill} %seiten rechtsbuendig
+\usepackage[style = list, toc, nopostdot]{glossaries}
+\renewcommand*\glspostdescription{\hfill} %seitenzahlen rechtsbuendig
 \input{glossar.tex}
 
 \setlength{\parindent}{0pt} %keine Einrückung nach absatz
@@ -128,6 +128,9 @@ bibliography=totoc %inhaltsverzeichnis enthaelt literatur
 \newtheorem{beispiel}{Beispiel}[chapter] %zähler zweistellig mit chapter
 \newtheorem{definition}[beispiel]{Definition} %selber zähler wie beispiel
 \newtheorem{lemma}[beispiel]{Lemma}           %selber zähler wie beispiel
+
+%setze emph nicht kursiv, da so schon funktionssymbole aussehen (Const)
+\renewcommand{\emph}[1]{\underline{#1}}
 
 
 %.........................................................................
