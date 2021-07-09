@@ -10,10 +10,10 @@ Der Textteil meiner Bachelorarbeit
 
 ## TODO
 - cpp 
-- schluss
 
 
 ## Optional
 - über beweisassistenten reden
 - Glossar
 - beispiel patternmatching anwendung algo
+- normalize ist eine projektion
