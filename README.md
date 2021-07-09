@@ -10,6 +10,7 @@ Der Textteil meiner Bachelorarbeit
 
 ## TODO
 - fertig :)
+- nicht zeilenumbruch in def. 2.4 mit eval
 
 
 ## Optional
