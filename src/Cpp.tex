@@ -2,7 +2,7 @@
 
 \chapter{Umsetzung} \label{secKernUmsetzungInCpp}
 
-Der gesamte Quelltext der Umsetzung ist auf GitHub einsehbar \cite{brunizzl2021Jul}. Dieses Kapitel hat keinen Anspruch auf Vollständigkeit. Der Fokus liegt viel mehr darauf, die theoretisch ausführlich beschriebenen Konzepte in der Praxis zu zeigen und die wichtigsten bisher in dieser Arbeit unbehandelten Ideen vorzustellen. Aufgrund der gegenseitigen Abhängigkeit der verschiedenen Ideen sollten die Abschnitte \ref{subsecKonzeptionelleUnterschiede} und \ref{subsecSyntax} nicht direkt mit dem Anspruch eines lückenlosen Verständnisses gelesen werden.
+Der gesamte Quelltext der Umsetzung in C\texttt{++} ist auf GitHub einsehbar \cite{brunizzl2021Jul}. Dieses Kapitel hat keinen Anspruch auf Vollständigkeit. Der Fokus liegt viel mehr darauf, die theoretisch ausführlich beschriebenen Konzepte in der Praxis zu zeigen und die wichtigsten bisher in dieser Arbeit unbehandelten Ideen vorzustellen. Aufgrund der gegenseitigen Abhängigkeit der verschiedenen Ideen sollten die Abschnitte \ref{subsecKonzeptionelleUnterschiede} und \ref{subsecSyntax} nicht direkt mit dem Anspruch eines lückenlosen Verständnisses gelesen werden, da die darauf folgenden Abschnitte noch weiter ins Detail gehen.
 
 %.........................................................................
 %.........................................................................
@@ -12,14 +12,14 @@ Die Umsetzung implementiert nicht exakt die bisher beschriebenen Strukturen. Der
 
 $$T \coloneqq \Sigma^+ \cup \mathbb C \cup \curl*{(\elems t 0 n)~|~ \elems t 0 n \in T)}.$$
 
-Die wichtigste Erweiterung der Implementierung ist allerdings die der anonymen Funktion bekannt als \emph{Lambda}. Das Lambdakalkül von Church \cite{ChurchLambda36} definiert Terme verwandt mit den in dieser Arbeit diskutierten. Der wichtigste Unterschied ist, dass keine externe Interpretation für einen gegebenen Lambdaausdruck notwendig ist. Anstatt Funktionssymbole über Namen zu identifizieren und die Abbildungsvorschrift getrennt anzugeben, ist eine Lambdafunktion $f \in \Lambda$ ausschließlich durch ihre Abbildungsvorschrift identifiziert. Church erlaubt neben der Funktionsanwendung als Term lediglich Variablensymbole  $v \in V$ und Lambdafunktionen. Soll $T$ also eine Obermenge aller Ausdrücke im Lambdakalkül werden, müsste prinzipiell nur die Lambdafunktion selbst hinzugefügt werden. Die Menge der Variablen $V$, hier als \emph{Lambdaparameter} bezeichnet wird allerdings von den bisher erlaubten Zeichenketten in $\Sigma^+$ getrennt.
+Die wichtigste Erweiterung der Implementierung ist allerdings die der anonymen Funktion bekannt als \emph{Lambda}. Das Lambdakalkül von Church \cite{ChurchLambda36} definiert Terme verwandt mit den in dieser Arbeit diskutierten. Der wichtigste Unterschied zum bisherigen Funktionssymbol ist, dass keine externe Interpretation für einen gegebenen Lambdaausdruck notwendig ist. Anstatt Funktionssymbole über Namen zu identifizieren und die Abbildungsvorschrift getrennt anzugeben, ist eine Lambdafunktion $f \in \Lambda$ ausschließlich durch ihre Abbildungsvorschrift identifiziert. Church erlaubt neben der Funktionsanwendung als Term lediglich Variablensymbole  $v \in V$ und Lambdafunktionen. Soll $T$ also eine Obermenge aller Ausdrücke im Lambdakalkül werden, müsste prinzipiell nur die Lambdafunktion selbst hinzugefügt werden. Die Menge der Variablen $V$, hier als \emph{Lambdaparameter} bezeichnet wird allerdings von den bisher erlaubten Zeichenketten in $\Sigma^+$ getrennt.
 
 Muster sind in der Umsetzung auch entsprechend flexibler, schließlich sind sie eine Obermenge der Literale. Dazu kommt die Fähigkeit, Bedingungen an Mustervariablen zu stellen, um mögliche Matches weiter einzuschränken. Eine spezielle Form dieser Einschränkung ist dabei die der \emph{Wert-Mustervariable} $w \in W$, welche versucht Matches zu finden, die in Unterkapitel \ref{subsecNormalKombinieren} erlaubt werden, also Komplexe Zahlen wieder in Rechenausdrücke zu dekonstruieren. Näher behandelt wird die Wert-Mustervariable noch im folgenden Abschnitt \ref{subsecMustervariablen}. 
 Zuletzt kann die Multi-Mustervariable aus Abschnitt \ref{subsecMulti} von hier an nicht mehr nur als abstrakte Idee gehandelt werden. Die Menge der Multi-Mustervariablen wird $X^*$ genannt. 
 
 \begin{definition} \label{defKnotentypenMathe}
 Die Menge der Terme $T$ ist in diesem Kapitel definiert als
-$$T \coloneqq \Sigma^+ \cup \mathbb C \cup X \cup X' \cup X^* \cup W \cup V \cup \Lambda \cup \curl*{(\elems t 0 n)~|~ \elems t 0 n \in T, n > 0)}$$
+$$T \coloneqq \Sigma^+ \cup \mathbb C \cup X \cup X' \cup X^* \cup W \cup V \cup \Lambda \cup \curl*{(\elems t 0 n)~|~ \elems t 0 n \in T}$$
 mit
 \begin{align*}
     \Sigma^+  &\coloneqq \text{Zeichenketten}\\
@@ -160,7 +160,7 @@ Ein Lambdaparameter ist in der Syntax nicht von anderen Symbolen unterscheidbar\
  
  Eine Alternative ist die Unterscheidung zwischen sogenannten \emph{transparenten} Lambdas und \emph{nicht-transparenten} Lambdas, zweitere dargestellt durch umschließende geschweifte Klammern: $\{\lambda \textit{<Parameter>}.\textit{<Definition>}\}$, bzw. $\{\lambda [n].\textit{<Definition>}\}$. Kommt ein transparentes Lambda $f'$ in der Definition eines Lambdas $f$ vor, wird bei der Auswertung von $f$ auch in $f'$ nach Lambdaparametern gesucht und diese ersetzt, bzw. deren Index erniedrigt. Transparente Lambdas verhalten sich damit nicht anders als die Lambdas bisher. Ist $f'$ allerdings nicht-transparent, lässt die Auswertung von $f$ die Definition von $f'$ unberührt. 
  Mit zwei weiteren Bedingungen wird die Überprüfung von Argumenten bei der Auswertung Lambdas dann obszolet: 
- Zum einen darf ein \emph{außenliegendes} Lambda $f$ nicht transparent sein. Ein Lambda ist außenliegend, wenn es nicht Teil der Definition einem weiteren Lambdas ist. Zum anderen darf die Funktionsanwendung eines Lambdas nur ausgewertet werden, wenn das Lambda außenliegend ist. Damit wird garantiert, dass während der Auswertung des Lambdas $f$ kein Argument $a$ direkt transparente Lambdas enthält, höchtens als Teil $g'$ (im Beispiel nicht enthalten) eines nicht-transparenten Lambdas $g$.
+ Zum einen darf ein \emph{außenliegendes} Lambda $f$ nicht transparent sein. Ein Lambda ist außenliegend, wenn es nicht Teil der Definition einem weiteren Lambdas ist, also zu seinen Ahnen keine Lambdaabstraktionen gehören. Zum anderen darf die Funktionsanwendung eines Lambdas nur ausgewertet werden, wenn das Lambda außenliegend ist. Damit wird garantiert, dass während der Auswertung des Lambdas $f$ kein Argument $a$ direkt transparente Lambdas enthält, höchtens als Teil $g'$ (im Beispiel nicht enthalten) eines nicht-transparenten Lambdas $g$.
 
 Im bereits behandelten Problemfall sind $f$ und $g$ damit nicht-transparent. Nur $f'$ ist zu Beginn transparent, wird allerdings nach Auswertung von $f$ ebendfalls zur äußersten Lambdaabstraktion, verliert also seine Transparenz. 
 \begin{align*}
@@ -172,7 +172,7 @@ Alternativ ohne Namen:
     ~           &~\{\lambda [1] .\lambda [1] .\%0(\%1)\}(\{\lambda [1] .\%0\}) \\
     \rightarrow &~\{\lambda [1] .(\{\lambda [1] .\%0\})(\%0)\}\\
 \end{align*}
-Bemerkenswert ist, dass mit den soeben formulierten Bedingungen der Ausdruck nicht weiter transformiert werden darf. Das liegt daran, dass die Funktionsanwendung von $g$ selbst noch vom Lambda $f'$ umschlossen ist. Es ist also nicht ausgeschlossen, dass Argumente von $g$ (hier nur $\%0$) direkt transparente Lambdas enthalten\footnote{Eng verwandt ist der Grund, warum auch bei der Verwendung von De Bruijn Indices ohne weiteres nur die äußerste Funktionsanwendung abgebildet werden darf. In dem Fall könnte sich sonst die Anzahl der Abstraktionen zwischen einer Variable in einem Argument und ihrer eigenen Abstraktion ändern. Der alte De Bruijn Index würde die Variable dann der falschen Abstraktion zuordnen.}.
+Bemerkenswert ist, dass mit den soeben formulierten Bedingungen der Ausdruck nicht weiter transformiert werden darf. Das liegt daran, dass die Funktionsanwendung von $g$ selbst noch vom Lambda $f'$ umschlossen ist. Es ist also nicht ausgeschlossen, dass Argumente der Funktionsanwendung von $g$ (hier nur $\%0$) direkt transparente Lambdas enthalten\footnote{Eng verwandt ist der Grund, warum auch bei der Verwendung von De Bruijn Indices ohne weiteres nur die äußerste Funktionsanwendung abgebildet werden darf. In dem Fall könnte sich sonst die Anzahl der Abstraktionen zwischen einer Variable in einem Argument und ihrer eigenen Abstraktion ändern. Der alte De Bruijn Index würde die Variable dann der falschen Abstraktion zuordnen.}.
 
 
 
@@ -184,7 +184,7 @@ Bemerkenswert ist, dass mit den soeben formulierten Bedingungen der Ausdruck nic
 In der Umsetzung wird zwischen drei Arten von Mustervariablen unterschieden. Die Sonderform der Multi-Mustervariable ist bereits aus Kapitel \ref{subsecMulti} bekannt, die Wert-Mustervariable ist allerdings neu. Als drittes ist die normale Mustervariable nach wie vor vorhanden. Wert-Mustervariable und normale Mustervariable können zudem durch Bedingungen eingeschränkt werden.
 
 \subsection{Wert-Mustervariable} \label{subsubsecWertMustervariable}
-Nach Definition \ref{defMatch} ist Match $v_p$ für ein Paar $(p, t)$ aus Muster $p$ und Literal $t$ dann gültig, wenn $\Const{lit}(p, v_p) = t$ gilt. In Kapitel \ref{secPattermatching} nicht diskutiert wurde die Möglichkeit Zahlen mit Rechenausdrücken zu matchen. Ein Muster $p = (\texttt{prod}, 2, \mathbf k)$ würde für das Literal $t = 12$ etwa ein Match $v_p$ mit $v_p~\mathbf k = 6$ besitzen. Um die Matchsuche nicht zu kompliziert zu gestalten, besitzt die Umsetzung zwei Einschränkungen. Zum einen ist eine solche Dekonstruktion des Musters zu einem Wert nur dann möglich, wenn das entsprechende Teilmuster exakt eine Instanz $w$ einer Wert-Mustervariable enthält. Zum anderen werden nur bijektive Funktionen\footnote{bzw. sonst Mehrdeutigkeiten ignoriert} dekonstruiert, wie im Beispiel die Multiplikation mit $2$. 
+Nach Definition \ref{defMatch} ist das Match $v_p$ für ein Paar $(p, t)$ aus Muster $p$ und Literal $t$ dann gültig, wenn $\Const{lit}(p, v_p) = t$ gilt. In Kapitel \ref{secPattermatching} nicht diskutiert wurde die Möglichkeit Zahlen mit Rechenausdrücken zu matchen. Ein Muster $p = (\texttt{prod}, 2, \mathbf k)$ würde für das Literal $t = 12$ etwa ein Match $v_p$ mit $v_p~\mathbf k = 6$ besitzen. Um die Matchsuche nicht zu kompliziert zu gestalten, besitzt die Umsetzung zwei Einschränkungen. Zum einen ist eine solche Dekonstruktion des Musters zu einem Wert nur dann möglich, wenn das entsprechende Teilmuster exakt eine Instanz $w$ einer Wert-Mustervariable enthält. Zum anderen werden nur bijektive Funktionen\footnote{bzw. sonst Mehrdeutigkeiten ignoriert} dekonstruiert, wie im Beispiel die Multiplikation mit $2$. 
 
 
 Vor einem Matchversuch muss ein Muster mit Wert-Mustervariablen zuerst entsprechend transformiert werden. Ziel der Transformation ist, das für den Matchalgorithmus direkt klar ist, ab wo das Muster einen Wert repräsentieren soll. Der Teilbaum des Musters, der eine Wert-Mustervariable $w$ enthält und als ganzes einen Wert matchen soll, ist idealerweise also direkt gekennzeichnet. In der Umsetzung ist das realisiert, indem eine Wert-Mustervariable im zu matchenden Muster kein Blatt darstellt, sondern einen Teilbaum markiert. Dieser entspricht allerdings nicht der ursprünglichen Umgebung um die Wert-Mustervariable, sondern der Inversen. 
@@ -235,7 +235,7 @@ Die Knoten des Termbaumes liegen in einem Array, dem sogenannten \verb|Store|. W
 \begin{enumerate}
 	\setcounter{enumi}{-1} %beginne aufzählung bei 0
 	\item {$\Sigma^+$.}
-	\item {Komplexe Fließkommazahl, zusammengesetzt aus zwei 64-bit Fließkommazahlen für Realteil und Imaginärteil}
+	\item {Komplexe Fließkommazahl\footnote{Die Nutzung von Fließkommazahlen ist für Computeralgebra nur bedingt geeignet, erlaubt aber die Verwendung der im C\texttt{++} Standard geforderten Rechenoperationen für Komplexe Zahlen. Über Auslesen der entsprechenden CPU-Flags kann dennoch garantiert werden, dass ausschließlich exakte Vereinfachungen durchgeführt werden.}, zusammengesetzt aus zwei 64-bit Fließkommazahlen für Realteil und Imaginärteil}
 	\item {$\Lambda$}
 	\item {$V$}
 	\item {Funktionsanwendung in einem Literal}
@@ -262,7 +262,29 @@ Das Literal \verb|tup(f(a, b)(c), 1, 2, 3)| wird in der folgenden Debugausgabe g
    6 |   ...           3,   4 }
 \end{verbatim}
 Die linke Spalte gibt den Arrayindex an. Nach der Art des gespeicherten Knotens folgt dann für Funktionsanwendungen die Auflistung der Funktion und Argumente. Ganz rechts ist der Teilbaum beginnend an dem entsprechenden Arrayindex angegeben. Bemerkenswert ist hierbei, dass die Symbole \verb|f|, \verb|tup|, \verb|a|, \verb|b| und \verb|c| als solche nicht im Array gespeichert sind. Die Funktionsanwendung von \verb|f| gespeichert an Index 0 verrät allerdings, dass das Programm vor dem Parsen von Symbol \verb|f| bereits 121 andere unbekannte Symbole eingelesen hat. Analog ist \verb|a| als Index 92, \verb|b| als Index 93 und \verb|c| als Index 94 gespeichert. 
-Interessant ist weiter, dass die Funktionsanwendung des Symbols \verb|tup| beginnend an Arrayindex 5 auch das darauffolgende Arrayelement okkupiert. Bis auf den Index von \verb|tup|, beziehen sich die restlichen Indices hier tatsächlich auf echte Elemente im Array. 
+Interessant ist weiter, dass die Funktionsanwendung des Symbols \verb|tup| beginnend an Arrayindex 5 auch das darauffolgende Arrayelement belegt. Bis auf den Index von \verb|tup|, beziehen sich die restlichen Indices dieser Funktionsanwendung tatsächlich auf echte Elemente im Array. 
+\end{beispiel}
+
+
+\begin{beispiel}~\\ \label{bspREPLlambda}
+Die in Abschnitt \ref{subsecLambdafunktionen} genutzte Notation für Lambdas mit namenlosen Lambdaparametern wird auch in der Umsetzung zur Darstellung von Lambdafunktionen genutzt. Als Bespiel wird die Speichernutzung des Literals \verb|(\f x .f(x, x, x))(sum, 3)| gezeigt.
+\begin{verbatim}
+  head at index: 4
+   0 | application:     {   0,   1,   1,     %0(%1, %1, %1)
+   1 |   ...           1 }
+   2 | lambda     :                          {\[2].%0(%1, %1, %1)}
+   3 | value      :                          3
+   4 | application:     {   2,  81,   3 }    {\[2].%0(%1, %1, %1)}(sum, 3)
+\end{verbatim}
+Nach Auswertung von $\Const{normalize}$ ändert sich die Speicherbelegung.
+\begin{verbatim}
+  head at index: 0
+   0 | value      :                          9
+   1 | -----free slot-----
+...
+   6 | -----free slot-----
+\end{verbatim}
+Zuerst wurden die Argumente \verb|sum| und \verb|3| in eine Kopie der Lambdadefinition eingesetzt, dann wurde die Funktionsanwendung von \verb|sum| zur Komplexen Zahl \verb|9| ausgewertet. Diese kann in einem einzelnen Arrayelement gespeichert werden, der restliche Platz ist jetzt ungenutzt.
 \end{beispiel}
 
 \BFred{TODO}

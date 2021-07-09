@@ -10,7 +10,7 @@ Solche Regeln von Hand anzuwenden ist sowohl zeitaufwändig als auch fehleranfä
 Die Idee Computer zu nutzen um symbolische Ausdrücke zu manipulieren ist deshalb fast so alt wie der Computer selbst.  LISP ist als eine der ersten höheren Programmiersprachen bereits für diesen Zweck geschaffen worden \cite{lisp}. Rückblickend war die symbolische Berechnung sogar vor der Erfindung des Computers ein wichtiger Teil dessen, was heute theoretische Informatik genannt wird. Herausstechend ist die Idee des Lambdakalküls von Church \cite{ChurchLambda36}. 
 
 Gegenwärtig gibt es eine Reihe etablierter Systeme zum symbolischen Rechnen. Wichtiger Bestandteil sind sie etwa in Mathematica \cite{MathematicaSymbolic}, Maple \cite{MapleSymbolic} oder Matlab \cite{MatlabSymbolic}.
-Konzeptionelle Grundlage dieser Anwendungen ist die des \emph{Termersetzungssystems}: Mit einer vom Nutzer oder Bibliotheksautor bestimmten Menge von Ersetzungsregeln wird ein gegebender Ausdruck so lange transformiert, bis keine Regel mehr anwendbar ist.
+Konzeptionelle Grundlage dieser Anwendungen ist die des \emph{Termersetzungssystems}: Mit einer vom Nutzer oder Bibliotheksautor bestimmten Menge von Ersetzungsregeln wird ein gegebener Ausdruck so lange transformiert, bis keine Regel mehr anwendbar ist.
 
 
 \begin{beispiel}~\\
@@ -38,13 +38,13 @@ In der einzelnen Ersetzung wird eine Variable der Ersetzungsregel dabei an ein T
 \end{beispiel}
 
 ~\\
-Der Einfluss von Termersetzungssystemen geht weit über die direkte Anwendung für den Mathematiker oder Ingenieur mit direktem Interesse am vereinfachten Ausdruck hinaus. Interessant ist etwa die Formulierung von Ersetzungsregeln im Kontext eines optimierenden Compilers \cite{HaskellCustomRewriteRules}, \cite{HaskellCoreOptimizer}. Termersetzungssysteme können weiter direkt die Grundlage der Auswertung eines funktionalen Programms sein \cite{Jones1987JanRewritingMiranda}.
+Der Einfluss von Termersetzungssystemen geht weit über die Anwendung durch Mathematiker oder Ingenieure mit direktem Interesse am vereinfachten Ausdruck hinaus. Interessant ist etwa die Formulierung von Ersetzungsregeln im Kontext eines optimierenden Compilers \cite{HaskellCustomRewriteRules}, \cite{HaskellCoreOptimizer}. Termersetzungssysteme können weiter direkt die Grundlage der Auswertung eines funktionalen Programms sein \cite{Jones1987JanRewritingMiranda}.
 
 
 \section{Zielsetzung}
 Ziel der Arbeit ist Design und Umsetzung eines Termersetzungssystems zur Vereinfachung algebraischer Ausdrücke. Der Kern des Termersetzungssystems ist ein Algorithmus zur Erkennung eines bestimmten Musters in einem Term. 
 Der Algorithmus soll ein Muster dabei möglichst nicht nur erkennen, wenn der Term die exakt identische Struktur aufweist. Bestimmte Äquivalenzklassen, wie etwa alle Permutationen der Parameter in einer kommutativen Funktion sollen bereits auf der Mustererkennungsebende berücksichtigt werden. Die Formulierung einer Menge von Ersetzungsregeln für das Termersetzungssystem muss also möglichst kompakt möglich sein. 
-Damit ist das Ziel die Mustererkennung möglichst schnell durchführen zu können beim Treffen von Designentscheidungen in der Musterstruktur nicht ausschlaggebend, eine polynomielle Laufzeitkomplexität ist allerdings angestrebt.\\
+Damit ist das Ziel die Mustererkennung möglichst schnell durchführen zu können, beim Treffen von Designentscheidungen in der Musterstruktur nicht ausschlaggebend, eine polynomielle Laufzeitkomplexität ist allerdings angestrebt.\\
 Das Leistungsvermögen des entwickelten Termersetzungssystems wird in einer Anwendung zur Vereinfachung algebraischer Ausdrücke über den Komplexen Zahlen getestet. 
 
 \section{Aufbau der Arbeit}
