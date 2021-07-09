@@ -9,7 +9,7 @@ Der Textteil meiner Bachelorarbeit
 - pdflatex + makeindex + bibtex main.tex baut finale pdf inklusive aller quellen
 
 ## TODO
-- cpp 
+- fertig :)
 
 
 ## Optional
