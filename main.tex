@@ -130,13 +130,14 @@ bibliography=totoc %inhaltsverzeichnis enthaelt literatur
 \newtheorem{lemma}[beispiel]{Lemma}           %selber zähler wie beispiel
 
 %setze emph nicht kursiv, da so schon funktionssymbole aussehen (Const)
-\renewcommand{\emph}[1]{\underline{#1}}
+\newcommand{\Emph}[1]{\underline{#1}}
 
 
 %.........................................................................
 %................................ Body ...................................
 %.........................................................................
 \begin{document}
+\emergencystretch 2em %not go into margin as often
 
 \maketitle
 
