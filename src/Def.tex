@@ -13,13 +13,13 @@ $$\Const{arity}~f = \begin{cases}
 
 Kann ein \Gls{Funktionssymbol} $f$ beliebig viele Argumente entgegennehmen, wird gesagt, dass $f$ \Emph{variadische} Stelligkeit hat oder \Emph{\gls{variadisch}} ist. Die Stelligkeitsfunktion bildet $f$ dann auf $\omega$ ab. 
 
-Die Menge $C$ enthält die \Emph{Konstantensymbole}. Mit den genannten Beispielen für Funktionssymbole ergibt etwa $C = \mathbb R$ Sinn. Wichtig ist, dass im folgenden nicht vorausgesetzt wird, dass zwangsweise jedem \Gls{Konstantensymbol} ein eindeutiger numerischer Wert zugeordnet werden kann\footnote{Die Symbole unbekannten Wertes werden häufig von den Konstantensymbolen getrennt und Variablensymbole genannt. Diese Unterscheidung wird hier nicht getroffen, primär um die Definitionen einfach zu halten.}.
+Die Menge $C$ enthält die \Emph{Konstantensymbole}. Mit den genannten Beispielen für Funktionssymbole ergibt etwa $C = \mathbb R$ Sinn. Wichtig ist, dass im Folgenden nicht vorausgesetzt wird, dass zwangsweise jedem \Gls{Konstantensymbol} ein eindeutiger numerischer Wert zugeordnet werden kann\footnote{Die Symbole unbekannten Wertes werden häufig von den Konstantensymbolen getrennt und Variablensymbole genannt. Diese Unterscheidung wird hier nicht getroffen, primär um die Definitionen einfach zu halten.}.
 
 
 
 
-\begin{definition}\label{defTerm}~\\
-Ein \Gls{Term} $t \in T(F, C)$ ist dann  {
+\begin{definition}\label{defTerm}
+Ein \Gls{Term} $t \in T(F, C)$ ist {
 \begin{itemize}
 	\item{ein \Gls{Konstantensymbol}, also $t \in C$}
 	\item{oder eine \Emph{\Gls{Funktionsanwendung}} des Funktionssymbols $f \in F$ mit $\Const{arity}~f \in \{n, \omega\}$ 
@@ -37,11 +37,11 @@ Eine \Gls{Funktionsanwendung} wird in der Literatur oft mit dem Funktionssymbol 
 
 \begin{figure}
 \Tree [.\texttt{divide} 3 [.\texttt{sin} 1 ] ]
-\label{ersterBeispielBaum}
 \caption{Baumdarstellung des Terms $(\texttt{divide}, 3, (\texttt{sin}, 1))$ }
+\label{ersterBeispielBaum}
 \end{figure}
 
-\begin{beispiel}~\\
+\begin{beispiel}
 Beispielsweise lässt sich der Ausdruck $\frac 3 {\sin 1}$ in der formalen Schreibweise als Term mittels der Funktionssymbole $\texttt{sin}$ und $\texttt{divide}$ sowie den Konstantensymbolen $3$ und $1$ darstellen als $(\texttt{divide}, 3, (\texttt{sin}, 1))$. Ein Term kann als Baum\footnote{In der theoretischen Informatik auch Syntaxbaum oder AST (englisch für \textit{Abstract Syntax Tree})} aufgefasst werden, siehe das aktuelle Beispiel in Abb. \ref{ersterBeispielBaum}.
 \end{beispiel}
 
@@ -67,7 +67,7 @@ Die Funktion $u$ wird als \Emph{\Gls{Interpretation}} der Funktionssymbole $F$, 
 Ein Element des Bildes einer Interpretation oder die Abbildung dahin wird als \Emph{\Gls{Auswertung}} bezeichnet.
 \\~\\
 
-\begin{beispiel}~\\ \label{bEval}
+\begin{beispiel} \label{bEval}
 Sei $F = \{\texttt{sum}, \texttt{prod}, \texttt{neg} \}$ und $C = \mathbb{N}$ mit $\Const{arity}~ \texttt{sum} = \Const{arity}~ \texttt{prod} = \omega$ und $\Const{arity}~ \texttt{neg} = 1$.
 Für die Interpretation $\Const{eval}(u, v)$ können $u$ und $v$ so gewählt werden, dass jeder Term in $T$ zu einer ganzen Zahl $n \in \mathbb{Z}$ auswertbar ist.
 
@@ -99,9 +99,9 @@ Der Term $t = (\texttt{sum}, 3, (\texttt{prod}, 2, 4), (\texttt{neg}, 1))$ kann 
 
 \subsection{Konstruktor}
 Eine direkt aus der Struktur des Terms folgende Interpretation $u_c$ für Funktionssymbole ist die des \Emph{\Glspl{Konstruktor}}. Als Konstruktor eines Typs $A$ wird allgemein eine Funktion bezeichnet, die nach $A$ abbildet. Für typlose Terme ist diese Definition deshalb unzureichend. 
-Insbesondere in funktionalen Sprachen wird das Konzept allerdings noch verfeinert. In Haskell transformiert ein Konstruktor Daten nicht im eigentlichen Sinn, sondern bündelt lediglich ein Tag, das festhält, welcher Konstruktor genutzt wurde, mit den $n$ übergebenen Argumenten zu einem Tupel der Größe $n+1$ \cite{haskellConstructor}. Das entspricht exakt der Funktionsanwendung in einem Term, mit dem Funktionssymbol als Tag. Dementsprechend folgt die Definition des Konstruktors.
+Insbesondere in funktionalen Sprachen wird das Konzept allerdings noch verfeinert. In Haskell transformiert ein Konstruktor Daten nicht im eigentlichen Sinn, sondern bündelt lediglich eine Kennzeichnung, die festhält, welcher Konstruktor genutzt wurde, mit den $n$ übergebenen Argumenten zu einem Tupel der Größe $n+1$ \cite{haskellConstructor}. Das entspricht exakt der Funktionsanwendung in einem Term, mit dem Funktionssymbol als Kennzeichnung. Dementsprechend folgt die Definition des Konstruktors.
 
-\begin{definition}~\\
+\begin{definition}
 Die Interpretation $u_c$ angewendet auf ein Funktionssymbol $f$ bildet das $n$-Tupel von Argumenten auf eine Funktionsanwendung von $f$ mit den selben $n$ Argumenten ab. 
  Mit $f \in F$ und $\Const{arity}~f = n \in \mathbb N$ 
 gilt 
@@ -115,7 +115,7 @@ $$u_c~\texttt{pair} \colon T^2 \rightarrow T, ~(a, b) \mapsto (\texttt{pair}, a,
 Hoffmann und O'Donnell \cite{hoffmann1982programming} definieren den Konstruktor im selben Kontext.
 
 
-\begin{beispiel}~\\
+\begin{beispiel}
 Ein Graph $G = (V, E)$ wird als Paar der Menge von Knoten $V$ und Menge der Kanten $E$ definiert. Eine Kante ist dabei eine zweielementige Menge von Knoten. Der vollständige Graph auf drei Knoten ist $K_3 = \paren*{\{1, 2, 3\}, \curl*{\{1, 2\}, \{2, 3\}, \{1, 3\}}}$. Mit der Interpretation der Funktionssymbole $\texttt{pair}$ und $\texttt{set}$ als Konstruktoren lässt sich $K_3$ auch als Term darstellen:
 $$(\texttt{pair}, (\texttt{set}, 1, 2, 3), (\texttt{set}, (\texttt{set}, 1, 2), (\texttt{set}, 2, 3), (\texttt{set}, 1, 3))).$$
 \end{beispiel}
@@ -131,7 +131,7 @@ $$M(F, C) \coloneqq T(F, C \cup X)$$
 
 Eine \Emph{\Gls{Ersetzungsregel}} für Literale $t \in T(F, C)$ hat die Form $(l, r) \in M(F, C) \times M(F, C)$. Die linke Seite $l$ steht für das Muster, welches im Literal durch einen Ausdruck der Form der rechten Seite $r$ ersetzt werden soll. Für die bessere Lesbarkeit wird statt $(l, r)$ auch $l \mapsto r$ geschrieben.
 
-\begin{beispiel}~\\ \label{bMuster}
+\begin{beispiel} \label{bMuster}
 Die Regel, die die Summe zweier identischer Terme $x$ als Produkt von $2$ und $x$ transformiert, wird geschrieben als
 $$(\texttt{sum}, \mathbf x, \mathbf x) \mapsto (\texttt{prod}, 2, \mathbf x).$$
 In der Anwendung auf das Literal 
@@ -139,15 +139,14 @@ $t = (\texttt{sum}, (\texttt{sin}, 3), (\texttt{sin}, 3))$, wird $t$ zu $t' = (\
 Hervorzuheben ist dabei, dass die Mustervariable $\mathbf x$ selbst nicht mehr im Ergebnisterm vorkommt. Sie wurde durch den Teilterm ersetzt, der im Ursprungsliteral an der Stelle von $\mathbf x$ stand, nämlich $(\texttt{sin}, 3)$.
 \end{beispiel}
 
-\begin{definition}~\\ \label{defMatch}
-Für ein Paar $(p, t) \in M(F, C) \times T(F, C)$ ist eine Funktion $v_p \colon X \rightarrow T(F, C)$ ein \Emph{\Gls{Match}}, wenn folgendes gilt:
+\begin{definition} \label{defMatch}
+Für ein Muster $p \in M(F, C)$ und ein Literal $t \in T(F, C)$ wird die Funktion $v_p \colon X \rightarrow T(F, C)$ als \Emph{\Gls{Match}} bezeichnet, wenn sie die Mustervariablen in $p$ so durch Literale ersetzt, dass ein Term identisch zu $t$ entsteht. Formal muss 
 $$\Const{eval}(u_c, \tilde v_p)~ p = t$$
+gelten. Die Hilfsfunktion $\tilde v_p$ erweitert dafür den Definitionsbereich von $v_p$ um die Konstantensymbole $C$.
 $$\tilde v_p~ c = \begin{cases}
 	v_p~ c & c \in X\\
 	c      & c \in C \setminus X
 \end{cases}$$
-$v_p$ muss die Mustervariablen in $p$ so durch Literale ersetzen, dass ein Term identisch zu $t$ entsteht. 
-Im vorangegangenen Beispiel \ref{bMuster} gilt damit $v_p~ \mathbf a = (\texttt{sin}, 3)$.
 
 Im Folgenden wird der Begriff des Matches noch etwas weiter gefasst. Es werden nach wie vor die Mustervariablen durch Literale ersetzt, allerdings muss nicht direkt das Ergebnis der Ersetzung, sondern nur eine normalisierte Form des Ergebnisses mit dem Literal $t$ übereinstimmen:
 $$\Const{lit}(v_p, p)  = t$$
@@ -157,10 +156,10 @@ Die Funktion $\Const{lit} \colon \paren*{X \rightarrow T} \times M \rightarrow T
 Aus der Definition ist klar, dass $\Const{normalize} \colon T \rightarrow T$ Terme auf Terme abbildet und ein Match $v_p$ nur dann gefunden werden kann, wenn $t$ im Bild von $\Const{normalize}$ liegt. 
 Gedacht ist $\Const{normalize}$ als Mittel, um Unterschiede zwischen Termen zu reduzieren, die die Auswertung für eine gegebene Interpretation $\Const{eval}(u, v)$ nicht ändern. Da das Ergebnis von $\Const{normalize}$ aber nur von dem übergebenen Term abhängig ist, können nie direkt Unterschiede zwischen mehreren Termen verglichen und missachtet werden. Ist die normalisierte Form $t'$ eines Terms $t$ ein Fixpunkt von $\Const{normalize}$, ist in dem Kontext klar, dass $t$ und $t'$ die gleiche Auswertung mit der Interpretation $\Const{eval}(u, v)$ besitzen, da auch $\Const{normalize}~t' = \Const{normalize}~t$ gilt. Wäre $\Const{normalize}~t' \neq t'$, würde die Funktion nicht die ihr zugedachte Aufgabe erfüllen. Deshalb muss $\Const{normalize}$ eine Projektion sein, also eine Funktion, für die jeder Bildpunkt gleichzeitig ein Fixpunkt ist. 
 
-Welche Unterschiede $\Const{normalize}$ beseitigt, soll hier nicht festgelegt werden. Klar ist aber, dass je nach Wahl von $\Const{normalize}$ zwar ein einzelnes Muster sehr mächtig werden kann, also ein Match mit sehr vielen Termen möglich ist, das Finden des Matches im allgemeinen Fall allerdings immer aufwändiger wird. 
-
+Welche Unterschiede $\Const{normalize}$ beseitigt, wird im folgenden Kapitel \ref{secErsteNormalform} festgelegt. Klar ist aber, dass je nach Wahl von $\Const{normalize}$ zwar ein einzelnes Muster sehr mächtig werden kann, also ein Match mit sehr vielen Termen möglich ist, das Finden des Matches im allgemeinen Fall allerdings immer aufwändiger wird. 
 \end{definition}
 
 Ein \Emph{\Gls{Matchalgorithmus}} ist eine Vorgehensweise für ein gegebenes Paar {$(p, t) \in M(F, C) \times T(F, C)$} ein gültiges Match zu finden. Perfekt wird ein solcher Algorithmus dann genannt, wenn jedes mögliche Match gefunden wird.
+Im vorangegangenen Beispiel \ref{bMuster} ist $v_p$ mit $v_p~ \mathbf x = (\texttt{sin}, 3)$ ein Match.
 
 

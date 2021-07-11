@@ -2,9 +2,10 @@
 
 \chapter{Mustererkennung} \label{secPattermatching}
 
-In Kapitel \ref{subsecMuster} wurden die Konzepte des Musters und des Matches eingeführt, zweiteres insbesondere in einer weiter gefassten Form, was auch erlaubt, Muster mit strukturell nicht exakt identischen Literalen zu assoziieren, sofern die Unterschiede mit der Projektion $\Const{normalize} \colon T \rightarrow T$ beseitigt werden können. Die in Kapitel \ref{secErsteNormalform} beschriebene Funktion $\Const{normalize}$ ist als solche Projektion nutzbar.  
+In Kapitel \ref{subsecMuster} wurden die Konzepte des Musters und des Matches eingeführt. Zweiteres ist insbesondere in der weiter gefassten Form relevant. Diese erlaubt, Muster mit strukturell nicht exakt identischen Literalen zu assoziieren, sofern die Unterschiede mit der Projektion $\Const{normalize} \colon T \rightarrow T$ beseitigt werden können. 
+Kapitel \ref{secErsteNormalform} definiert diese Projektion.
 
-In diesem Kapitel wird ein Algorithmus entwickelt, der die Äquivalenzklassen der verschieden geschachtelten Funktionsanwendungen eines assoziativen Funktionssymbols mit den selben Argumenten sowie die Äquivalenzklassen der verschieden permutierten Argumente in der Funktionsanwendung eines kommutativen Funktionssymbols beim Finden eines Matches berücksichtigt. Die teilweise Auswertung von $\Const{normalize}$ aus Kapitel \ref{subsecNormalKombinieren} wird in diesem Kapitel nicht verfolgt.
+In diesem Kapitel wird ein Algorithmus entwickelt, der die Äquivalenzklassen der verschieden geschachtelten Funktionsanwendungen eines assoziativen Funktionssymbols mit den selben Argumenten, sowie die Äquivalenzklassen der verschieden permutierten Argumente in der Funktionsanwendung eines kommutativen Funktionssymbols beim Finden eines Matches berücksichtigt. Die teilweise Auswertung von $\Const{normalize}$ aus Kapitel \ref{subsecNormalKombinieren} wird zuerst nicht verfolgt.
 
 
 %.........................................................................
@@ -12,7 +13,7 @@ In diesem Kapitel wird ein Algorithmus entwickelt, der die Äquivalenzklassen de
 %.........................................................................
 \section{Grundstruktur} \label{subsecPatternmatchingGrundstruktur}
 
-Dem Ergebnis eines Matchalgorithmus müssen zwei Dinge entnehmbar sein. Zum ersten muss klar sein, ob ein Match $v_p \colon X \rightarrow T$ gefunden wurde. Wurde ein Match gefunden, muss zudem dessen Abbildungsvorschrift zurückgegeben werden. Der Rückgabetyp von Algorithmus \ref{simpleMatchAlgorithmShell} ist deswegen nicht nur das finale Match, sondern auch ein Wahrheitswert $b \in \mathit{Bool} \coloneqq \{\Const{false}, \Const{true}\}$. Alternativ kann die Menge aller möglichen Matches zurückgegeben werden. Diese Idee wird im Folgenden nicht weiter verfolgt, da sie mit den Anforderungen an hier behandelte Muster auch im besten Fall schnell exponentielle Laufzeiten produziert\footnote{siehe Lemma \ref{lemNrAssocMatches}}. Sind aber Mehrfachnennungen einer Mustervariable in einem Muster nicht erlaubt, haben Hoffman und O'Donnell in \cite{patternMatchingInTrees} gezeigt, dass sehr effiziente Algorithmen zum gleichzeitigen Finden von Matches einer ganzen Menge von Mustern in allen Teiltermen eines Literals mit dieser Grundidee möglich sind.\\
+Dem Ergebnis eines Matchalgorithmus müssen zwei Dinge entnehmbar sein. Zum einen muss klar sein, ob ein Match $v_p \colon X \rightarrow T$ gefunden wurde. Wurde ein Match gefunden, muss zudem dessen Abbildungsvorschrift zurückgegeben werden. Der Rückgabetyp von Algorithmus \ref{simpleMatchAlgorithmShell} ist deswegen nicht nur das finale Match, sondern auch ein Wahrheitswert $b \in \mathit{Bool} \coloneqq \{\Const{false}, \Const{true}\}$. Alternativ kann die Menge aller möglichen Matches zurückgegeben werden. Diese Idee wird im Folgenden nicht weiter verfolgt, da sie mit den Anforderungen an hier behandelte Muster auch im besten Fall schnell exponentielle Laufzeiten produziert\footnote{siehe Lemma \ref{lemNrAssocMatches}}. Sind aber Mehrfachnennungen einer Mustervariable in einem Muster nicht erlaubt, haben Hoffman und O'Donnell in \cite{patternMatchingInTrees} gezeigt, dass sehr effiziente Algorithmen zum gleichzeitigen Finden von Matches einer ganzen Menge von Mustern in allen Teiltermen eines Literals mit dieser Grundidee möglich sind.\\
 
 Da eine Mustervariable in dieser Arbeit mehrfach in einem Muster vorkommen darf, muss ein Algorithmus beim Suchen nach einem Match $v_p \colon X \rightarrow T$ zu jedem Zeitpunkt wissen, für welche $x \in X$ das Match $v_p~x$ bereits feststeht. $v_p$ ist also nicht nur Rückgabewert eines Matchalgorithmus, sondern muss mit den Funktionswerten für bereits besuchte Mustervariablen auch Eingabe in den Algorithmus sein. In Algorithmus \ref{simpleMatchAlgorithmShell} wird $v_p$ deswegen als partielle Funktion definiert, welche zu Beginn keine einzige Mustervariable nach $T$ abbilden kann. \\
 
@@ -57,18 +58,18 @@ Da eine Mustervariable in dieser Arbeit mehrfach in einem Muster vorkommen darf,
 
 Wenn das Match streng definiert ist, also der Unterschied zwischen einem Muster $p$ und einem Literal $t$ für die Existenz eines Matches $v_p$ ausschließlich darin bestehen darf, dass Teilterme von $t$ in $p$ durch eine Mustervariable repräsentiert werden, ist ein einfacher Matchalgorithmus fast trivial. Auf der Idee von $\Const{simpleMatchAlgorithm}$ basieren auch die späteren Algorithmen dieses Kapitels. Diese ist, dass mit einer Tiefensuche, die parallel durch Muster und Literal läuft, nach einem Unterschied zwischen beiden gesucht wird. Mustervariablen funktionieren dabei als Wildcard, wenn eine identische Mustervariable in der Tiefensuche vorher noch nicht gefunden wurde. Andernfalls vergleichen sie identisch zu dem Teilbaum, der mit dem ersten Vorkommen der Mustervariable verglichen wurde. Die Aufgabe, diese vorher begegneten Teilbäume zu speichern, übernimmt $v_p$, was erklärt, warum $v_p$ auch als Parameter für Algorithmus \ref{simpleMatchAlgorithm} notwendig ist. Ist das gesamte Muster durchlaufen worden, ohne einen strukturellen Unterschied zum Literal zu finden, ist $v_p$ das resultierende Match.\\
 
-\begin{lemma}~\\
+\begin{lemma}
 Die Laufzeit von Algorithmus \ref{simpleMatchAlgorithmShell} ist linear abhängig von der Anzahl der Funktionssymbole und Konstantensymbole des Literals.
 \end{lemma}
 
-\textbf{Beweis}.\\
+\textbf{Beweis.}
 Gibt es ein Match, wird jedes Funktionssymbol und Konstantensymbol des Literals höchstens einmal in $\Const{simpleMatchAlgorithm}$ abgelaufen. Wird eine Funktionsanwendung $t$ im Literal parallel zu einer Mustervariable $\mathbf x$ im Muster abgelaufen, bleiben die Nachkommen von $t$ unbesucht, wenn $\mathbf x$ noch nicht gematcht wurde. Andernfalls wird jeder Nachkomme von $t$ höchstens einmal abgelaufen, um Gleichheit zu $v_p~\mathbf x$ zu testen.
 Gibt es kein Match, wird das Literal so lange identisch zum anderen Fall abgelaufen, bis ein struktureller Unterschied festgestellt wurde. Dann bricht der Algorithmus ab.
 \hfill $\square$\\
 
 
-\begin{definition}~\\
-Die Instanz einer Mustervariable $\mathbf x$ wird als \Emph{bindend}  bezeichnet, wenn sie in einer Tiefensuche durch das gesamte Muster als erste Instanz abgelaufen wird. Da Algorithmus \ref{simpleMatchAlgorithm} das Muster in einer Tiefensuche abläuft, ist die Bedingung $p \in X$ \KwAnd $v_p~p = \bot$ in der ersten Zeile damit genau dann wahr, wenn $p$ bindend ist\footnote{Der Begriff \Emph{bindend} ist so zu verstehen, dass $\mathbf x$ nach Ablauf der ersten Instanz in Algorithmus \ref{simpleMatchAlgorithm} einen festen Wert $v_p~\mathbf x$ hat, also für den spätere Teile des Musters an diesen Wert gebunden ist.}. Weitere Instanzen von $\mathbf x$ im selben Muster werden als \Emph{gebunden} bezeichnet.
+\begin{definition}
+Die Instanz einer Mustervariable $\mathbf x$ wird als \Emph{bindend}  bezeichnet, wenn sie in einer Tiefensuche durch das gesamte Muster als erste Instanz abgelaufen wird. Da Algorithmus \ref{simpleMatchAlgorithm} das Muster in einer Tiefensuche abläuft, ist die Bedingung $p \in X$ \KwAnd $v_p~p = \bot$ in der ersten Zeile damit genau dann wahr, wenn $p$ bindend ist\footnote{Der Begriff \Emph{bindend} ist so zu verstehen, dass $\mathbf x$ nach Ablauf der ersten Instanz in Algorithmus \ref{simpleMatchAlgorithm} einen festen Wert $v_p~\mathbf x$ hat, also für den spätere Teil des Musters an diesen Wert gebunden ist.}. Weitere Instanzen von $\mathbf x$ im selben Muster werden als \Emph{gebunden} bezeichnet.
 \end{definition}
 
 
@@ -79,22 +80,22 @@ Die Instanz einer Mustervariable $\mathbf x$ wird als \Emph{bindend}  bezeichnet
 
 Von Anfang an werden Funktionssymbole in dieser Arbeit als möglicherweise variadisch definiert. Das ist insofern ein Problem, als dass Muster bisher immer nur eine feste Anzahl an Argumenten für jede Funktionsanwendung angeben können. Ist ein variadisches Funktionssymbol zudem assoziativ, ließe sich dieses Problem prinzipiell beheben, wenn Assoziativität im Matchalgorithmus berücksichtigt würde. Das Muster $\tilde p = (f, \mathbf x, \mathbf y)$ würde für ein assoziatives Funktionssymbol $f$ dann auch Literale wie $\tilde t = (f, a, b, c, d)$ matchen, mit verschiedenen Optionen für $v_p$, etwa $v_p~\mathbf x = (f, a, b)$ und $v_p~\mathbf y = (f, c, d)$. Ist auch die leere Funktionsanwendung $(f)$ von $f$ erlaubt \footnote{Das ergibt dann Sinn, wenn $f$ ein neutrales Element $e \in T$ besitzt, da $(f, as..., (f), bs...)$ mit $\Const{normalize}$ zu $(f, as..., bs...) = (f, as..., e, bs...)$ umgeformt wird. Im Folgenden wird von der Existenz eines Neutralen Elementes ausgegangen.}, gäbe es fünf verschiedene Matches $v_p$ für $\paren*{\tilde p, \tilde t}$ mit nicht-kommutativem $f$.
 
-\begin{lemma}~\\ \label{lemNrAssocMatches}
+\begin{lemma} \label{lemNrAssocMatches}
 Das Muster $p = (f, \elems {\mathbf x} 1 m)$ hat mit dem Literal $t = (f, \elems a 1 n)$ genau ${m + n - 1}\choose n$ mögliche Matches, wenn $f$ assoziativ aber nicht kommutativ ist $(1)$. Ist $f$ assoziativ und kommutativ, gibt es $m^n$ mögliche Matches $(2)$.\\
 \end{lemma}
 
-\textbf{Beweis}.\\
+\textbf{Beweis.}
 $(1)$: Es gibt $m$ möglicherweise leere Abschnitte in den $n$ Argumenten von $t$, welche jeweils eine Mustervariable $\mathbf x_i$ matchen. Stellt man eine Abschnittsgrenze mit einem Strich $~|~$ und ein Argument von $t$ mit einem Stern $~*~$ dar, kann die Aufteilung der Argumente von $t$ über ein String aus $m - 1$ Strichen und $n$ Sternen dargestellt werden. 
 Als Beispiel ist $~**|**~$ der String zur Aufteilung von $\tilde t$ aus dem Anfang des Abschnittes zum beschriebenen Match $v_p$.
 Es gibt ${m + n - 1}\choose n$ Möglichkeiten die $n$ Sterne auf die ${m + n - 1}$ möglichen Plätze zu verteilen.\\
 
-$(2)$: Jedes der $n$ Argumente von $t$ kann unabhängig der restlichen Argumenten zu einer der $m$ Mustervariablen gematcht werden. Insgesamt ergeben sich so $m^n$ Kombinationen.
+$(2)$: Jedes der $n$ Argumente von $t$ kann unabhängig der restlichen Argumente zu einer der $m$ Mustervariablen gematcht werden. Insgesamt ergeben sich so $m^n$ Kombinationen.
 \hfill $\square$\\
 
 Schon für nicht-kommutative aber assoziative Funktionssymbole $f$ gibt es somit Muster $p$ mit einer Anzahl möglicher Matches, die exponentiell mit der Größe des Literals steigt. Ist ein solches Muster $p$ Teil eines größeren Musters $p'$ und kommen Mustervariablen von $p$ auch in anderen Teilen von $p'$ vor, so ist nicht direkt ersichtlich, wie ein Algorithmus aussehen würde, der in $P$ liegt und bestimmen kann, dass es kein Match für $p'$ mit einem entsprechenden Literal gibt, bzw. das Match findet. Die Existenz eines solchen Algorithmus ist unwahrscheinlich: Benanav hat 1987 gezeigt, dass das Problem NP-vollständig ist \cite{NPHardMatching}.
-Von dem perfekten Matchalgorithmus wird aus diesem Grund abgesehen. Für viele Spezialfälle sind bessere Algorithmen möglich. Eine wichtige Klasse solcher Spezialfälle ist die, wo von vorne herein klar ist, welche Mustervariable möglicherweise mehrere Parameter des Literals matchen soll. Würde man etwa bei der Ersetzung der ersten Binomischen Formel eine weitere Mustervariable $\mathbf c$ hinzufügen, um die Binomische Formel auch in einer Summe mit mehr als drei Summanden zu erkennen, kann die Ersetzungsregel geschrieben werden als
+Von dem perfekten Matchalgorithmus wird aus diesem Grund abgesehen. Für viele Spezialfälle sind bessere Algorithmen möglich. Eine wichtige Klasse solcher Spezialfälle ist die, wo von vorne herein klar ist, welche Mustervariable möglicherweise mehrere Parameter des Literals matchen soll. Würde bei der Ersetzung der ersten Binomischen Formel eine weitere Mustervariable $\mathbf c$ ergänzt, um die Binomische Formel auch in einer Summe mit mehr als drei Summanden zu erkennen, kann die Ersetzungsregel geschrieben werden als
 $$(\texttt{sum}, (\texttt{pow}, \mathbf a, 2), (\texttt{prod}, 2, \mathbf a, \mathbf b), (\texttt{pow}, \mathbf b, 2), \mathbf c) \mapsto (\texttt{sum}, (\texttt{pow}, (\texttt{sum}, \mathbf a, \mathbf b), 2), \mathbf c).$$
-$\mathbf c$ ist damit vom Autor des Musters ausschließlich dazu gedacht überbleibende Summanden \glqq aufzusaugen\grqq{}. Dieser Gedanke bleibt aber bisher dem Algorithmus verborgen.
+Die Mustervariable $\mathbf c$ ist damit vom Autor des Musters ausschließlich dazu gedacht überbleibende Summanden \glqq aufzusaugen\grqq{}. Dieser Gedanke bleibt aber bisher dem Algorithmus verborgen.
 Die in dieser Arbeit gewählte Lösung zur Beschreibung von beliebig vielen Argumenten in einem Muster ist im Prinzip schon in Kapitel \ref{secErsteNormalform} eingeführt worden. Die Schreibweise $(f, ts...)$ als kompakte Alternative zu $(f, t_1, \dots, t_n)$ hat viele der zur Beschreibung von Assoziativität gewünschten Eigenschaften. Ferner können so auch Muster mit nicht assoziativen variadischen Funktionssymbolen dargestellt werden. Eine \Emph{\Gls{Multi-Mustervariable}} der Form $\mathbf{xs...}$ kann also nicht nur genau ein Argument in einer Funktionsanwendung matchen, sondern beliebig viele, auch keins. Um den Matchalgorithmus nicht zu kompliziert zu gestalten, darf jede Multi-Mustervariable auf der linken Seite einer Ersetzungsregel nur höchstens einmal vorkommen\footnote{Das macht zudem mehrere Multi-Mustervariablen in der selben Funktionsanwendung eines kommutativen Funktionssymbols auf der linken Seite einer Ersetzungsregel überflüssig. Diese Konstellation ist dementsprechend im Folgenden nicht berücksichtigt.}. Die rigorose Beschreibung des Konzeptes gestaltet sich allerdings mit den bisher eingeführten Ideen schwierig, da eine Multi-Mustervariable nur Teil einer Funktionsanwendung ist und damit auch alleine keinen vollständigen Term repräsentiert. Konnte eine Matchfunktion $v_p \colon X \rightarrow T$ vorher einfach auf die Menge aller Terme abbilden, wäre dies nach Hinzufügen der Multi-Mustervariablen nicht mehr möglich. Entsprechend umständlicher würde auch die Beschreibung der Auswertung eines Musters werden. \\
 
 Formal wird die Multi-Mustervariable damit nicht als neues Symbol in die Menge der Muster aufgenommen, sondern ist lediglich eine vereinfachende Schreibweise, die wie in Kapitel \ref{secErsteNormalform} immer für eine beliebige Anzahl an Teiltermen steht, in diesem Fall Mustervariablen. Ein Muster mit einer Multi-Mustervariable $\mathbf{xs...}$ repräsentiert formal unendlich viele konkrete Muster mit konkreten Mustervariablen $\mathbf{x_i}$:
@@ -108,7 +109,7 @@ Formal wird die Multi-Mustervariable damit nicht als neues Symbol in die Menge d
 	\end{split}
 \end{equation*}
 Für die folgenden Algorithmen dieses Kapitels sowie der echten Umsetzung ist es nicht praktikabel, diese Definition anzuwenden. Mit der Restriktion, dass jede Multi-Mustervariable auf der linken Seite einer Ersetzungsregel höchstens einmal vorkommen darf, ist eine einfache Verwaltung möglich. Für Funktionsanwendungen kommutativer Funktionssymbole in einem Muster muss lediglich zwischen \textit{enthält eine Multi-Mustervariable} und \textit{enthält keine Multi-Mustervariable} unterschieden werden. Multi-Mustervariablen in Funktionsanwendungen nicht-kommutativer Funktionssymbole haben allerdings eine eindeutige Position. Im Folgenden werden aber auch hier keine weiteren Parameter für Multi-Mustervariablen hinzugefügt. Alternativ wird für jeden tatsächlichen Term in den Argumenten einer solchen Funktionsanwendung festgehalten, ob er Nachfolger einer Multi-Mustervariable ist und weiter, ob an dem letzten Argument noch eine Multi-Mustervariable anschließt. 
-Die Ersetzungsregel für die erste Binomische Formel anwendbar auf Summen beliebiger Länge wird demgemäß  geschrieben als:
+Die Ersetzungsregel für die erste Binomische Formel, anwendbar auf Summen beliebiger Länge, wird demgemäß  geschrieben als:
 $$(\texttt{sum}, (\texttt{pow}, \mathbf a, 2), (\texttt{prod}, 2, \mathbf a, \mathbf b), (\texttt{pow}, \mathbf b, 2), \mathbf{cs...}) \mapsto (\texttt{sum}, (\texttt{pow}, (\texttt{sum}, \mathbf a, \mathbf b), 2), \mathbf{cs...}).$$
 Die Summe der linken Seite setzt sich für die folgenden Algorithmen dieses Kapitels dennoch nur aus drei Summanden zusammen. Die syntaktisch als Parameter geschriebenen $\mathbf{cs...}$ kommen hier in der linken Seite der Regel nur als Wahrheitswert vor, denn es gilt \glqq Die Summe \textit{enthält eine Multi-Mustervariable}\grqq{}. Lediglich auf der rechten Seite ist relevant, um welche Multi-Mustervariable es sich handelt, sollte es mehrere geben. Dieses Kapitel befasst sich allerdings fast ausschließlich mit der linken Seite einer Regel.
 
@@ -122,7 +123,7 @@ Die Summe der linken Seite setzt sich für die folgenden Algorithmen dieses Kapi
 Die Algorithmen \ref{findMatch}, \ref{rematch}, \ref{findIdentic}, \ref{findPermutation} und \ref{findDilation} bilden zusammen die Grundlage des finalen Matchalgorithmus dieser Arbeit. Der Startpunkt einer Matchsuche ist der Aufruf von $\Const{findMatch}$. Hier wird im Kontrast zu $\Const{simpleMatchAlgorithm}$ nicht direkt ein Rekursionsaufruf durchgeführt, sondern abhängig von der Form der vorgefundenen Funktionsanwendung eine entsprechende Strategie für die Suche eines Matches gewählt. Die Algorithmen, die die entsprechenden Strategien implementieren, sind $\Const{findPermutation}$, $\Const{findDilation}$ und $\Const{findIdentic}$. Alle hier vorgestellten Strategien nutzen dabei Backtracking, um die verschiedenen Möglichkeiten zu testen. Sollte dabei die Notwendigkeit auftreten, für einen bereits gematchten Teil des Musters ein neues Match mit dem selben Literal zu finden, wird in allen drei Strategien $\Const{rematch}$ aufgerufen. Dieser Algorithmus ist ähnlich zu $\Const{findMatch}$, erwartet aber, dass das übergebende Muster $p$ bereits mit dem übergebenen Literal $t$ gematcht ist. Die eigentliche Arbeit wird bei $\Const{rematch}$ an die selben Suchstrategien abgegeben. Da der Startpunkt dort aber davon abhängig ist, ob bereits eine bestimmte Zuordnung der Argumente als erfolgreich matchend festgehalten ist oder nicht, wird diese Information als letzter Parameter jeder Strategie mit übergeben.
 
 
-Im Grundaufbau funktionieren alle Strategien gleich. Die Argumente $\elems p 0 {m-1}$ des Musters $p$ werden in der vorliegenden Reihenfolge mit den Argumenten $\elems t 0 {n-1}$ des Literals $t$ gematcht. Kann für das aktuelle Argument $p_i$ kein Match mehr gefunden werden, wird probiert, die vorhergehenden Argumente $\elems p 0 {i-1}$ neu zu matchen, beginnend mit $p_{i-1}$. Mit welchen Argumenten $t_k$ ein Match dabei erlaubt ist, variiert nach Strategie. Am stärksten eingeschränkt ist $\Const{findIdentic}$. Das Musterargument $p_i$ kann dort nur mit $t_k$ gematcht werden, wenn $k = i$ gilt\footnote{Algorithmus \ref{simpleMatchAlgorithm} hat ausschließlich auf diese Weise nach einem Match gesucht}. Das andere Extrem stellt $\Const{findPermutation}$ da. Hier kann jedes $p_i$ mit jedem $t_k$ gematcht werden, vorausgesetzt $t_k$ ist noch nicht mit einem Argument aus $\elems p 0 {i-1}$ gematcht. In der Freiheit dazwischen steht $\Const{findDilation}$, welche die Reihenfolge der $p_i$ untereinander gleich halten muss, jedoch eine Lücke beliebiger Länge zwischen $p_{i-1}$ und $p_i$ erlaubt, sofern im Muster an dieser Stelle eine Multi-Mustervariable steht\footnote{Wie in Abschnitt \ref{subsecMulti} erörtert, treten diese hier nicht als echte Argumente auf.}.
+Im Grundaufbau funktionieren alle Strategien gleich. Die Argumente $\elems p 0 {m-1}$ des Musters $p$ werden in der vorliegenden Reihenfolge mit den Argumenten $\elems t 0 {n-1}$ des Literals $t$ gematcht. Kann für das aktuelle Argument $p_i$ kein Match mehr gefunden werden, wird probiert, die vorhergehenden Argumente $\elems p 0 {i-1}$ neu zu matchen, beginnend mit $p_{i-1}$. Mit welchen Argumenten $t_k$ ein Match dabei erlaubt ist, variiert nach Strategie. Am stärksten eingeschränkt ist $\Const{findIdentic}$. Das Musterargument $p_i$ kann dort nur mit $t_k$ gematcht werden, wenn $k = i$ gilt\footnote{Algorithmus \ref{simpleMatchAlgorithm} hat ausschließlich auf diese Weise nach einem Match gesucht}. Am wenigsten eingeschränkt ist $\Const{findPermutation}$. Hier kann jedes $p_i$ mit jedem $t_k$ gematcht werden, vorausgesetzt $t_k$ ist noch nicht mit einem Argument aus $\elems p 0 {i-1}$ gematcht. In der Freiheit dazwischen steht $\Const{findDilation}$, welche die Reihenfolge der $p_i$ untereinander gleich halten muss, jedoch eine Lücke beliebiger Länge zwischen $p_{i-1}$ und $p_i$ erlaubt, sofern im Muster an dieser Stelle eine Multi-Mustervariable steht\footnote{Wie in Abschnitt \ref{subsecMulti} erörtert, treten diese hier nicht als echte Argumente auf.}.
 
 \begin{algorithm}
 \DontPrintSemicolon
@@ -180,7 +181,7 @@ Der Algorithmus $\Const{rematch}$ ist fast identisch zur unteren Hälfte von $\C
 
 
 
-\subsubsection {findIdentic}
+\subsection {findIdentic}
 \begin{algorithm}
 \DontPrintSemicolon
 \caption{$\Const{findIdentic} \colon M \times T \times \mathit{Bool} \rightarrow \mathit{Bool}$}\label{findIdentic}
@@ -209,17 +210,17 @@ Der Algorithmus $\Const{rematch}$ ist fast identisch zur unteren Hälfte von $\C
 Als Strategie mit den wenigsten Freiheiten ist die Umsetzung von $\Const{findIdentic}$ die kürzeste. Die Laufvariable $i$ steht gleichzeitig als Index für die Argumente von Muster und Literal. Wenn der Aufruf aus $\Const{findMatch}$ erfolgt, wird mit $i = 0$ gestartet und in Abschnitt \texttt{\ref{backtrackMatchMuster}} versucht, für alle $i$ bis $n-1$ $p_i$ mit $t_i$ zu matchen. Sollte das  für ein $i$ fehlschlagen, besteht für entsprechende Muster die Möglichkeit, dass eines der Argumente $p_j \in \{\elems p 0 {i-1}\}$ anders als bisher mit $t_j$ gematcht werden kann, was dann das Match von $p_i$ mit $t_i$ ermöglicht. Gefunden wird $p_j$ in Abschnitt \texttt{\ref{backtrackRematchMuster}}. 
 Soll das gesamte Muster neu gematcht werden, startet $\Const{findIdentic}$ bei einem Aufruf durch $\Const{rematch}$ deswegen bei \texttt{\ref{backtrackRematchMuster}} und mit $i = n$.
 
-\begin{lemma}\label{lemKomplexitaetFindPermutation}~\\
+\begin{lemma}\label{lemKomplexitaetFindPermutation}
 Die Laufzeitkomplexität von Algorithmus \ref{findIdentic} bei der Suche eines Matches für ein Muster $p = (f, \elems {\mathbf x} 0 {n-1})$ mit einem Literal $t = (f, \elems t 0 {n-1})$ ist in $\mathcal O(n)$, wenn jeder Parameter $t_i$ von $t$ nur $\mathcal O(1)$ Konstantensymbole und Funktionssymbole besitzt.
 \end{lemma}
 
-\textbf{Beweis}.\\
+\textbf{Beweis.}
 Der Ausdruck $\Const{not}$ $\Const{rematch}(pi , ti)$ ist für kein $i$ wahr, da $\Const{rematch}$ für Mustervariablen immer $\Const{false}$ zurückgibt. Die äußere Schleife wird folglich nur exakt einmal durchlaufen. Sowohl ein Durchlauf der \textbf{while}-Schleife als auch ein Durchlauf der \textbf{do-while}-Schleife ist in $\mathcal O(1)$, da jedes $t_i$ nur $\mathcal O(1)$ Teilterme hat bzw. $\Const{rematch}(pi , ti)$ für Mustervariblen $p_i$ direkt $\Const{false}$ zurückgibt. Entweder wird der Abschnitt \texttt{\ref{backtrackMatchMuster}} exakt $n$ Mal abgelaufen und $\Const{true}$ zurückgegeben oder $n' < n$ Mal abgelaufen, woraufhin auch Abschnitt \texttt{\ref{backtrackRematchMuster}} $n'$ Mal abgelaufen wird, bis $\Const{false}$ zurückgegeben wird. 
 \hfill $\square$\\
 
 
 
-\subsubsection {findPermutation}
+\subsection {findPermutation}
 \begin{algorithm}
 \DontPrintSemicolon
 \caption{$\Const{findPermutation} \colon M \times T \times \mathit{Bool} \rightarrow \mathit{Bool}$}\label{findPermutation}
@@ -265,18 +266,18 @@ Algorithmus \ref{findPermutation} probiert, das Muster einer kommutativen Funkti
 Wurde für alle $p_i$ ein Match gefunden, so ist ganz $p$ mit ganz $t$ gematcht, falls gleichzeitig alle $t_k$ gematcht sind oder $p$ eine Multi-Mustervariable enthält. Sollte keiner der beiden Fälle eintreten, ist an dieser Stelle kein Match von $p$ und $t$ möglich. 
 
 
-\begin{lemma}\label{lemKomplexitaetFindPermutation}~\\
+\begin{lemma}\label{lemKomplexitaetFindPermutation}
 Die Laufzeitkomplexität von Algorithmus \ref{findPermutation} bei der Suche eines Matches für ein Muster $p = (f, \elems {\mathbf x} 0 {m-1})$ mit einem Literal $t = (f, \elems t 0 {n-1})$ ist in $\mathcal O(n^m)$, wenn jedes Argument $t_k$ von $t$ nur $\mathcal O(1)$ Konstantensymbole und Funktionssymbole besitzt.
 \end{lemma}
 
-\textbf{Beweis}.\\
+\textbf{Beweis.}
 Der Beweis erfolgt als Induktion über $m$.
 Für den Induktionsanfang mit $m = 1$ muss $\mathbf x_0$ höchstens mit allen $n$ Argumenten des Literals verglichen werden. Unabhängig davon, ob die Instanz von $\mathbf x_0$ bindend oder gebunden ist, terminiert $\Const{findMatch}(\mathbf x_0, t_k)$ in $\mathcal O(1)$, da alle $t_k$ in ihrer Größe beschränkt sind. \\
 Im allgemeinen Fall kann die Anwendung von $\Const{findPermutation}$ mit $p$ und $t$ auf höchstens $m$ Anwendungen des Algorithmus mit Mustergröße $m-1$ zurückgeführt werden. Erneut kann $\mathbf x_0$ potenziell mit jedem $t_k$ matchen. Das Match mit $t_k$ erfolgt wie im Indunktionsanfang beschrieben in $\mathcal O (1)$. Die anschließende Suche nach Matches für $x_i$ mit $i > 0$ ist in der Komplexität äquivalent zu einem neuen Aufruf von $\Const{findPermutation}$ mit dem Muster $p' = (f, \elems {\mathbf x} 1 {m-1})$ und dem Literal $t' = (f, \elems t 0 {k-1}, t_k', \elems t {k+1} {n-1})$, wobei $t_k'$ ein spezieller Wert ist, mit dem ein Match zu jedem Muster in $\mathcal O (1)$ abgelehnt wird \footnote{Der Wert von $t_k'$ ist sonst nicht notwendig, da in Bereich \texttt{\ref{PermutationHauptschleifenbeginn}} durch die if-Abfrage der problematische Matchversuch mit $t_k$ umgangen wird.}. Gibt dieser Aufruf $\Const{false}$ zurück, gibt auch $\Const{rematch}(\mathbf x_0, t_k)$ in $\mathcal O (1)$ $\Const{false}$ zurück. Der Übergang von $t_k$ zu $t_{k-1}$ erfolgt ebenfalls in $\mathcal O (1)$. Für jedes der bis zu $n$ Matches von $\mathbf x_0$ mit einem $t_k$ treten damit Laufzeitkosten von $\mathcal O (1)$ außerhalb der Rekursion auf. Jeder der $n$ Rekursionsaufrufe hat nach Induktionshypothese eine Laufzeit in $\mathcal O (n^{m-1})$. Insgesamt ergibt sich so also eine Laufzeit in $n \cdot \mathcal O (1) \cdot \mathcal O (n^{m-1}) = \mathcal O (n^m)$.
 \hfill $\square$\\
 
 
-\subsubsection {findDilation}
+\subsection {findDilation}
 \begin{algorithm}
 \DontPrintSemicolon
 \caption{$\Const{findDilation} \colon M \times T \times \mathit{Bool} \rightarrow \mathit{Bool}$}\label{findDilation}
@@ -332,20 +333,20 @@ Algorithmus \ref{findDilation} teilt die Musterargumente $\elems p 0 {m-1}$ in B
 Konnte $p_i$ nicht gematcht werden, wird  $i$ im Bereich \texttt{\ref{dilationRematchLastNeedle}} so lange heruntergezählt, bis entweder $\Const{rematch}$ erfolgreich ist oder $p_i$ das erste Element des aktuellen Blocks ist. Besonderes Verhalten tritt erneut für $i = 0$ auf. War jeder Matchversuch für $p_0$ erfolglos, gibt es keine Möglichkeit mehr, die Teilterme von $p$ so zu \glqq strecken\grqq{}\footnote{daher der Name $\Const{findDilation}$}, dass ein Match mit $t$ gefunden werden kann, ähnlich der Situation für $p_0$ in $\Const{findPermutation}$. Anders als bei $\Const{findPermutation}$ wird $k$ im Bereich \texttt{\ref{dilationPrepareNextNeedle}} hochgezählt, da $p_i$ nie ein Literal $t_k$ matchen darf, wenn $p_{i-1}$ bereits mit $t_l$ gematcht ist und $l > k$.
 
 
-\begin{lemma}\label{lemKomplexitaetDilation}~\\
+\begin{lemma}\label{lemKomplexitaetDilation}
 Sei $p$ ein Muster bestehend aus einer Funktionsanwendung des Funktionssymbols $f$ auf auf $m$ Mustervariablen $\elems {\mathbf x} 0 {m-1}$. 
 Jede Mustervariable $\mathbf x_i$ ist Nachfolger einer Multi-Mustervariable und auf $x_{m-1}$ folgt eine Multi-Mustervariable. Für $m = 3$ gilt also $p = (f, \mathbf{as...}, \mathbf x_0, \mathbf{bs...}, \mathbf x_1, \mathbf{cs...}, \mathbf x_2, \mathbf{ds...})$.
 Die Laufzeitkomplexität von Algorithmus \ref{findDilation} bei der Suche eines Matches für ein Muster $p$  mit einem Literal $t = (f, \elems t 0 {n-1})$ ist in $\mathcal O(n^m)$, wenn jedes Argument $t_k$ von $t$ nur $\mathcal O(1)$ Konstantensymbole und Funktionssymbole besitzt.
 \end{lemma}
 
-\textbf{Beweis}.\\
+\textbf{Beweis.}
 Sei $D(m, n)$ die asymptotische Laufzeit von Algorithmus \ref{findDilation}. Erneut wird ein Induktionsbeweis über $m$ geführt.
 Mit $m = 1$ ist der Fall identisch zu dem Induktionsanfang des Beweises von Lemma \ref{lemKomplexitaetFindPermutation}, es gilt $D(1, n) = \mathcal O(n)$. 
 
-Für $m > 1$ wird $D(m, n)$ auf $D(m-1, n)$ zurückgeführt. Für jedes $k$ muss nach erfolgreichem Match von $\mathbf x_0$ mit $t_k$ versucht werden, die restlichen Mustervariablen $\elems {\mathbf x} 1 {m-1}$ in den restlichen Argumenten $\elems {t} {k+1} {n-1}$ des Literals $t$ zu matchen. Das entspricht einem erneuten Aufruf von $\Const{findDilation}$ mit neuem Muster $p'$ ohne $\mathbf x_0$ und neuem Liteal $t' = (f, \elems t {k+1}, {n-1})$.
+Für $m > 1$ wird $D(m, n)$ auf $D(m-1, n)$ zurückgeführt. Für jedes $k$ muss nach erfolgreichem Match von $\mathbf x_0$ mit $t_k$ versucht werden, die restlichen Mustervariablen $\elems {\mathbf x} 1 {m-1}$ in den restlichen Argumenten $\elems {t} {k+1} {n-1}$ des Literals $t$ zu matchen. Das entspricht einem erneuten Aufruf von $\Const{findDilation}$ mit neuem Muster $p'$ ohne $\mathbf x_0$ und neuem Literal $t' = (f, \elems t {k+1}, {n-1})$.
 Im rechenaufwändigsten Fall passiert das für jedes $k$.
 $$D(m, n) = \sum_{k = 0}^{n-1} \paren*{\mathcal O(1) + D(m-1, n - k - 1)}$$
-Trotz der vorgegebenden Reihenfolge der Matches von Musterargumenten im Literal, folgt die selbe Komplexitätsabschätzung wie für $\Const{findPermutation}$.
+Trotz der vorgegebenen Reihenfolge der Matches von Musterargumenten im Literal, folgt die selbe Komplexitätsabschätzung wie für $\Const{findPermutation}$.
 \begin{equation*}
 	\begin{split} 
 		D(m, n) 
@@ -369,11 +370,11 @@ Voraussetzung dafür wird sein, dass sowohl Muster als auch Literal mit $\Const{
 Bestimmte Muster mit kommutativen Funktionssymbolen können mit dieser einfachen Maßnahme bereits in linearer Zeit mit einem Literal abgeglichen werden. Besteht ein Muster etwa aus der Anwendung eines kommutativen Funktionssymbols $f$ auf $m$ Argumente $\elems p 1 m$ und sind die Argumente $p_i$ ausschließlich Funktionsanwendungen paarweise verschiedener Funktionssymbole, ist garantiert, dass die Argumente eines normalisierten Literals für ein Match in der selben Reihenfolge liegen müssen. Wenn auch alle Teilmuster $p_i$ dieser Struktur folgen bzw. nicht kommutativ sind, wird ein Match zuverlässig bereits mit $\Const{findIdentic}$ (Algorithmus \ref{findIdentic}) gefunden\footnote{ohne Berücksichtigung von Matches, welche durch Assoziativität ermöglicht würden}. Das liegt daran, dass für alle $i, j \in \{1, \dots, m\}$ mit $ i < j$ gilt, dass $p_i$ ausschließlich Literale matchen kann, die vor jedes Literal sortiert werden, welches mit $p_j$ gematcht werden könnte. Diese Idee der Ordnung von Mustern wird im Folgenden ausgeführt.
 
 
-\begin{definition}~\\
+\begin{definition}
 Man sagt, das Muster $p_1$ ist \Emph{stark kleiner} als das Muster $p_2$ oder $p_1 \prec p_2$, wenn für alle Matchfunktionen $v_p$ gilt, dass $\Const{lit}(p_1, v_p) < \Const{lit}(p_2, v_p)$. Gilt immer $\Const{lit}(p_1, v_p) \leq \Const{lit}(p_2, v_p)$, sagt man $p_1$ ist \Emph{stark kleiner-gleich} als $p_2$ oder $p_1 \preceq p_2$.
 \end{definition}
 
-\begin{beispiel}~\\
+\begin{beispiel}
 Wenn $\texttt{sin} < \texttt{cos}$, gilt $p_1 \prec p_2$ für $p_1 = (\texttt{pow}, (\texttt{sin}, \mathbf x), 2)$ und $p_2 = (\texttt{pow}, (\texttt{cos}, \mathbf y), 2)$. Der Beweis folgt mit Lemma \ref{lemStarkKleinerFaelle}.
 
 Die Muster $\hat p_1 = (\texttt{pow}, \mathbf x, 2)$ und $\hat p_2 = (\texttt{pow}, \mathbf y, 3)$ sind zueinander nicht stark geordnet. 
@@ -382,12 +383,12 @@ Können sowohl $t_1$ als auch $t_3$ mit $\hat p_1$ matchen und $t_2$ mit $\hat p
  Mit $1 < 2 < 3$ erfüllen $t_1 = (\texttt{pow}, 1, 2)$, $t_2 = (\texttt{pow}, 2, 3)$ und $t_3 = (\texttt{pow}, 3, 2)$ die Bedingungen.
 \end{beispiel}
 
-\begin{lemma}~\\
+\begin{lemma}
 Sei $p$ ein beliebiges Muster ohne die Mustervariable $\mathbf x$, $q$ ein Muster, welches nur aus der Mustervariable $\mathbf x$ besteht, und sei die Menge der Konstantensymbole $C$ ohne Minimum.
 Es gilt $p \not\preceq q$, und $q \not\preceq p$.
 \end{lemma}
 
-\textbf{Beweis}.\\
+\textbf{Beweis.}
 Mit beliebiger Matchfunktion $v_p$ sei $t_2 = \Const{lit}~(p, v_p)$. Nach Lemma \ref{lemMinMax} gibt es die Literale $t_1 < t_2$ und $t_3 > t_2$. 
 Mit $v_p'$ identisch zu $v_p$, nur $v_p'~\Const x = t_1$, gilt 
 $$\Const{lit}(p, v_p') = t_2 > t_1 = \Const{lit}(q, v_p') \implies p \not\preceq q.$$
@@ -398,7 +399,7 @@ $$\Const{lit}(p, v_p'') = t_2 < t_3 = \Const{lit}(q, v_p'') \implies q \not\prec
 
 Einfach zu sehen ist, dass nur ein kleiner Teil der Muster zueinander stark geordnet sind, wenn die allgemeinste Form des Matches erlaubt ist. Problematisch ist dabei vor allem $\Const{combine}$ (Algorithmus \ref{combine}) als Teil von $\Const{normalize}$. Dadurch wird es möglich, Funktionsanwendungen als Muster mit Konstantensymbolen als Literal zu matchen. Da es aufwändig ist, überhaupt zu bestimmen, welche Muster Matches dieser Art erlauben, wird $\Const{normalize}$ hier abweichend von Kapitel \ref{secErsteNormalform} ohne $\Const{combine}$ angenommen. Nur Assoziativität und Kommutativität werden berücksichtigt.
 
-\begin{lemma}~\\ \label{lemStarkKleinerFaelle}
+\begin{lemma} \label{lemStarkKleinerFaelle}
 Für folgende Formen von normalisierten Mustern $p$ und $q$ gilt $p \prec q$:
 \begin{enumerate}
 	\item{$p$ und $q$ enthalten keine Mustervariablen und $p < q$} \label{itemStarkKleiner1}
@@ -417,7 +418,7 @@ Für folgende Formen von normalisierten Mustern $p$ und $q$ gilt $p \prec q$:
 \end{enumerate}
 \end{lemma}
 
-\textbf{Beweis}~\\
+\textbf{Beweis.}~\\
 In allen Fällen wird eine Mustervariable nur an Punkten erlaubt, die nicht zur Bestimmung der Ordnung von $p$ und $q$ unter der Relation $<$ beitragen bzw. die für kein Literal anstelle der Mustervariable die Ordnung der normalisierten Terme beeinflussen würden. Trivial ist das für Fall \ref{itemStarkKleiner1}.
 
 Für die restlichen Fälle muss klar sein, dass ein Literal der Form $(f, xs...)$ auch nach Normalisierung diese Form behält. Die Reihenfolge der Argumente und damit auch, ob $f$ kommutativ ist, spielen keine Rolle. Das Normalisieren mehrerer geschachtelter Anwendungen des selben assoziativen Funktionssymbols $f$ entfernt nie die äußerste Funktionsanwendung. Die Struktur bleibt erhalten.

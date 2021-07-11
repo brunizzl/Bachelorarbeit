@@ -55,7 +55,7 @@ Die Funktion $\tilde u$ kann hier und in den weiteren Algorithmen dieses Kapitel
 \section{Kommutative Funktionsanwendungen} \label{subsecNormalSortieren}
 Eine Normalform für kommutative Funktionsanwendungen erfordert eine totale Ordnung auf der Menge aller Terme $T(F, C)$. 
 
-\begin{definition}~\\ \label{defOrdnungKleiner}
+\begin{definition} \label{defOrdnungKleiner}
 Aufbauend auf einer totalen Ordnung von $F$ sowie $C$, kann eine lexikographische Ordnung $<$ von $T$ frei nach \cite{LexikografischeOrdnung} wie folgt definiert werden: 
 \begin{enumerate}
 	\item{sind $c, \tilde{c} \in T$ Konstantensymbole, so ist die Ordnung identisch zu der Ordnung in $C$}
@@ -75,7 +75,7 @@ Aufbauend auf einer totalen Ordnung von $F$ sowie $C$, kann eine lexikographisch
 $T$ hat genau dann ein Minimum, wenn $C$ ein Minimum hat $(1)$. $T$ hat kein endlich großes Maximum $(2)$.
 \end{lemma}
 
-\textbf{Beweis}.\\
+\textbf{Beweis.}
 Teil $(1)$ folgt daraus, dass die Konstantensymbole selbst bereits Terme sind und kleiner als jede Funktionsanwendung sind. Ein Minimum von $C$ ist damit gleichzeitig Minimum von $T$.
 
 Teil $(2)$ folgt aus einem Widerspruch. Angenommen es gäbe einen größten endlichen Term $t$. Der Term $t'$ ist identisch zu $t$, nur die Konstantensymbole von $t$ sind durch beliebige Funktionsanwendungen ersetzt. Der neue Term $t'$ ist größer als $t$.
@@ -111,7 +111,7 @@ Mit der Darstellung einer assoziativen Funktion mit einem variadischen Funktions
 Gilt allgemein für ein Funktionssymbol $f \in F$, dass $\tilde u~f$ assoziativ ist, reicht es aus, zwei aufeinander folgende Argumente $x$ und $y$ in einer Funktionsanwendung von $f$ zu finden, mit denen die Funktionsanwendung $(f, x, y)$ auswertbar wäre. $x$ und $y$ können dann entsprechend ersetzt werden.
 $$\Const{eval}(\tilde u, \Const{id})~(f, x, y) = z \in C \implies (f, us..., x, y, vs...) \mapsto (f, us..., z, vs...)$$
 
-Ist $\tilde u~f$ zudem kommutativ, müssen $x$ und $y$ nicht notwendigerweise direkt aufeinander folgen:
+Ist $\tilde u~f$ zudem kommutativ, müssen $x$ und $y$ nicht notwendigerweise direkt aufeinander folgen.
 $$\Const{eval}(\tilde u, \Const{id})~(f, x, y) = z \in C \implies (f, us..., x, vs..., y, ws...) \mapsto (f, z, us..., vs..., ws...)$$
 
 Eine normalisierte Funktionsanwendung enthält keine zwei auf diese Art ersetzbare Argumente $x$ und $y$ mehr. Weiter ist jede Funktionsanwendung, die als ganzes zu einer Konstante $z \in C$ auswertbar ist, ausgewertet.\\

@@ -9,7 +9,7 @@ Dieses Kapitel hat keinen Anspruch auf Vollständigkeit. Der Fokus liegt darauf,
 %.........................................................................
 %.........................................................................
 \section{Konzeptionelle Unterschiede} \label{subsecKonzeptionelleUnterschiede}
-Die Umsetzung implementiert nicht exakt die bisher beschriebenen Strukturen. Der erste Unterschied ist, dass die Mengen der Funktionssymbole $F$ und der Konstantensymbole $C$ hier nicht unterschieden werden. Da der Zweck der Implementierung alleine in der Vereinfachung von Ausdrücken über den Komplexen Zahlen $\mathbb C$ liegt, ist die Menge an Symbolen zudem im Code nicht generisch gehalten. Die beiden wichtigsten Arten von Symbolen für Literale sind Komplexe Zahlen $z \in \mathbb C$, sowie Zeichenketten $c_1 c_2\dots c_n$ beliebiger Länge $n$. Die einzelnen Zeichen $c_i$ stammen dabei aus dem Alphabet $\Sigma$, welches aus Klein-und Großbuchstaben des lateinischen Alphabetes, Ziffern von $0$ bis $9$, den Apostroph \verb|'| und dem Unterstrich \verb|_| besteht. Die Ausnahme bildet das erste Zeichen $c_1$, welches ein Klein-oder Großbuchstabe des Lateinischen Alphabetes sein muss. Zu den Zeichenketten gehören insbesondere auch die Funktionssymbole. Mit der dadurch entstehenden Möglichkeit, Funktionssymbole als Werte zu behandeln, ergibt es Sinn, auch Funktionsanwendungen von dynamisch bestimmten Funktionssymbolen zuzulassen. Das erste Element $f$ des Funktionsanwendungstupels $(f, \elems t 0 {n-1})$ ist in der Umsetzung deshalb kein Symbol, sondern ein Term. Mit den bis hier diskutierten Änderungen und $\Sigma^+$ als Bezeichnung für die Menge von Zeichenketten über dem beschriebenen Alphabet $\Sigma$, sähe die idealisierte Menge aller Literale in der Umsetzung im Gegensatz zu Definition \ref{defTerm} so aus:
+Die Umsetzung implementiert nicht exakt die bisher beschriebenen Strukturen. Der erste Unterschied ist, dass die Mengen der Funktionssymbole $F$ und der Konstantensymbole $C$ hier nicht unterschieden werden. Da der Zweck der Implementierung alleine in der Vereinfachung von Ausdrücken über den Komplexen Zahlen $\mathbb C$ liegt, ist die Menge an Symbolen zudem im Code nicht generisch gehalten. Die beiden wichtigsten Arten von Symbolen für Literale sind Komplexe Zahlen $z \in \mathbb C$, sowie Zeichenketten $c_1 c_2\dots c_n$ beliebiger Länge $n$. Die einzelnen Zeichen $c_i$ stammen dabei aus dem Alphabet $\Sigma$, welches aus Klein-und Großbuchstaben des lateinischen Alphabetes, Ziffern von $0$ bis $9$, dem Apostroph \verb|'| und dem Unterstrich \verb|_| besteht. Die Ausnahme bildet das erste Zeichen $c_1$, welches ein Klein- oder Großbuchstabe des Lateinischen Alphabetes sein muss. Zu den Zeichenketten gehören insbesondere auch die Funktionssymbole. Mit der dadurch entstehenden Möglichkeit, Funktionssymbole als Werte zu behandeln, ergibt es Sinn, auch Funktionsanwendungen von dynamisch bestimmten Funktionssymbolen zuzulassen. Das erste Element $f$ des Funktionsanwendungstupels $(f, \elems t 0 {n-1})$ ist in der Umsetzung deshalb kein Symbol, sondern ein Term. Mit den bis hier diskutierten Änderungen und $\Sigma^+$ als Bezeichnung für die Menge von Zeichenketten über dem beschriebenen Alphabet $\Sigma$, sähe die idealisierte Menge aller Literale in der Umsetzung im Gegensatz zu Definition \ref{defTerm} so aus:
 
 $$T \coloneqq \Sigma^+ \cup \mathbb C \cup \curl*{(\elems t 0 n)~|~ \elems t 0 n \in T}.$$
 
@@ -141,7 +141,7 @@ Die beiden letzten Regeln haben den exakt gleichen Effekt, wie noch in Abschnitt
 %.........................................................................
 \section{Lambdafunktionen} \label{subsecLambdafunktionen}
 Die umgesetzten Funktionen erweitern die Definition von Church, indem die selbe Lambdaabstraktion auch mehrere Parameter erlaubt. Während der Ausdruck $\lambda x y . x(y)$ für Church also nur eine vereinfachte Schreibweise\footnote{Die Klammern um $y$ werden in der Literatur oft weggelassen, für diese Arbeit sind sie allerdings notwendig.} für den Ausdruck $\lambda x .\lambda y .x(y)$ darstellt, handelt es sich für die hier beschriebene Umsetzung um zwei verschiedene Funktionen. 
-Ein Lambdaparameter ist in der Syntax nicht von anderen Symbolen unterscheidbar\footnote{siehe \ref{subsubsecLambdaSyntax}}, wird intern jedoch durch einen Index dargestellt. Die Darstellung unterscheidet sich von De Bruijn Indizierung \cite{deBruijn} darin, dass jede Instanz der selben Variable immer den selben Index hat\footnote{Sollte eine Ersetzungsregel auch innerhalb eines Lambdas anwendbar sein, ist eine solche Herangehensweise vorteilhaft, da der Matchalgorithmus biser keinen Unterschied zwischen syntaktischer Gleichheit und semantischer Gleichheit macht.}.
+Ein Lambdaparameter ist in der Syntax nicht von anderen Symbolen unterscheidbar\footnote{siehe \ref{subsubsecLambdaSyntax}}, wird intern jedoch durch einen Index dargestellt. Die Darstellung unterscheidet sich von De Bruijn Indizierung \cite{deBruijn} darin, dass jede Instanz der selben Variable immer den selben Index hat\footnote{Sollte eine Ersetzungsregel auch innerhalb eines Lambdas anwendbar sein, ist eine solche Herangehensweise vorteilhaft, da der Matchalgorithmus bisher keinen Unterschied zwischen syntaktischer Gleichheit und semantischer Gleichheit macht.}.
  Jeder neu gebundene Parameter bekommt als Index die Anzahl der weiter außen bzw. in der selben Abstraktion vor ihm gebundenen Parameter. Zur Veranschaulichung wird hier der Index im Tiefsatz mitgeschrieben. Wichtig ist hervorzuheben, dass die hier nach wie vor dargestellten Namen ausschließlich der Übersichtlichkeit dienen und in der Umsetzung nicht gespeichert sind.
  Als Beispiel dient $\lambda x_0 y_1 .\lambda z_2 .x_0 + y_1 + z_2$. Das Zeichen $x$ wird in der äußersten Abstraktion zuerst gebunden, hat also keine Vorgänger und dementsprechend Index $0$. In der selben Abstraktion wird als zweiter Parameter weiter $y$ gebunden. Als Nachfolger von $x$ wird $y$ Index $1$ zugewiesen. Die Bindung von $z$ liegt innerhalb der Abbildungsvorschrift des äußeren Lambdas, $x$ und $y$ können also referenziert werden. Dementsprechend hat $z$ zwei Vorgänger und Index $2$. 
  
@@ -152,7 +152,7 @@ Ein Lambdaparameter ist in der Syntax nicht von anderen Symbolen unterscheidbar\
  Enthält ein Argument $a$ der Funktionsanwendung einer Lambdafunktion $f$ selbst eine Lambdafunktion $g$, so reicht es für die Auswertung von $f$ mit bisher diskutierten Konzepten nicht aus, den entsprechenden Lambdaparameter von $f$ einfach durch $a$ zu ersetzen. Sollte diese Ersetzung innerhalb einer Lambdaabstraktion $f'$ stattfinden, müssen alle Lambdaparameter von $g$ im Index um die Anzahl der weiter außen gebundenen Parameter erhöht werden. Als Beispiel ist $a = g = \lambda x_0 .x_0$ die Identität, welche der Funktion $f = \lambda x_0 .\lambda y_1 .x_0(y_1)$ übergeben wird. Teil der Definition von $f$ ist $f' = \lambda y_1 .x_0(y_1)$.
  $$(\lambda x_0 .\lambda y_1 .x_0(y_1))(\lambda x_0 .x_0)$$
  
- An dieser Stelle wird zudem eine alternative Notation eingeführt, die nur Information benutzt, die der Implementierung tatsächlich bekannt ist. Ehrlicher ist die Darstellung einer Lambdaabstraktionen mit $n$ Parametern als $\lambda [n] .\textit{<Definition>}$. Mit den Parametern geschrieben als Prozentzeichen gefolgt von ihrem Index, ist der problematische Ausdruck geschrieben als
+ An dieser Stelle wird zudem eine alternative Notation eingeführt, die nur Information benutzt, die der Implementierung tatsächlich bekannt ist. Ehrlicher ist die Darstellung einer Lambdaabstraktion mit $n$ Parametern als $\lambda [n] .\textit{<Definition>}$. Mit den Parametern geschrieben als Prozentzeichen gefolgt von ihrem Index, ist der problematische Ausdruck geschrieben als
  
  $$(\lambda [1] .\lambda [1] .\%0(\%1))(\lambda [1] .\%0).$$
  Die naive Ersetzung von $x_0$ in $f$ durch $g$ würde im folgenden Ausdruck resultieren.
@@ -163,7 +163,7 @@ Ein Lambdaparameter ist in der Syntax nicht von anderen Symbolen unterscheidbar\
  
  Eine Alternative ist die Unterscheidung zwischen sogenannten \Emph{\glspl{transparent}} Lambdas und \Emph{nicht-transparenten} Lambdas, zweitere dargestellt durch umschließende geschweifte Klammern: $\{\lambda \textit{<Parameter>}.\textit{<Definition>}\}$ bzw. $\{\lambda [n].\textit{<Definition>}\}$. Kommt ein transparentes Lambda $f'$ in der Definition eines Lambdas $f$ vor, wird bei der Auswertung von $f$ auch in $f'$ nach Lambdaparametern gesucht und diese ersetzt bzw. deren Index erniedrigt. Transparente Lambdas verhalten sich damit nicht anders als die Lambdas bisher. Ist $f'$ allerdings nicht-transparent, lässt die Auswertung von $f$ die Definition von $f'$ unberührt. 
  Mit zwei weiteren Bedingungen wird die Überprüfung von Argumenten bei der Auswertung Lambdas dann obsolet: 
- Zum einen darf ein \Emph{außenliegendes} Lambda $f$ nicht transparent sein. Ein Lambda ist außenliegend, wenn es nicht Teil der Definition einem weiteren Lambdas ist, also zu seinen Ahnen keine Lambdaabstraktionen gehören. Zum anderen darf die Funktionsanwendung eines Lambdas nur ausgewertet werden, wenn das Lambda außenliegend ist. Damit wird garantiert, dass während der Auswertung des Lambdas $f$ kein Argument $a$ direkt transparente Lambdas enthält, höchtens als Teil $g'$ (im Beispiel nicht enthalten) eines nicht-transparenten Lambdas $g$.
+ Zum einen darf ein \Emph{außenliegendes} Lambda $f$ nicht transparent sein. Ein Lambda ist außenliegend, wenn es nicht Teil der Definition eines weiteren Lambdas ist, also zu seinen Ahnen keine Lambdaabstraktionen gehören. Zum anderen darf die Funktionsanwendung eines Lambdas nur ausgewertet werden, wenn das Lambda außenliegend ist. Damit wird garantiert, dass während der Auswertung des Lambdas $f$ kein Argument $a$ direkt transparente Lambdas enthält, höchstens als Teil $g'$ (im Beispiel nicht enthalten) eines nicht-transparenten Lambdas $g$.
 
 Im bereits behandelten Problemfall sind $f$ und $g$ damit nicht-transparent. Nur $f'$ ist zu Beginn transparent. Nach Auswertung von $f$ ist $f'$ dann jedoch ebenfalls außenliegend.
 \begin{align*}
@@ -220,7 +220,7 @@ $$w = \verb|inv(|z\verb|)|$$
 
 Je nachdem, ob $w$ eine bindende oder eine gebundene Instanz ist, wird der berechnete Wert im Matchzustand\footnote{siehe Abschnitt \ref{subsubsecMatchalgoCpp}} gespeichert oder mit dem bereits gespeicherten Wert verglichen.
 
-\begin{beispiel}~\\
+\begin{beispiel}
 Das Muster $p =$ \verb~cos(2 $k pi) | $k :int~ mit der Wert-Mustervariable $w =$ \verb|$k| wird in der Zwischenrepräsentation dargestellt als 
 \begin{unbreakable}\begin{verbatim}
 cos(2 value_match__(0, int, \y .y) pi). 
@@ -248,7 +248,7 @@ Diese Bedingungen übernehmen teilweise eine ähnliche Rolle wie die Wert-Muster
 
 
 \subsubsection{Mögliche Ausdrücke}
-Bedingungen, die nicht mit Wert-Mustervariablen dargestellt werden könnten, nutzen primär die Funktionssymbole \verb|contains|, \verb|neq| und \verb|of_type__|. Ersteres ist binär und prüft, ob das erste Argument Teilbaum des zweiten Argumentes ist\footnote{sie Abschnitt \ref{subsubsecDiff}}. Zweiteres (normal in Infixform \verb|!=| geschrieben) ist ebenfalls binär und prüft, ob zwei Teilbäume ungleich sind. Beide dürfen dabei allerdings ausschließlich direkt Mustervariablen als Argumente übergeben bekommen. 
+Bedingungen, die nicht mit Wert-Mustervariablen dargestellt werden könnten, nutzen primär die Funktionssymbole \verb|contains|, \verb|neq| und \verb|of_type__|. Ersteres ist binär und prüft, ob das erste Argument Teilbaum des zweiten Argumentes ist\footnote{siehe Abschnitt \ref{subsubsecDiff}}. Zweiteres (normal in Infixform \verb|!=| geschrieben) ist ebenfalls binär und prüft, ob zwei Teilbäume ungleich sind. Beide dürfen dabei allerdings ausschließlich direkt Mustervariablen als Argumente übergeben bekommen. 
 
 Genauso ist das Symbol \verb|of_type__| binär und wird normal nicht ausgeschrieben hingeschrieben, sondern tritt als Infixoperator \verb|:| auf. Die Bedeutung variiert dann nach dem rechten Argument. Ist dies ein Knotentyp, etwa \verb|complex| oder \verb|f_app|, prüft \verb|of_type__|, ob das linke Argument von diesem Typ ist. Eine spezifischere Variante der Bedingung \verb|_x :f_app| ist {\verb|_x :|$f$}, mit einem Symbol $f$. In dem Fall wird geprüft, ob die linke Seite eine Funktionsanwendung von $f$ ist. Als Beispiel muss mit der Bedingung \verb|_x :sum| die Mustervariable \verb|_x| mit einer Summe, also einer Funktionsanwendung des Symbols \verb|sum|, gematcht sein, damit das Match gültig ist.
 Der dritte Spezialfall tritt auf, wenn die rechte Seite eine fest definierte Teilmenge der Komplexen Zahlen ist, etwa \verb|_x :int|. Die linke Seite muss dann nicht direkt eine Mustervariable sein, sondern lediglich zu einer Komplexen Zahl ausgewertet werden können\footnote{siehe Abschnitt \ref{subsubsecCos}}.
@@ -330,7 +330,7 @@ union TermNode
 
 
 
-\begin{beispiel}~\\ \label{bspREPLliteral}
+\begin{beispiel} \label{bspREPLliteral}
 Das Literal \verb|tup(f(a, b)(c), 1, 2, 3)| wird in der folgenden Debugausgabe genutzt, um den Speicheraufbau zu veranschaulichen.
 \begin{unbreakable}
 \begin{verbatim}
@@ -349,7 +349,7 @@ Interessant ist weiter, dass die Funktionsanwendung des Symbols \verb|tup| begin
 \end{beispiel}
 
 
-\begin{beispiel}~\\ \label{bspREPLlambda}
+\begin{beispiel} \label{bspREPLlambda}
 Die in Abschnitt \ref{subsecLambdafunktionen} genutzte Notation für Lambdas mit namenlosen Lambdaparametern wird auch in der Umsetzung zur Darstellung von Lambdafunktionen genutzt. Als Beispiel wird die Speichernutzung des Literals \verb|(\f x .f(x, x))(sum, 3)| gezeigt.
 \begin{unbreakable}\begin{verbatim}
   head at index: 3
@@ -506,7 +506,7 @@ fdiff(tan)     = \x .cos(x)^(-2)
 ...
 \end{verbatim}\end{unbreakable}
 
-Die linken Seiten sind entweder Funktionsanwendungen des binären Funktionssymbols \verb|diff| oder des unären Funktionssymbols \verb|fdiff|. Während \verb|diff| einen beliebigen Term als erstes Argument erwartet, gefolgt von dem Symbol, nach dem abgeleitet werden soll, Leitet \verb|fdiff| unäre Funktionen ab. Das vereinfacht die Syntax zur Darstellung der Kettenregel, welche als letzte Regel für \verb|diff|  vor der Leerzeile umgesetzt ist. Interessant ist bei dem entsprechenden Muster \verb|diff(_f(_y), _x)|, dass die Funktion, deren Anwendung abgeleitet wird, repräsentiert durch die Mustervariable \verb|_f|, selbst eine Unbekannte ist. Die rechte Seite \verb|diff(_y, _x) fdiff(_f)(_y)| implementiert dann das \glqq innere mal äußere Ableitung \glqq{} Muster. Da \verb|fdiff(_f)| eine Funktion zurückgibt, kann auf diese Funktion dann das Argument \verb|_y| angewendet werden.
+Die linken Seiten sind entweder Funktionsanwendungen des binären Funktionssymbols \verb|diff| oder des unären Funktionssymbols \verb|fdiff|. Während \verb|diff| einen beliebigen Term als erstes Argument erwartet, gefolgt von dem Symbol, nach dem abgeleitet werden soll, Leitet \verb|fdiff| unäre Funktionen ab. Das vereinfacht die Syntax zur Darstellung der Kettenregel, welche als letzte Regel für \verb|diff|  vor der Leerzeile umgesetzt ist. Interessant ist bei dem entsprechenden Muster \verb|diff(_f(_y), _x)|, dass die Funktion, deren Anwendung abgeleitet wird, repräsentiert durch die Mustervariable \verb|_f|, selbst eine Unbekannte ist. Die rechte Seite \verb|diff(_y, _x) fdiff(_f)(_y)| implementiert dann das \glqq innere mal äußere Ableitung\grqq{} Muster. Da \verb|fdiff(_f)| eine Funktion zurückgibt, kann auf diese Funktion dann das Argument \verb|_y| angewendet werden.
 
 Im folgenden wird die rechte Seite der vierten Regel diskutiert.
 \begin{verbatim}
@@ -525,12 +525,12 @@ map_helper(_g_app, _g(), _f)
 \end{verbatim}\end{unbreakable}
 
 In der konkreten Anwendung im Muster wird also die Ableitung einer Summe umgeschrieben als die Summe der Ableitungen der Argumente. Das Muster
+\begin{verbatim}
+diff(_u + vs..., _x) = diff(_u, _x) + diff(sum(vs...), _x)
+\end{verbatim}
+hätte in wiederholter Anwendung den selben Effekt. Die genutzte Version benötigt allerdings nur eine einzige Ersetzung\footnote{sofern \texttt{map} in $\Const{normalize}$ ausgewertet wird} für eine Summe mit beliebig vielen Argumenten.
 
-\verb|diff(_u + vs..., _x) = diff(_u, _x) + diff(sum(vs...), _x)|
-
-hätte in wiederholter Anwendung den selben Effekt, die genutze Version benötigt allerdings nur eine einzige Ersetzung\footnote{sofern \texttt{map} in $\Const{normalize}$ ausgewertet wird} für eine Summe mit beliebig vielen Argumenten.
-
-\begin{beispiel}~\\
+\begin{beispiel}
 Angewendet auf das Literal \verb|diff(sin(pi t) + 3, t)|, erzeugen die Ableitungsregeln folgende Zwischenergebnisse, bzw. folgende Normalform (Leerzeichen sind zur verbesserten Lesbarkeit ergänzt).
 \begin{unbreakable}\begin{verbatim}
 diff(3, t) + diff(sin(pi t), t)
