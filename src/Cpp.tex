@@ -49,7 +49,6 @@ Solche Zeichenketten sind von hier an in \texttt{monospace} gesetzt. Auf eine fo
 
 \subsection{Funktionsanwendungen}
 \begin{figure}
-    \label{tabZucker}
     \centering
     \begin{tabular}{l l}
         \hline
@@ -76,11 +75,12 @@ Solche Zeichenketten sind von hier an in \texttt{monospace} gesetzt. Auf eine fo
         \hline
     \end{tabular}
     \caption{alternative Syntax für bestimmte Funktionssymbole}
+    \label{tabZucker}
 \end{figure}
 
 Die bisher genutzte Schreibweise $(f, x, y, z)$ für die Funktionsanwendung des Funktionssymbols $f$ auf die Parameter $x, y, z$ wurde in Abschnitt \ref{subsecTerm} eingeführt, um den Term syntaktisch von anderen Ideen zu differenzieren. Dies ist für die Umsetzung in C\texttt{++} nicht notwendig, da hier durch den Kontext klar ist, ob eine Zeichenkette in einen Term übersetzt wird. Aus dem Grund werden Funktionsanwendungen in der Syntax \verb|f(x, y, z)| geparst. 
 Weiter können Funktionsanwendungen bestimmter Funktionen auch mit fest definierten Infixoperatoren geschrieben werden, siehe Tabelle \ref{tabZucker}. Die Bindekraft der Operatoren nimmt in der Tabelle von oben nach unten ab.
-Aus der Tabelle hervorzuheben sind zwei Dinge: Zum einen wird ein Leerzeichen zwischen zwei Termen als Multiplikation interpretiert, Funktionsanwendungen dürfen also kein Leerzeichen zwischen Funktion und Parametertupel setzen. \verb|f (x)| ist dementsprechend gleichbedeutend zu \verb|prod(f, x)|, während \verb|f (x, y)| einen Syntaxfehler darstellt. Zum anderen ist das Fehlen von Funktionssymbolen für die Darstellung des additiven Inversen und des multiplikativen Inversen. Dies reduziert die Anzahl der Ersetzungsregeln, die benötigt werden, um eine Gesetzmäßigkeit, die Summen oder Produkte involviert, abzubilden. 
+Aus der Tabelle hervorzuheben sind zwei Dinge: Zum einen wird ein Leerzeichen zwischen zwei Termen als Multiplikation interpretiert, Funktionsanwendungen dürfen also kein Leerzeichen zwischen Funktion und Parametertupel setzen. Der Ausdruck \verb|f (x)| ist dementsprechend gleichbedeutend zu \verb|prod(f, x)|, während \verb|f (x, y)| einen Syntaxfehler darstellt. Zum anderen fehlen Funktionssymbole für die Darstellung des additiven Inversen und des multiplikativen Inversen. Dies reduziert die Anzahl der Ersetzungsregeln, die benötigt werden, um eine Gesetzmäßigkeit, die Summen oder Produkte involviert, abzubilden. 
 
 \subsection{Lambdafunktionen} \label{subsubsecLambdaSyntax}
 Da der ASCII Zeichensatz keine griechischen Buchstaben enthält, wird anstelle des kleinen Lambdas $\lambda$ der umgekehrte Schrägstrich \verb~\ ~genutzt. Die Identitätsfunktion $\lambda x.x$ wird dementsprechend \verb~\x .x~ geschrieben. Mehrere Parameter werden durch Leerzeichen getrennt: \verb~\x y .pow(x, y)~ ist eine Lambdafunktion mit identischem Verhalten zum Funktionssymbol \verb|pow|.
@@ -88,22 +88,22 @@ Da der ASCII Zeichensatz keine griechischen Buchstaben enthält, wird anstelle d
 \subsection{Symbole}
 Komplexe Zahlen auf der reellen Achse sind in der Syntax vergleichbar mit Darstellungen für Integer und Fließkommazahlen erlaubt in C. Möglich sind etwa \verb|3.1415|, \verb|42|, \verb|1.337e3| oder \verb|1.602e-19|. Komplexe Zahlen auf der imaginären Achse sind in der Struktur identisch, allerdings immer direkt gefolgt vom Zeichen \verb|i|. 
 
-Die verschiedenen Mustervariablen werden auf unterschiedliche Weise identifiziert. Eine normale Mustervariable muss mit einem Unterstrich beginnen (\verb|_x|), eine Wert-Mustervariable mit einem Dollar (\verb|$x|) und eine Multi-Mustervariable endet in drei Punkten (\verb|xs...|). Besitzt ein Name keines dieser besonderen Merkmale, wird daraus kontextabhängig ein Lambdaparameter oder ein Symbol aus $\Sigma^+$. Ist der umgebende Name bereits in einem umschließenden Lambda gebunden, wird die innerste solche Bindung gewählt. Als Beispiel ist im Ausdruck \verb|\x .x + y| das Symbol \verb|x| als Lambdaparameter interpretiert, während \verb|y| als Zeichenkette erhalten bleibt.
+Die verschiedenen Mustervariablen werden auf unterschiedliche Weise identifiziert. Eine normale Mustervariable muss mit einem Unterstrich beginnen (\verb|_x|), eine Wert-Mustervariable mit einem Dollar (\verb|$x|) und eine Multi-Mustervariable endet in drei Punkten (\verb|xs...|). Besitzt ein Name keines dieser besonderen Merkmale, wird daraus kontextabhängig ein Lambdaparameter oder ein Symbol aus $\Sigma^+$. Ist der umgebende Name bereits in einem umschließenden Lambda gebunden, wird die innerste Bindung gewählt. Als Beispiel ist im Ausdruck \verb|\x .x + y| das Symbol \verb|x| als Lambdaparameter interpretiert, während \verb|y| als Zeichenkette erhalten bleibt.
 Im Ausdruck \verb|\x .\x .2 - x| kann der Parameter \verb|x| des äußeren Lambdas in der Definition des inneren Lambdas nicht mehr referenziert werden. Der Gesamtausdruck ist damit identisch zu \verb|(\x .(\y .2 - y))|.
 
 \subsection{Literale}
 Ein Literal kann Lambdafunktionen, Funktionsanwendungen, Komplexe Zahlen und Symbole aus $\Sigma^+$ enthalten. Abbildung \ref{figBspLit} enthält Beispiele.
 
 \begin{figure}
-\begin{verbatim}
+\begin{unbreakable}\begin{verbatim}
 1 + a
 
 sin(3 pi / 2 t) + 5 cos(pi / 8 t)
 
 map(tup, \x .x^2, tup(1, 2, 3))
-\end{verbatim}
-\label{figBspLit}
+\end{verbatim}\end{unbreakable}
 \caption{Beispiele für Literale}
+\label{figBspLit}
 \end{figure}
 
 \subsection{Ersetzungsregeln}
@@ -116,7 +116,7 @@ In der zweiten Variante ist \textit{<Bedingungen>} eine kommaseparierte Liste vo
 Beispiele sind in Abbildung \ref{figBspRegeln} aufgeführt.
 
 \begin{figure}
-\begin{verbatim}
+\begin{unbreakable}\begin{verbatim}
 id = \x .x
 
 0 xs... = 0
@@ -128,9 +128,9 @@ change(_f, _g, _f(xs...)) = _g(xs...)
 $a^2 + 2 $a _b + _b^2 = ($a + _b)^2
 
 _aPow2 + _2a _b + _b^2 | 4 _aPow2 == _2a^2 = (1/2 _2a + _b)^2
-\end{verbatim}
-\label{figBspRegeln}
+\end{verbatim}\end{unbreakable}
 \caption{Beispiele für Ersetzungsregeln}
+\label{figBspRegeln}
 \end{figure}
 Die beiden letzten Regeln haben den exakt gleichen Effekt, wie noch in Abschnitten \ref{subsubsecWertMustervariable} und \ref{subsubsecBedingungen} erörtert. Während die vorletzte die Wert-Mustervariable \verb|$a| einsetzt, bringt die letzte Regel die Mustervariablen \verb|_aPow2| und \verb|_2a| über die angestellte Bedingung in Beziehung zueinander.
 
@@ -151,18 +151,18 @@ Ein Lambdaparameter ist in der Syntax nicht von anderen Symbolen unterscheidbar\
  Die gewählte Indizierung hat ein Problem, welches die De Bruijn Indizierung nicht besitzt. Der Index eines Lambdaparameters ist abhängig vom Kontext der bindenden Abstraktion. Ändert sich dieser Kontext, stimmt die bisherige Indizierung möglicherweise nicht mehr:
  Enthält ein Argument $a$ der Funktionsanwendung einer Lambdafunktion $f$ selbst eine Lambdafunktion $g$, so reicht es für die Auswertung von $f$ mit bisher diskutierten Konzepten nicht aus, den entsprechenden Lambdaparameter von $f$ einfach durch $a$ zu ersetzen. Sollte diese Ersetzung innerhalb einer Lambdaabstraktion $f'$ stattfinden, müssen alle Lambdaparameter von $g$ im Index um die Anzahl der weiter außen gebundenen Parameter erhöht werden. Als Beispiel ist $a = g = \lambda x_0 .x_0$ die Identität, welche der Funktion $f = \lambda x_0 .\lambda y_1 .x_0(y_1)$ übergeben wird. Teil der Definition von $f$ ist $f' = \lambda y_1 .x_0(y_1)$.
  $$(\lambda x_0 .\lambda y_1 .x_0(y_1))(\lambda x_0 .x_0)$$
- Alternativ kann der selbe Audruck dargestellt werden, ohne Information zu benutzen
+ 
  An dieser Stelle wird zudem eine alternative Notation eingeführt, die nur Information benutzt, die der Implementierung tatsächlich bekannt ist. Ehrlicher ist die Darstellung einer Lambdaabstraktionen mit $n$ Parametern als $\lambda [n] .\textit{<Definition>}$. Mit den Parametern geschrieben als Prozentzeichen gefolgt von ihrem Index, ist der problematische Ausdruck geschrieben als
  
- $$(\lambda [1] .\lambda [1] .\%0(\%1))(\lambda [1] .\%0)$$.
- Die Naive Ersetzung von $x_0$ in $f$ durch $g$ würde im folgenden Ausdruck resultieren.
+ $$(\lambda [1] .\lambda [1] .\%0(\%1))(\lambda [1] .\%0).$$
+ Die naive Ersetzung von $x_0$ in $f$ durch $g$ würde im folgenden Ausdruck resultieren.
  $$\lambda y_0 .(\lambda x_0 .x_0)(y_0)$$
- Ohne Namen ist jetzt klar, dass in der Abbildungsvorschrift von $g$ nun fälschlicherweise auf den Parameter von $f'$ abgebildet wird:
+ Ohne Namen ist jetzt klar, dass in der Abbildungsvorschrift von $g$ nun fälschlicherweise auf den Parameter von $f'$ abgebildet wird.
  $$\lambda [1] .(\lambda [1] .\%0)(\%0)$$
- Es gibt verschiedene Möglichkeiten, den Fehler zu beheben. Eine einfache Lösung ist, Indizes von eingesetzten Argumenten in der Auswertung einer Lambdafunktion entsprechend anzupassen. Konsequenz wäre aber, dass die Komplexität der Auswertung von der Größe der Argumente abhängig ist. Ein weiterer Nachteil ist, dass veränderte Argumente kopiert werden müssen. Das macht \textit{lazy evaluation} \cite{EvalStrategien}, also die Idee, jede Funktionsanwendung höchstens einmal auswerten zu müssen, unmöglich.
+ Es gibt verschiedene Möglichkeiten, den Fehler zu beheben. Eine einfache Lösung ist, Indices von eingesetzten Argumenten in der Auswertung einer Lambdafunktion entsprechend anzupassen. Konsequenz wäre aber, dass die Komplexität der Auswertung von der Größe der Argumente abhängig ist. Ein weiterer Nachteil ist, dass veränderte Argumente kopiert werden müssen. Das macht \textit{lazy evaluation} \cite{EvalStrategien}, also die Idee, jede Funktionsanwendung höchstens einmal auswerten zu müssen, unmöglich.
  
  Eine Alternative ist die Unterscheidung zwischen sogenannten \Emph{\glspl{transparent}} Lambdas und \Emph{nicht-transparenten} Lambdas, zweitere dargestellt durch umschließende geschweifte Klammern: $\{\lambda \textit{<Parameter>}.\textit{<Definition>}\}$ bzw. $\{\lambda [n].\textit{<Definition>}\}$. Kommt ein transparentes Lambda $f'$ in der Definition eines Lambdas $f$ vor, wird bei der Auswertung von $f$ auch in $f'$ nach Lambdaparametern gesucht und diese ersetzt bzw. deren Index erniedrigt. Transparente Lambdas verhalten sich damit nicht anders als die Lambdas bisher. Ist $f'$ allerdings nicht-transparent, lässt die Auswertung von $f$ die Definition von $f'$ unberührt. 
- Mit zwei weiteren Bedingungen wird die Überprüfung von Argumenten bei der Auswertung Lambdas dann obszolet: 
+ Mit zwei weiteren Bedingungen wird die Überprüfung von Argumenten bei der Auswertung Lambdas dann obsolet: 
  Zum einen darf ein \Emph{außenliegendes} Lambda $f$ nicht transparent sein. Ein Lambda ist außenliegend, wenn es nicht Teil der Definition einem weiteren Lambdas ist, also zu seinen Ahnen keine Lambdaabstraktionen gehören. Zum anderen darf die Funktionsanwendung eines Lambdas nur ausgewertet werden, wenn das Lambda außenliegend ist. Damit wird garantiert, dass während der Auswertung des Lambdas $f$ kein Argument $a$ direkt transparente Lambdas enthält, höchtens als Teil $g'$ (im Beispiel nicht enthalten) eines nicht-transparenten Lambdas $g$.
 
 Im bereits behandelten Problemfall sind $f$ und $g$ damit nicht-transparent. Nur $f'$ ist zu Beginn transparent. Nach Auswertung von $f$ ist $f'$ dann jedoch ebenfalls außenliegend.
@@ -193,7 +193,7 @@ Nach Definition \ref{defMatch} ist das Match $v_p$ für ein Paar $(p, t)$ aus Mu
 Vor einem Matchversuch muss ein Muster mit Wert-Mustervariablen transformiert werden. Ziel der Transformation ist, dass für den Matchalgorithmus direkt klar ist, ab wo das Muster einen Wert repräsentieren soll. Der Teilbaum des Musters, der eine Wert-Mustervariable $w$ enthält und als ganzes einen Wert matchen soll, ist idealerweise also direkt gekennzeichnet. In der Umsetzung ist das realisiert, indem eine Wert-Mustervariable im zu matchenden Muster kein Blatt darstellt, sondern einen Teilbaum markiert. Dieser entspricht nicht der ursprünglichen Umgebung um die Wert-Mustervariable, sondern derer Inversen. 
 
 \begin{figure}
-\begin{verbatim}
+\begin{unbreakable}\begin{verbatim}
 value_match__(_i, _dom, _match) + _a + cs... | _a :complex 
     = value_match__(_i, _dom, _match - _a) + cs...
         
@@ -205,12 +205,12 @@ value_match__(_i, _dom, _match) ^ 2
         
 sqrt(value_match__(_i, _dom, _match))                           
     = value_match__(_i, _dom, _match ^ 2)
-\end{verbatim}
+\end{verbatim}\end{unbreakable}
+\caption{Transformationsregeln für Muster mit Wert-Mustervariable}
 \label{figWertMusterBau}
-\caption{Transformationsregeln von Mustern mit Wert-Mustervariable}
 \end{figure}
 
-Die Transformation in diese Form erfolgt über Anwendung von Ersetzungsregeln. Die Wert-Mustervariable wird dazu temporär als Funktionsanwendung des Symbols \verb|value_match__| gespeichert. Die Regeln sind - jeweils zweizeilig -  in Abbildung \ref{figWertMusterBau} aufgeführt. Das Funktionssymbol erwartet drei Argumente, hier die Mustervariablen \verb|_i| für den Identifikationsindex, \verb|_dom| für den erlauben Raum (kurz für \textit{domain}) und \verb|_match| für den Teilterm, der im Matchalgorithmus den Wert bestimmt. 
+Die Transformation in diese Form erfolgt über Anwendung von Ersetzungsregeln. Die Wert-Mustervariable wird dazu temporär als Funktionsanwendung des Symbols \verb|value_match__| gespeichert. Die Regeln sind jeweils zweizeilig in Abbildung \ref{figWertMusterBau} aufgeführt. Das Funktionssymbol erwartet drei Argumente, hier die Mustervariablen \verb|_i| für den Identifikationsindex, \verb|_dom| für den erlauben Raum (kurz für \textit{domain}) und \verb|_match| für den Teilterm, der im Matchalgorithmus den Wert bestimmt. 
 
 
 Die finale Repräsentation einer Wert-Mustervariablen entspricht in den gespeicherten Informationen fast exakt der Zwischenform als Funktionsanwendung von \verb|value_match__|. Ergänzt wird einzig, ob die jeweilige Instanz bindend oder gebunden ist.
@@ -219,13 +219,13 @@ Im Match der Wert-Mustervariablen $w$ mit einer komplexen Zahl $z$ als Literal w
 
 \begin{beispiel}~\\
 Das Muster $p =$ \verb~cos(2 $k pi) | $k :int~ mit der Wert-Mustervariable $w =$ \verb|$k| wird in der Zwischenrepräsentation dargestellt als 
-\begin{verbatim}
+\begin{unbreakable}\begin{verbatim}
 cos(2 value_match__(0, int, value_proxy__) pi). 
-\end{verbatim}
+\end{verbatim}\end{unbreakable}
 Die zweite Regel aus Abbildung \ref{figWertMusterBau} lässt sich mit $v_p$ \verb|_a| = \verb|2| auf den gegebenen Term anwenden. Die Normalform von $p$ ist das Ergebnis der Regelanwendung:
-\begin{verbatim}
+\begin{unbreakable}\begin{verbatim}
 cos(value_match__(0, int, value_proxy__ / 2) pi)
-\end{verbatim}
+\end{verbatim}\end{unbreakable}
 Nach Umwandlung der Funktionsanwendung von \verb|value_match__| in die interne Darstellung, genannt $w'$, hat das finale Muster die Form $p' =$ \verb|cos(|$w'$\verb| pi)|. 
 
 
@@ -233,9 +233,9 @@ Das Literal \verb|cos(8 pi)| kann mit $p'$ gematcht werden. Dazu muss \verb|8| m
 \end{beispiel}
 
 \subsubsection{Starke Ordnung}
-In Kapitel \ref{subsecCMuster} wurden Wert-Mustervariablen ausgeschlossen, da sie die starke Ordnung vieler Muster zueinander zerstören. In der hier beschriebenen Umsetzung ist das allerdings nicht der Fall. Nach außen verhält sich eine Wert-Mustervariable in matchbereiter Konfiguration exakt wie eine normale Mustervariable, die ausschließlich bestimmte Teilmengen der Komplexen Zahlen matchen kann. Die Frage, welche Funktionsanwendungen eines Musters auch Konstantensymbole matchen können, stellt sich damit nicht mehr im Matchalgorithmus. Die entsprechenden Teile des Musters wurden bereits vorab erkannt und mit den Regeln aus Abbildung \ref{figWertMusterBau} so transformiert, dass die Wert-Mustervariable direkt den gesamten Teilbaum repräsentiert.
+In Kapitel \ref{subsecCMuster} wurden Wert-Mustervariablen ausgeschlossen, da sie die starke Ordnung vieler Muster zueinander zerstören. In der hier beschriebenen Umsetzung ist das allerdings nicht der Fall. Nach außen verhält sich eine Wert-Mustervariable in matchbereiter Konfiguration exakt wie eine normale Mustervariable, die ausschließlich bestimmte Teilmengen der Komplexen Zahlen matchen kann. Die Frage, welche Funktionsanwendungen eines Musters auch Konstantensymbole matchen können, stellt sich damit nicht mehr während der Ausführung des Matchalgorithmus. Die entsprechenden Teile des Musters wurden bereits vorab erkannt und mit den Regeln aus Abbildung \ref{figWertMusterBau} so transformiert, dass die Wert-Mustervariable direkt den gesamten Teilbaum repräsentiert.
 
-Nachteil dieser Vorgehensweise ist, dass an manchen Stellen mehrere fast identische Muster benötigt werden, da die Wert-Mustervariablen jetzt ausschließlich Werte erkennen, nicht mehr die ursprünglichen Teilbäume. 
+Nachteil dieser Vorgehensweise ist, dass an manchen Stellen mehrere fast identische Muster benötigt werden, da Wert-Mustervariablen jetzt ausschließlich Werte erkennen, nicht mehr die ursprünglichen Teilbäume. 
 
 
 \subsection{Bedingungen} \label{subsubsecBedingungen}
@@ -247,7 +247,7 @@ Diese Bedingungen übernehmen teilweise eine ähnliche Rolle wie die Wert-Muster
 \subsubsection{Mögliche Ausdrücke}
 Bedingungen, die nicht mit Wert-Mustervariablen dargestellt werden könnten, nutzen primär die Funktionssymbole \verb|contains|, \verb|neq| und \verb|of_type__|. Ersteres ist binär und prüft, ob das erste Argument Teilbaum des zweiten Argumentes ist\footnote{sie Abschnitt \ref{subsubsecDiff}}. Zweiteres (normal in Infixform \verb|!=| geschrieben) ist ebenfalls binär und prüft, ob zwei Teilbäume ungleich sind. Beide dürfen dabei allerdings ausschließlich direkt Mustervariablen als Argumente übergeben bekommen. 
 
-Das Symbol \verb|of_type__| ist auch binär und wird normal nicht direkt hingeschrieben, sondern tritt als Infixoperator \verb|:| auf. Die Bedeutung variiert dann nach dem rechten Argument. Ist dies ein Knotentyp, etwa \verb|complex| oder \verb|f_app|, prüft \verb|of_type__|, ob das linke Argument von diesem Typ ist. Eine spezifischere Variante der Bedingung \verb|_x :f_app| ist {\verb|_x :|$f$}, mit einem Symbol $f$. In dem Fall wird geprüft, ob die linke Seite eine Funktionsanwendung von $f$ ist. Als Beispiel muss mit der Bedingung \verb|_x :sum| die Mustervariable \verb|_x| mit einer Summe, also einer Funktionsanwendung des Symbols \verb|sum|, gematcht sein, damit das Match gültig ist.
+Genauso ist das Symbol \verb|of_type__| binär und wird normal nicht ausgeschrieben hingeschrieben, sondern tritt als Infixoperator \verb|:| auf. Die Bedeutung variiert dann nach dem rechten Argument. Ist dies ein Knotentyp, etwa \verb|complex| oder \verb|f_app|, prüft \verb|of_type__|, ob das linke Argument von diesem Typ ist. Eine spezifischere Variante der Bedingung \verb|_x :f_app| ist {\verb|_x :|$f$}, mit einem Symbol $f$. In dem Fall wird geprüft, ob die linke Seite eine Funktionsanwendung von $f$ ist. Als Beispiel muss mit der Bedingung \verb|_x :sum| die Mustervariable \verb|_x| mit einer Summe, also einer Funktionsanwendung des Symbols \verb|sum|, gematcht sein, damit das Match gültig ist.
 Der dritte Spezialfall tritt auf, wenn die rechte Seite eine fest definierte Teilmenge der Komplexen Zahlen ist, etwa \verb|_x :int|. Die linke Seite muss dann nicht direkt eine Mustervariable sein, sondern lediglich zu einer Komplexen Zahl ausgewertet werden können\footnote{siehe Abschnitt \ref{subsubsecCos}}.
 
 \subsubsection{Umsetzung}
@@ -261,22 +261,43 @@ Eine Bedingung die mehrere Mustervariablen enthält, wird der Mustervariablen hi
 %.........................................................................
 %.........................................................................
 \section{Datenstruktur}
-Die Knoten des Termbaums liegen in einem Array, dem sogenannten \verb|Store|. Während eine Komplexe Zahl oder ein Lambdaparameter immer ein Arrayelement besetzen, kann die Funktionsanwendung auch mehrere direkt hintereinanderliegende Arrayelemente nutzen, je nachdem, wie viele Argumente referenziert werden müssen. Referenziert wird ein Knoten aus einem Paar aus Arrayindex und Knotentyp, beide dargestellt als natürliche Zahl. Dieses Paar wird \verb|NodeIndex| genannt. Der Knotentyp wird als \verb|NodeType| bezeichnet und kann 12 verschiedene Werte annehmen, eng verwandt mit Definition \ref{defKnotentypenMathe}:
-\begin{enumerate}
-	\setcounter{enumi}{-1} %beginne aufzählung bei 0
-	\item {$\Sigma^+$.}
-	\item {Komplexe Fließkommazahl\footnote{Die Nutzung von Fließkommazahlen ist für Computeralgebra nur bedingt geeignet, erlaubt aber die Verwendung der im C\texttt{++} Standard geforderten Rechenoperationen für Komplexe Zahlen. Über Auslesen der entsprechenden CPU-Flags kann dennoch garantiert werden, dass ausschließlich exakte Vereinfachungen durchgeführt werden.}, zusammengesetzt aus zwei 64-bit Fließkommazahlen für Realteil und Imaginärteil}
-	\item {$\Lambda$}
-	\item {$V$}
-	\item {Funktionsanwendung in einem Literal}
-	\item {Funktionsanwendung in einem Muster}
-	\item {Hilfsyp, aktuell genutzt in der Transformation eines Musters mit Wert-Mustervariablen}
-	\item {bindende Instanz einer Mustervariable $\mathbf x \in X$ an die im Muster Bedingungen geknüpft sind}
-	\item {bindene Instanz einer Mustervariable $\mathbf x \in X$ ohne weitere Bedingungen}
-	\item {gebundene Instanz einer Mustervariable $\mathbf x \in X$}
-	\item {$X^*$}
-	\item {$W$}
-\end{enumerate}
+Die Knoten des Termbaums liegen in einem Array, dem sogenannten \verb|Store|. Während eine Komplexe Zahl oder ein Lambdaparameter immer ein Arrayelement besetzen, kann die Funktionsanwendung auch mehrere direkt hintereinanderliegende Arrayelemente nutzen, je nachdem, wie viele Argumente referenziert werden müssen. Referenziert wird ein Knoten aus einem Paar aus Arrayindex und Knotentyp, beide dargestellt als natürliche Zahl. Dieses Paar wird \verb|NodeIndex| genannt. Der Knotentyp wird als \verb|NodeType| bezeichnet und kann die in Tabelle \ref{tabNodeType} gelisteten 12 verschiedene Werte annehmen, eng verwandt mit Definition \ref{defKnotentypenMathe}.
+
+\begin{figure}
+    \centering
+    \begin{tabular}{l l}
+        \hline
+        Wert & repräsentiert\\
+        \hline \hline
+        0 & $\Sigma^+$\\
+        \hline
+        1 & Komplexe Fließkommazahl\footnote{Die Nutzung von Fließkommazahlen ist für Computeralgebra nur bedingt geeignet, erlaubt aber die Verwendung der im C\texttt{++} Standard geforderten Rechenoperationen für Komplexe Zahlen. Über Auslesen der entsprechenden CPU-Flags kann dennoch garantiert werden, dass ausschließlich exakte Vereinfachungen durchgeführt werden.}\\
+        \hline
+        2 & $\Lambda$\\
+        \hline
+        3 & $V$\\
+        \hline
+        4 & Funktionsanwendung in einem Literal\\
+        \hline
+        5 & Funktionsanwendung in einem Muster\\
+        \hline
+        6 & \shortstack[l]{Hilfstyp, aktuell genutzt in der Transformation eines Musters \\ mit Wert-Mustervariablen}\\
+        \hline
+        7 & \shortstack[l]{bindende Instanz einer Mustervariable $\mathbf x \in X$ an die im Muster \\ Bedingungen geknüpft sind}\\
+        \hline
+        8 & bindende Instanz einer Mustervariable $\mathbf x \in X$ ohne weitere Bedingungen\\
+        \hline
+        9 & gebundene Instanz einer Mustervariable $\mathbf x \in X$\\
+        \hline
+        10 & $X^*$\\
+        \hline
+        11 & $W$\\
+        \hline
+    \end{tabular}
+    \caption{Werte von \texttt{NodeType}}
+    \label{tabNodeType}
+\end{figure}
+
 Manche der hier aufgezählten Knoten müssen neben ihrem Typen nur eine einzige natürliche Zahl kennen. Bereits diekutiert wurde das für Knoten von Typ $3$, den Lambdaparametern. Für ein Knoten dieser Art ist es nicht notwendig, die Information als eigenens Arrayelement des \verb|Store| zu speichern, der Index des Paares aus Index und Typ von \verb|NodeType| enthält direkt den erforderlichen Wert. Damit werden die entsprechenden Argumente ohne Indirektion direkt in einer Funktionsanwendung gespeichert. Knoten dieser Art sind Typ 0, 3, 6, 8 und 9. Für Symbole aus $\Sigma^+$ wird nicht der Name selbst gespeichert, sondern der Index in einem zentralen Namensspeicher. Nicht optimal ist damit, dass die Ordnung zweier Symbole aus $\Sigma^+$ zueinander von der Reihenfolge der Auflistung im Namensspeicher und damit von der Eingabereihenfolge abhängen, was aber nur ästhetische Nachteile birgt. Der Zugriff auf den Namensspeicher wird so auf die Eingabe und Ausgabe eines Terms beschränkt.
 
 
@@ -300,15 +321,15 @@ union TermNode
     FAppInfo f_app_info; //metadata for f_app in pattern (directly preceeding)
 };
 \end{minted}
-\label{codeTermNode}
 \caption{mögliche Einträge eines Feldes im Speicher}
+\label{codeTermNode}
 \end{listing}
 
 
 
 \begin{beispiel}~\\ \label{bspREPLliteral}
 Das Literal \verb|tup(f(a, b)(c), 1, 2, 3)| wird in der folgenden Debugausgabe genutzt, um den Speicheraufbau zu veranschaulichen.
-\begin{verbatim}
+\begin{unbreakable}\begin{verbatim}
   head at index: 5
    0 | application:     { 121,  92,  93 }    f(a, b)
    1 | application:     {   0,  94 }         f(a, b)(c)
@@ -317,7 +338,7 @@ Das Literal \verb|tup(f(a, b)(c), 1, 2, 3)| wird in der folgenden Debugausgabe g
    4 | value      :                          3
    5 | application:     {  78,   1,   2,     tup(f(a, b)(c), 1, 2, 3)
    6 |   ...           3,   4 }
-\end{verbatim}
+\end{verbatim}\end{unbreakable}
 Die linke Spalte gibt den Arrayindex an. Nach der Art des gespeicherten Knotens folgt dann für Funktionsanwendungen die Auflistung der Funktion und Argumente. Ganz rechts ist der Teilbaum beginnend an dem entsprechenden Arrayindex angegeben. Bemerkenswert ist hierbei, dass die Symbole \verb|f|, \verb|tup|, \verb|a|, \verb|b| und \verb|c| als solche nicht im Array gespeichert sind. Die Funktionsanwendung von \verb|f| gespeichert an Index 0 verrät allerdings, dass das Programm vor dem Parsen von Symbol \verb|f| bereits 121 andere unbekannte Symbole eingelesen hat. Analog ist \verb|a| als Index 92, \verb|b| als Index 93 und \verb|c| als Index 94 gespeichert. 
 Interessant ist weiter, dass die Funktionsanwendung des Symbols \verb|tup| beginnend an Arrayindex 5 auch das darauffolgende Arrayelement belegt. Bis auf den Index von \verb|tup|, beziehen sich die restlichen Indices dieser Funktionsanwendung tatsächlich auf echte Elemente im Array. 
 \end{beispiel}
@@ -325,22 +346,22 @@ Interessant ist weiter, dass die Funktionsanwendung des Symbols \verb|tup| begin
 
 \begin{beispiel}~\\ \label{bspREPLlambda}
 Die in Abschnitt \ref{subsecLambdafunktionen} genutzte Notation für Lambdas mit namenlosen Lambdaparametern wird auch in der Umsetzung zur Darstellung von Lambdafunktionen genutzt. Als Bespiel wird die Speichernutzung des Literals \verb|(\f x .f(x, x, x))(sum, 3)| gezeigt.
-\begin{verbatim}
+\begin{unbreakable}\begin{verbatim}
   head at index: 4
    0 | application:     {   0,   1,   1,     %0(%1, %1, %1)
    1 |   ...           1 }
    2 | lambda     :                          {\[2].%0(%1, %1, %1)}
    3 | value      :                          3
    4 | application:     {   2,  81,   3 }    {\[2].%0(%1, %1, %1)}(sum, 3)
-\end{verbatim}
+\end{verbatim}\end{unbreakable}
 Nach Auswertung von $\Const{normalize}$ ändert sich die Speicherbelegung.
-\begin{verbatim}
+\begin{unbreakable}\begin{verbatim}
   head at index: 0
    0 | value      :                          9
    1 | -----free slot-----
 ...
    6 | -----free slot-----
-\end{verbatim}
+\end{verbatim}\end{unbreakable}
 Zuerst wurden die Argumente \verb|sum| und \verb|3| in eine Kopie der Lambdadefinition eingesetzt, dann wurde die Funktionsanwendung von \verb|sum| zur Komplexen Zahl \verb|9| ausgewertet. Diese kann in einem einzelnen Arrayelement gespeichert werden, der restliche Platz ist jetzt ungenutzt.
 \end{beispiel}
 
@@ -353,7 +374,7 @@ Zuerst wurden die Argumente \verb|sum| und \verb|3| in eine Kopie der Lambdadefi
 %.........................................................................
 \section{Algorithmen} \label{subsecCppAlgos}
 
-Die beschriebene Datenstruktur wird in den meisten Fällen rekursiv abgelaufen. Der einzelne \verb|NodeIndex|, bietet aber nicht genug Information, um zu wissen, wo der referenzierte Knoten gespeichert ist. Das Array des \verb|Store| muss adressierbar sein. Für diesen Zweck gibt es Hilfstypen, die eine Referenz auf den \verb|Store|, bzw. das unterliegende Array mit dem \verb|NodeIndex| bündeln. Die mutierbare Variante wird als \verb|MutRef| bezeichnet. Soll nur lesen des Terms erlaubt sein, gibt es die Hilfstypen \verb|Ref| und \verb|UnsaveRef|. 
+Die beschriebene Datenstruktur wird in den meisten Fällen rekursiv abgelaufen. Der einzelne \verb|NodeIndex| bietet aber nicht genug Information, um zu wissen, wo der referenzierte Knoten gespeichert ist. Das Array des \verb|Store| muss adressierbar sein. Für diesen Zweck gibt es Hilfstypen, die eine Referenz auf den \verb|Store|, bzw. das unterliegende Array mit dem \verb|NodeIndex| bündeln. Die mutierbare Variante wird als \verb|MutRef| bezeichnet. Soll nur lesen des Terms erlaubt sein, gibt es die Hilfstypen \verb|Ref| und \verb|UnsaveRef|. 
 
 \begin{listing}
 \footnotesize
@@ -386,11 +407,13 @@ void free_tree(const MutRef ref)
     ref.store->free_one(ref.index);
 } //free_tree
 \end{minted}
-\label{codeFreeTree}
 \caption{Speicherfreigabe eines Teilterms}
+\label{codeFreeTree}
 \end{listing}
 
-Illustriert wird die Vorgehensweise des Ablaufens des Terms als Baum mit polymorphen Knoten anhand der Funktion \verb|free_tree|, dargestellt als Quelltext \ref{codeFreeTree}, welche im \verb|Store| die von dem übergebenden Teilbaum \verb|ref| belegten Arrayfelder freigibt, sofern in Zeile 3 nicht herausgefunden wird, dass der Teilbaum noch von anderer Stelle referenziert wird. Die Felder \verb|ref.type| und \verb|ref.index| von \verb|MutRef| sind als Daten von \verb|NodeIndex| zu erkennen. Die Methode \verb|ref.at(|$x$\verb|)| konstruiert eine Referenz zu einem neuen Teilterm $x$, übergeben als \verb|NodeIndex|.
+Illustriert wird die Vorgehensweise des Ablaufens des Terms als Baum mit polymorphen Knoten anhand der Funktion \verb|free_tree|, dargestellt als Quelltext \ref{codeFreeTree}, welche im \verb|Store| die von dem übergebenden Teilbaum \verb|ref| belegten Arrayfelder freigibt. Diese Freigabe ist aber nur möglich, wenn in Zeile 3 zum einen festgestellt wird, dass zu dem Term auch Arrayelemente im \verb|Store| gehören und dass diese von nirgendwo sonst referenziert werden,
+ Die Felder \verb|ref.type| und \verb|ref.index| von \verb|MutRef| sind als Daten von \verb|NodeIndex| zu erkennen. Die Methode \verb|ref.at(|$x$\verb|)| konstruiert eine Referenz zu einem neuen Teilterm $x$, übergeben als \verb|NodeIndex|.
+Die Werte, die die einzelnen \verb|case|-Statements differenzieren, sind die Zahlen aus Tabelle \ref{tabNodeType}, jedoch zur Kompilierzeit berechnet aus korrespondierenden \verb|enum|-Werten.
 
 \subsection{Eingebaute Auswertung und Normalisierung} \label{subsubsecAuswertungNormalCpp}
 
@@ -418,8 +441,8 @@ NodeIndex normalize::recursive(const MutRef ref, const Options options)
     return normalize::outermost(ref, options).res;
 } //recursive
 \end{minted}
-\label{codeNormalizeRecursive}
 \caption{rekursive Normalisierung eines Literals}
+\label{codeNormalizeRecursive}
 \end{listing}
 
 Erst die Funktion \verb|normalize::recursive|, abgebildet als Quelltext \ref{codeNormalizeRecursive}, implementiert dann die Auswertungsstrategie für den Gesamtterm: Zuerst wird in Zeile 6 das Funktionssymbol berechnet, was in der aktuellen Funktionsanwendung angewendet wird. Möglich ist, dass ein Funktionssymbol faul ist\footnote{Das ist aktuell ausschließlich für \texttt{true} und \texttt{false} als binäre Funktionen der Fall: \texttt{true} bildet auf das erste Argument ab, \texttt{false} auf das zweite.}, also vor seinen Argumenten normalisiert wird. 
@@ -434,15 +457,21 @@ Die große Lücke bei der Diskussion des Matchalgorithmus in Kapitel \ref{secPat
 \begin{listing}
 \footnotesize
 \begin{minted}[xleftmargin=2em, linenos, breaklines]{cpp}
-bool matches(const UnsaveRef pn_ref, const UnsaveRef ref, match::State& match_state);
+bool find_match(const UnsaveRef pn_ref, const UnsaveRef ref, State& match_state);
 
-bool rematch(const UnsaveRef pn_ref, const UnsaveRef ref, match::State& match_state);
+bool rematch(const UnsaveRef pn_ref, const UnsaveRef ref, State& match_state);
+
+bool find_identic(const UnsaveRef pn_ref, const UnsaveRef hay_ref, State& match_state, const bool find_rematch);
+
+bool find_permutation(const UnsaveRef pn_ref, const UnsaveRef hay_ref, State& match_state, const bool find_rematch);
+
+bool find_dilation(const UnsaveRef pn_ref, const UnsaveRef hay_ref, State& match_state, const bool find_rematch);
 \end{minted}
+\caption{Funktionsdelarationen der Algorithmen \ref{findMatch}, \ref{rematch}, \ref{findIdentic}, \ref{findPermutation} und \ref{findDilation}}
 \label{codeRematchDecl}
-\caption{Funktionsdelarationen der Algorithmen \ref{findMatch} und \ref{rematch}}
 \end{listing}
 
-Der Typ \verb|match::State| enthält primär drei Arrays. Im Array \verb|.single_vars| sind die Referenzen der Teilterme des Literals, mit dem die bindenden Instanzen der normalen Mustervariablen aktuell assoziiert sind als \verb|NodeIndex| gespeichert.
+Der Typ \verb|State| enthält primär drei Arrays. Im Array \verb|.single_vars| sind die Referenzen der Teilterme des Literals, mit dem die bindenden Instanzen der normalen Mustervariablen aktuell assoziiert sind als \verb|NodeIndex| gespeichert.
 Im Array \verb|.value_vars| ist für jede Wert-Mustervariable der aktuell assoziierte Wert gespeichert. Diese beiden Arrays implementieren damit fast exakt das Match $v_p$. Die Indices der Mustervariablen werden in den Arrays auf die entsprechend assoziierten Literale abgebildet.
 Nicht ausschließlich als Teil $v_p$ zu verstehen, ist der Teil von \verb|match::State|, der die Matchkonfiguration jeder Funktionsanwendung des Musters mit kommutativem Funktionssymbol oder mit Multi-Mustervariablen unter den Argumenten festhält. Das Array \verb|.f_app_entries| hält diese Konfigurationen mit einem Element für jede darauf zurückgreifende Funktionsanwendung. Ein solches Element besteht selbst aus einem Array mit einem Eintrag für jedes Argument der Funktionsanwendung, der speichert, mit dem Literal an welchem Index $k$ aktuell das Match besteht. Eine sekundäre Funktion besitzt \verb|.f_app_entries| für Multi-Mustervariablen. Die Argumente des Literals, die einer entsprechenden Mustervariablen zugeordnet werden, können hieraus rekonstruiert werden, da die Multi-Mustervariablen genau die Stellen besetzen, die mit keinem normalen Argument gematcht sind. Das erlaubt der Implementierung die Multi-Mustervariablen auf der linken Seite eines Musters exakt so zu nutzen, wie im Pseudocode angedeutet, also als einfache Logikwerte in einem Array bei jeder Funktionsanwendung. 
 
@@ -458,7 +487,7 @@ Nicht ausschließlich als Teil $v_p$ zu verstehen, ist der Teil von \verb|match:
 
 Wenn auch Ableitungsregeln nicht die Möglichkeiten des assoziativen und kommutativen Matches ausnutzen, bieten sie eine gute erste Übersicht der Nutzung eines Termersetzungssystems.
 
-\begin{verbatim}
+\begin{unbreakable}\begin{verbatim}
 diff(_x, _x)                     = 1
 diff(_a, _x) | !contains(_a, _x) = 0
 diff(_g^_h, _x) = (diff(_h, _x) ln(_g) + _h diff(_g, _x) / _g) _g^_h
@@ -473,17 +502,16 @@ fdiff(exp)     = exp
 fdiff(ln)      = \x .x^(-1)
 fdiff(tan)     = \x .cos(x)^(-2)
 ...
-\end{verbatim}
+\end{verbatim}\end{unbreakable}
 
 Die linken Seiten sind entweder Funktionsanwendungen des binären Funktionssymbols \verb|diff| oder des unären Funktionssymbols \verb|fdiff|. Während \verb|diff| einen beliebigen Term als erstes Argument erwartet, gefolgt von dem Symbol, nach dem abgeleitet werden soll, Leitet \verb|fdiff| unäre Funktionen ab. Das vereinfacht die Syntax zur Darstellung der Kettenregel, welche als letzte Regel für \verb|diff|  vor der Leerzeile umgesetzt ist. Interessant ist bei dem entsprechenden Muster \verb|diff(_f(_y), _x)|, dass die Funktion, deren Anwendung abgeleitet wird, repräsentiert durch die Mustervariable \verb|_f|, selbst eine Unbekannte ist. Die rechte Seite \verb|diff(_y, _x) fdiff(_f)(_y)| implementiert dann das \glqq innere mal äußere Ableitung \glqq{} Muster. Da \verb|fdiff(_f)| eine Funktion zurückgibt, kann auf diese Funktion dann das Argument \verb|_y| angewendet werden.
 
 Im folgenden wird die rechte Seite der vierten Regel diskutiert.
-
-\verb~    diff(_a, _x) | _a :sum = map(sum, \f .diff(f, _x), _a)~
-
-Das Funktionssymbol \verb|map| hat eine fest in $\Const{normalize}$ eingebaute Auswertung: Sollte das dritte Argument eine Funktionsanwendung des ersten Argumentes $g$ sein, wird wieder eine Funktionsanwendung von $g$ zurückgegeben, allerdings mit dem zweiten Argument von \verb|map| angewendet auf jedes Argument von $g$. In Mustern geschrieben, sähe die Abbildungsvorschrift von \verb|map| wie folgt aus:
-
 \begin{verbatim}
+diff(_a, _x) | _a :sum = map(sum, \f .diff(f, _x), _a)
+\end{verbatim}
+Das Funktionssymbol \verb|map| hat eine fest in $\Const{normalize}$ eingebaute Auswertung: Sollte das dritte Argument eine Funktionsanwendung des ersten Argumentes $g$ sein, wird wieder eine Funktionsanwendung von $g$ zurückgegeben, allerdings mit dem zweiten Argument von \verb|map| angewendet auf jedes Argument von $g$. In Mustern geschrieben, sähe die Abbildungsvorschrift von \verb|map| wie folgt aus:
+\begin{unbreakable}\begin{verbatim}
 map(_g, _f, _g(xs...)) 
     = map_helper(_g(), _g(xs...), _f)
 
@@ -492,7 +520,7 @@ map_helper(_g(xs...), _g(_y, ys...), _f)
 
 map_helper(_g_app, _g(), _f) 
     = _g_app
-\end{verbatim}
+\end{verbatim}\end{unbreakable}
 
 In der konkreten Anwendung im Muster wird also die Ableitung einer Summe umgeschrieben als die Summe der Ableitungen der Argumente. Das Muster
 
@@ -502,8 +530,7 @@ hätte in wiederholter Anwendung den selben Effekt, die genutze Version benötig
 
 \begin{beispiel}~\\
 Angewendet auf das Literal \verb|diff(sin(pi t) + 3, t)|, erzeugen die Ableitungsregeln folgende Zwischenergebnisse, bzw. folgende Normalform (Leerzeichen sind zur verbesserten Lesbarkeit ergänzt).
-\begin{verbatim}
-
+\begin{unbreakable}\begin{verbatim}
 diff(3, t) + diff(sin(pi t), t)
 0          + diff(sin(pi t), t)
              diff(pi t, t)                   fdiff(sin)(pi t)
@@ -513,34 +540,34 @@ diff(3, t) + diff(sin(pi t), t)
              (pi            + t 0          )        cos(pi t)
              
 pi cos(pi t)
-\end{verbatim}
+\end{verbatim}\end{unbreakable}
 \end{beispiel}
 
 \subsection{Exakte Auswertung trigonometrischer Funktionen} \label{subsubsecCos}
 Die Regeln zur Erkennung von Nullstellen und Extrempunkte der Kosinus-Funktion lassen sich sehr kompakt mit Wert-Mustervariablen beschreiben: 
 
-\begin{verbatim}
+\begin{unbreakable}\begin{verbatim}
 cos(             pi)           = -1
 cos(($k + 0.5)   pi) | $k :int =  0
 cos((2 $k)       pi) | $k :int =  1
 cos((2 $k + 1)   pi) | $k :int = -1
-\end{verbatim}
+\end{verbatim}\end{unbreakable}
 
 Eine alternative Regelmenge mit selbem Effekt nutzt Bedingungen.
 
-\begin{verbatim}
+\begin{unbreakable}\begin{verbatim}
 cos(   pi)                     = -1
 cos(_a pi) | _a + 1/2     :int =  0
 cos(_a pi) | _a / 2       :int =  1
 cos(_a pi) | (_a - 1) / 2 :int = -1
-\end{verbatim}
+\end{verbatim}\end{unbreakable}
 
 Bemerkenswert ist, dass in beiden Regelmengen dem System kein numerischer Wert für das Symbol \verb|pi| genannt wird.
 
 \subsection{Faktorisieren}
 Schwieriger in der Frage, ob jede Regelanwendung zu einer Vereinfachung führt, ist das Faktorisieren einer Summe aus Produkten. Wer dieser Frage unkritisch gegenübersteht, kann die folgenden Ersetzungsregeln nutzen.
 
-\begin{verbatim}
+\begin{unbreakable}\begin{verbatim}
 _a^2 + 2 _a _b + _b^2 = (_a + _b)^2
 _a^2 - 2 _a _b + _b^2 = (_a - _b)^2
 $a^2 + 2 $a _b + _b^2 = ($a + _b)^2
@@ -549,7 +576,7 @@ $a^2 - 2 $a _b + _b^2 = ($a - _b)^2
 _a bs... + _a cs... = _a (prod(bs...) + prod(cs...))
 _a bs... + _a       = _a (prod(bs...) + 1)
 _a       + _a       = 2 _a
-\end{verbatim}
+\end{verbatim}\end{unbreakable}
 
 Leider nicht direkt durch eine endliche Menge von Mustern abbildbar ist der binomische Lehrsatz. Die ersten beiden binomischen Formeln sind aber durch die vier Regeln im ersten Block vollständig beschrieben. Die unteren beiden Regeln des Blocks erkennen die Formeln auch dann, wenn \verb|$a| nicht direkt vorliegt, sondern als Wert bereits mit seiner Umgebung kombiniert wurde. Anwendbar ist die dritte Regel etwa auf das Literal \verb|81 + 18 sin(x) + sin(x)^2| mit $v_p$ \verb|$a| $= 9$.
 

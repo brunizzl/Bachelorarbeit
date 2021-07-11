@@ -53,6 +53,7 @@ bibliography=totoc %inhaltsverzeichnis enthaelt literatur
 \numberwithin{figure}{section} %label nr. beinhaltet section
 
 \usepackage{qtree}
+
  %option linesnumbered schlägt sich mit goto labeln
 \usepackage[german, ruled, vlined]{algorithm2e} 
 
@@ -64,8 +65,8 @@ bibliography=totoc %inhaltsverzeichnis enthaelt literatur
 \usepackage{xcolor} %\textcolor{blue}{This is a sample text in blue.}
 
 \usepackage{minted} %code
-\renewcommand{\listingscaption}{Quelltext}
 \usemintedstyle{friendly}
+\renewcommand{\listingscaption}{Quelltext}
 
 
 %toc fügt eintrag in inhaltsverzeichnis ein
@@ -80,9 +81,10 @@ bibliography=totoc %inhaltsverzeichnis enthaelt literatur
 \usepackage{amsthm}
 \theoremstyle{definition} %keine kursiven theoreme
 
-%subsections nicht im Inhaltsverzeichniss
+%subsections nicht im Inhaltsverzeichnis
 \setcounter{tocdepth}{1}
-\setcounter{secnumdepth}{2}
+%\setcounter{secnumdepth}{2}
+
 
 
 
@@ -133,6 +135,18 @@ bibliography=totoc %inhaltsverzeichnis enthaelt literatur
 \newcommand{\Emph}[1]{\underline{#1}}
 
 
+%eignet sich gut, um verbatim zu wrappen
+\newenvironment{unbreakable}{\samepage}{\pagebreak[0]}
+
+
+
+%.........................................................................
+%................................ Silben .................................
+%.........................................................................
+
+\hyphenation{Addi-tion}
+
+
 %.........................................................................
 %................................ Body ...................................
 %.........................................................................
@@ -141,6 +155,8 @@ bibliography=totoc %inhaltsverzeichnis enthaelt literatur
 
 \maketitle
 
+%subsections nicht im Inhaltsverzeichnis
+\setcounter{tocdepth}{1}
 \tableofcontents
 
 \clearpage

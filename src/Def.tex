@@ -11,7 +11,7 @@ $$\Const{arity}~f = \begin{cases}
 1 & f \in \{\texttt{sin}, \texttt{sqrt}\}\\
 \end{cases}$$
 
-Kann eine \Gls{Funktionssymbol} $f$ beliebig viele Argumente entgegennehmen, wird gesagt, dass $f$ \Emph{variadische} Stelligkeit hat oder \Emph{\gls{variadisch}} ist. Die Stelligkeitsfunktion bildet $f$ dann auf $\omega$ ab. 
+Kann ein \Gls{Funktionssymbol} $f$ beliebig viele Argumente entgegennehmen, wird gesagt, dass $f$ \Emph{variadische} Stelligkeit hat oder \Emph{\gls{variadisch}} ist. Die Stelligkeitsfunktion bildet $f$ dann auf $\omega$ ab. 
 
 Die Menge $C$ enthält die \Emph{Konstantensymbole}. Mit den genannten Beispielen für Funktionssymbole ergibt etwa $C = \mathbb R$ Sinn. Wichtig ist, dass im folgenden nicht vorausgesetzt wird, dass zwangsweise jedem \Gls{Konstantensymbol} ein eindeutiger numerischer Wert zugeordnet werden kann\footnote{Die Symbole unbekannten Wertes werden häufig von den Konstantensymbolen getrennt und Variablensymbole genannt. Diese Unterscheidung wird hier nicht getroffen, primär um die Definitionen einfach zu halten.}.
 
@@ -42,7 +42,7 @@ Eine \Gls{Funktionsanwendung} wird in der Literatur oft mit dem Funktionssymbol 
 \end{figure}
 
 \begin{beispiel}~\\
-Beispielsweise lässt sich der Ausdruck $\frac 3 {\sin 1}$ in der formalen Schreibweise als Term mittels der Funktionssymbole $\texttt{sin}$ und $\texttt{divide}$ sowie den Konstantensymbolen $3$ und $1$ darstellen als $(\texttt{divide}, 3, (\texttt{sin}, 1))$. Ein Term kann als Baum\footnote{In der theoretischen Informatik auch Syntaxbaum oder AST (englisch für \textit{Abstract Syntax Tree})} aufgefasst werden, das aktuelle Beispiel in Abb. \ref{ersterBeispielBaum}.
+Beispielsweise lässt sich der Ausdruck $\frac 3 {\sin 1}$ in der formalen Schreibweise als Term mittels der Funktionssymbole $\texttt{sin}$ und $\texttt{divide}$ sowie den Konstantensymbolen $3$ und $1$ darstellen als $(\texttt{divide}, 3, (\texttt{sin}, 1))$. Ein Term kann als Baum\footnote{In der theoretischen Informatik auch Syntaxbaum oder AST (englisch für \textit{Abstract Syntax Tree})} aufgefasst werden, siehe das aktuelle Beispiel in Abb. \ref{ersterBeispielBaum}.
 \end{beispiel}
 
 Mit dem Kontext der Baumdarstellung lassen sich nun die folgenden Begriffe auf Terme übertragen. In der Funktionsanwendung $t = (f, \tOneN)$ sind $\tOneN$ die \Emph{Kinder} ihres \Emph{\Glspl{Vater}} $t$. Ein \Gls{Kind} ist allgemeiner \Emph{\Gls{Nachkomme}}. Nachkommen verhalten sich transitiv, also ein Nachkomme $z$ des Nachkommen $y$ von $x$ ist auch ein Nachkomme von $x$. Umgekehrt ist $x$ \Emph{\Gls{Ahne}} von $y$ und $z$. \\

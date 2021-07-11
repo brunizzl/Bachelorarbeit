@@ -17,25 +17,25 @@ Konzeptionelle Grundlage dieser Anwendungen ist die des \Emph{Termersetzungssyst
 \begin{beispiel}~\\
 Es werden vier Ersetzungsregeln definiert:
 \begin{alignat*}{4}
-    ~& x \cdot y + x \cdot z & &= x \cdot (y + z) &~~~& (1) \\
-    ~& \sqrt{x}              & &= x^{\frac 1 2}   &~~~& (2) \\
-    ~& \paren{x^y}^z         & &= x^{y \cdot z}   &~~~& (3) \\
-    ~& \sin(x)^2 + \cos(x)^2 & &= 1               &~~~& (4)
+    ~& x \cdot y + x \cdot z   & &= x \cdot (y + z) &~~~& (1) \\
+    ~& \sqrt{x}                & &= x^{\frac 1 2}   &~~~& (2) \\
+    ~& \paren{x^y}^z           & &= x^{y \cdot z}   &~~~& (3) \\
+    ~& (\sin x)^2 + (\cos x)^2 & &= 1               &~~~& (4)
 \end{alignat*}
 Der folgende Ausdruck kann durch Ersetzung der Struktur der linken Seite einer Vereinfachungsregel durch die Struktur der rechten Seite vereinfacht werden. Weiter werden Ausdrücke ohne Unbekannte ausgewertet.
 \begin{equation*}
     \begin{split}
-	3 \cdot \sin(a + b)^2 + 3 \cdot \sqrt{\cos(a + b)^4}
-	&\stapel = {(1)} 3 \cdot \paren*{\sin(a + b)^2 + \sqrt{\cos(a + b)^4}} \\
-	&\stapel = {(2)} 3 \cdot \paren*{\sin(a + b)^2 + \paren*{{\cos(a + b)^4}}^{\frac 1 2}}\\
-	&\stapel = {(3)} 3 \cdot \paren*{\sin(a + b)^2 + {\cos(a + b)^{4 \cdot \frac 1 2}}}\\
-	& =              3 \cdot \paren*{\sin(a + b)^2 + {\cos(a + b)^2}}\\
+	3 \cdot (\sin(a + b))^2 + 3 \cdot \sqrt{(\cos(a + b))^4}
+	&\stapel = {(1)} 3 \cdot \paren*{(\sin(a + b))^2 + \sqrt{(\cos(a + b))^4}} \\
+	&\stapel = {(2)} 3 \cdot \paren*{(\sin(a + b))^2 + \paren*{{(\cos(a + b))^4}}^{\frac 1 2}}\\
+	&\stapel = {(3)} 3 \cdot \paren*{(\sin(a + b))^2 + {(\cos(a + b))^{4 \cdot \frac 1 2}}}\\
+	& =              3 \cdot \paren*{(\sin(a + b))^2 + {(\cos(a + b))^2}}\\
 	&\stapel = {(4)} 3 \cdot 1\\
     & = 3
     \end{split}
 \end{equation*}
 In der einzelnen Ersetzung wird eine Variable der Ersetzungsregel dabei an einen Teil des zu ersetzenden Ausdrucks gebunden, welcher dann im Einsetzen der rechten Regelseite im transformierten Ausdruck wieder an Stelle der Variablen gesetzt wird.
- Formalisiert wird dieser Unterschied in Abschnitt \ref{subsecMuster}. Als Beispiel gilt für die erste Umformung $y = \sin(a + b)^2$ mit $y$ aus Regel $(1)$.
+ Formalisiert wird dieser Unterschied in Abschnitt \ref{subsecMuster}. Als Beispiel gilt für die erste Umformung $y = (\sin(a + b))^2$ mit $y$ aus Regel $(1)$.
 \end{beispiel}
 
 ~\\
@@ -50,7 +50,7 @@ Das Leistungsvermögen des entwickelten Termersetzungssystems wird in einer Anwe
 
 \section{Aufbau der Arbeit}
 In Abschnitt \ref{secGrundlegendeDefinitionen} werden die Begriffe eingeführt, die zur Beschreibung eines zu transformierenden Ausdrucks, aber auch zur Beschreibung der Transformation selbst notwendig sind. Mit den dann etablierten Begriffen werden die Algorithmen zur Normalisierung ohne Mustererkennung aus Kapitel \ref{secErsteNormalform} und die Algorithmen zur Mustererkennung in Abschnitt \ref{secPattermatching} erläutert. 
-Die tatsächliche Umsetzung und ihre Abweichungen von vorhergehenden Ideen ist in den Kapitel \ref{secKernUmsetzungInCpp} behandelt. 
+Die tatsächliche Umsetzung und ihre Abweichungen von vorhergehenden Ideen ist in Kapitel \ref{secKernUmsetzungInCpp} behandelt. 
 Kapitel \ref{secZusammenfassung} fasst die Arbeit zusammen.
 
 
