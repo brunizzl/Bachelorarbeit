@@ -1,7 +1,7 @@
 
 
 \chapter{Fazit} \label{secZusammenfassung}
-Terme können als Baumstrukturen verstanden werden. Die Transformation eines Terms wird dementsprechend als Transformation eines Baumes umgesetzt. In dieser Arbeit erfolgt die Transformation über Ersetzungsregeln, die selbst als Paare von Bäumen dargestellt werden, die Bäume werden dabei als Muster bezeichnet. Mustervariablen fungieren als Platzhalter in einer Ersetzungsregel.
+Terme können als Baumstrukturen verstanden werden. Die Transformation eines Terms wird dementsprechend als Transformation eines Baumes umgesetzt. In dieser Arbeit erfolgt die Transformation über Ersetzungsregeln, die selbst als Paare von Bäumen dargestellt werden; die Bäume werden dabei als Muster bezeichnet. Mustervariablen fungieren als Platzhalter in einer Ersetzungsregel.
 
 Es ist schwierig, effiziente Algorithmen zu finden, die eine große Teilmenge aller Muster mit assoziativen und kommutativen Funktionssymbolen erkennen. Die allgemeine Lösung bietet sich nur für wenige Probleme an, da kein deterministischer Algorithmus mit polynomieller Laufzeit bekannt ist. 
 Die beschriebenen Algorithmen nutzen Backtracking, um unterschiedliche Matchmöglichkeiten der Teilmuster zu testen. 
@@ -9,11 +9,11 @@ Die beschriebenen Algorithmen nutzen Backtracking, um unterschiedliche Matchmög
 Als teilweise Alternative zur Berücksichtigung von Assoziativität bei der Matchsuche bieten sich Konstrukte an, die für mehrere Argumente einer Funktionsanwendung gleichzeitig stehen können, hier als Multi-Mustervariablen bezeichnet. Vollständigen Ersatz bieten sie jedoch nicht.
 Bestimmte kommutative Muster können in linearer Zeit in einem Literal erkannt werden, auch wenn gleiche Mustervariablen mehrfach auftreten. 
 
-Die Zielsetzung, Ausdrücke über den Komplexen Zahlen zu vereinfachen, hat sich als sehr ambitioniert herausgestellt. Das implementierte Termersetzungssystem erlaubt die einfache und schnelle Anpassung einer Normalisierungsstrategie. Vor allem aber die häufig fehlende Konfluenz der gewählten Regelmengen machen es schwierig die Vereinfachung exakt zu kontrollieren. 
-Die Implementierung von Wert-Mustervariablen erlaubt in einigen Fällen Muster zu definieren, die sehr nah an gewohnten mathematischen Schreibweisen liegen. In ihren Möglichkeiten sind sie gegenüber dem implementierten Bedingungssystem jedoch stärker eingeschränkt. In beiden Fällen können aber fast ausschließlich Bedingungen an die Wertebereiche Komplexer Zahlen gestellt werden.
+Die Zielsetzung, Ausdrücke über den Komplexen Zahlen zu vereinfachen, hat sich als sehr ambitioniert herausgestellt. Das implementierte Termersetzungssystem erlaubt die einfache und schnelle Anpassung einer Normalisierungsstrategie. Vor allem aber die häufig fehlende Konfluenz der gewählten Regelmengen machen es schwierig, die Vereinfachung exakt zu kontrollieren. 
+Die Implementierung von Wert-Mustervariablen erlaubt in einigen Fällen, Muster zu definieren, die sehr nah an gewohnten mathematischen Schreibweisen liegen. In ihren Möglichkeiten sind sie gegenüber dem implementierten Bedingungssystem jedoch stärker eingeschränkt. In beiden Fällen können aber fast ausschließlich Bedingungen an die Wertebereiche Komplexer Zahlen gestellt werden.
 
 \section{Ausblick}
-Drei Gebiete sind für den Autor besonders interessant. Zum einen sind die Möglichkeiten bestimmte Muster schneller zu finden noch nicht ausgeschöpft. Weiter wird die fehlende Konfluenz der genutzten Regelmengen in der Umsetzung noch wenig berücksichtigt. Denkbar wäre für die Vereinfachung recht kleiner Terme etwa die gleichzeitige Anwendung aller möglichen Ersetzungsregeln mit anschließender Auswahl der besten Normalform. Um in diesem Fall die Größe des Literals bzw. Literale und damit auch den Ersetzungsaufwand kontrollieren zu können, müssten möglichst viele gleiche Abschnitte von mehreren Versionen des Literals geteilt werden. 
+Drei Gebiete sind für den Autor besonders interessant. Zum einen sind die Möglichkeiten, bestimmte Muster schneller zu finden, noch nicht ausgeschöpft. Weiter wird die fehlende Konfluenz der genutzten Regelmengen in der Umsetzung noch wenig berücksichtigt. Denkbar wäre für die Vereinfachung recht kleiner Terme etwa die gleichzeitige Anwendung aller möglichen Ersetzungsregeln mit anschließender Auswahl der besten Normalform. Um in diesem Fall die Größe des Literals bzw. der Literale und damit auch den Ersetzungsaufwand kontrollieren zu können, müssten möglichst viele gleiche Abschnitte von mehreren Versionen des Literals geteilt werden. 
 
 In dieser Arbeit nicht besprochen ist die Kompilierung von Mustern zu entsprechenden musterspezifischen Matchalgorithmen. Die Schwierigkeit steigt hierbei allerdings mit der Ausdruckskraft der Muster.
 
