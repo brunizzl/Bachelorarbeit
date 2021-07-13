@@ -34,8 +34,9 @@ Der folgende Ausdruck kann durch Ersetzung der Struktur der linken Seite einer V
     & = 3
     \end{split}
 \end{equation*}
-In der einzelnen Ersetzung wird eine Variable der Ersetzungsregel dabei an einen Teil des zu ersetzenden Ausdrucks gebunden, welcher dann im Einsetzen der rechten Regelseite im transformierten Ausdruck wieder an Stelle der Variablen gesetzt wird.
- Formalisiert wird dieser Unterschied in Abschnitt \ref{subsecMuster}. Als Beispiel gilt für die erste Umformung $y = (\sin(a + b))^2$ mit $y$ aus Regel $(1)$.
+
+Wird eine Ersetzungsregel angewandt, stehen die Variablen der Regel dabei stellvertretend für die entsprechenden Teile des zu transformierenden Ausdrucks.
+ Formalisiert wird diese Beziehung in Abschnitt \ref{subsecMuster}. Als Beispiel gilt für die erste Umformung $y = (\sin(a + b))^2$ mit $y$ aus Regel $(1)$.
 \end{beispiel}
 
 ~\\
@@ -46,7 +47,7 @@ Der Einfluss von Termersetzungssystemen geht weit über die Anwendung durch Math
 Ziel der Arbeit ist Design und Umsetzung eines Termersetzungssystems zur Vereinfachung algebraischer Ausdrücke. Der Kern des Termersetzungssystems ist ein Algorithmus zur Erkennung eines bestimmten Musters in einem Term. 
 Der Algorithmus soll ein Muster dabei möglichst nicht nur erkennen, wenn der Term die exakt identische Struktur aufweist. Bestimmte Äquivalenzklassen, wie etwa alle Permutationen der Parameter in einer kommutativen Funktion, sollen bereits auf der Mustererkennungsebene berücksichtigt werden. Die Formulierung einer Menge von Ersetzungsregeln für das Termersetzungssystem muss also möglichst kompakt möglich sein. 
 Damit ist das Ziel, die Mustererkennung möglichst schnell durchführen zu können, beim Treffen von Designentscheidungen in der Musterstruktur nicht ausschlaggebend, eine polynomielle Laufzeitkomplexität ist allerdings angestrebt.\\
-Das Leistungsvermögen des entwickelten Termersetzungssystems wird in einer Anwendung zur Vereinfachung algebraischer Ausdrücke über den Komplexen Zahlen getestet. 
+Das Leistungsvermögen des entwickelten Termersetzungssystems wird in einer Anwendung zur Vereinfachung algebraischer Ausdrücke über den komplexen Zahlen getestet. 
 
 \section{Aufbau der Arbeit}
 In Abschnitt \ref{secGrundlegendeDefinitionen} werden die Begriffe eingeführt, die zur Beschreibung eines zu transformierenden Ausdrucks, aber auch zur Beschreibung der Transformation selbst notwendig sind. Mit den dann etablierten Begriffen werden die Algorithmen zur Normalisierung ohne Mustererkennung aus Kapitel \ref{secErsteNormalform} und die Algorithmen zur Mustererkennung in Abschnitt \ref{secPattermatching} erläutert. 
