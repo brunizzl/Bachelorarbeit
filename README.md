@@ -9,12 +9,10 @@ Der Textteil meiner Bachelorarbeit
 - pdflatex + makeindex + bibtex main.tex baut finale pdf inklusive aller quellen
 
 ## TODO
-- nicht zeilenumbruch in def. 2.4 mit eval
-- einheitlich zeilenumbruch nach beispiel, lemma, definiton, beweis?
+- nix :)
 
 
 ## Optional
+- zeilenumbrüche optimieren
 - über beweisassistenten reden
-- Glossar
-- beispiel patternmatching anwendung algo
 - normalize ist eine projektion
