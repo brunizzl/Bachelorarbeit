@@ -10,22 +10,23 @@ Oft ist für zwei Ausdrücke bekannt, dass sie gleichbedeutend sind, wenn beide 
 Solche Regeln von Hand anzuwenden, ist sowohl zeitaufwändig als auch fehleranfällig. 
 Die Idee, Computer zu nutzen, um symbolische Ausdrücke zu manipulieren, ist deshalb fast so alt wie der Computer selbst.  LISP ist als eine der ersten höheren Programmiersprachen bereits für diesen Zweck geschaffen worden \cite{lisp}. Rückblickend war die symbolische Berechnung sogar vor der Erfindung des Computers ein wichtiger Teil dessen, was heute theoretische Informatik genannt wird. Herausstechend ist die Idee des Lambdakalküls von Church \cite{ChurchLambda36}. 
 
-Gegenwärtig gibt es eine Reihe etablierter Systeme zum symbolischen Rechnen. Wichtiger Bestandteil sind sie etwa in Mathematica \cite{MathematicaSymbolic}, Maple \cite{MapleSymbolic} oder Matlab \cite{MatlabSymbolic}.
+Gegenwärtig gibt es eine Reihe etablierter Systeme zum symbolischen Rechnen. Wichtiger Bestandteil sind diese etwa in Mathematica \cite{MathematicaSymbolic}, Maple \cite{MapleSymbolic} oder Matlab \cite{MatlabSymbolic}.
 Konzeptionelle Grundlage dieser Anwendungen ist die des \Emph{Termersetzungssystems}: Mit einer vom Nutzer oder Bibliotheksautor bestimmten Menge von Ersetzungsregeln wird ein gegebener Ausdruck so lange transformiert, bis keine Regel mehr anwendbar ist.
 
 
 \begin{beispiel}
-Es werden vier Ersetzungsregeln definiert:
+Es werden vier Ersetzungsregeln definiert.
 \begin{alignat*}{4}
     ~& x \cdot y + x \cdot z   & &= x \cdot (y + z) &~~~& (1) \\
     ~& \sqrt{x}                & &= x^{\frac 1 2}   &~~~& (2) \\
     ~& \paren{x^y}^z           & &= x^{y \cdot z}   &~~~& (3) \\
     ~& (\sin x)^2 + (\cos x)^2 & &= 1               &~~~& (4)
 \end{alignat*}
-Der folgende Ausdruck kann durch Ersetzung der Struktur der linken Seite einer Vereinfachungsregel durch die Struktur der rechten Seite vereinfacht werden. Weiter werden Ausdrücke ohne Unbekannte ausgewertet.
+Der folgende Term wird durch Anwendung der Regeln transformiert. 
+ Weiter werden Ausdrücke ohne Unbekannte ausgewertet.
 \begin{equation*}
     \begin{split}
-	3 \cdot (\sin(a + b))^2 + 3 \cdot \sqrt{(\cos(a + b))^4}
+    3 \cdot (\sin(a + b))^2 + 3 \cdot \sqrt{(\cos(a + b))^4}
 	&\stapel = {(1)} 3 \cdot \paren*{(\sin(a + b))^2 + \sqrt{(\cos(a + b))^4}} \\
 	&\stapel = {(2)} 3 \cdot \paren*{(\sin(a + b))^2 + \paren*{{(\cos(a + b))^4}}^{\frac 1 2}}\\
 	&\stapel = {(3)} 3 \cdot \paren*{(\sin(a + b))^2 + {(\cos(a + b))^{4 \cdot \frac 1 2}}}\\
@@ -36,7 +37,7 @@ Der folgende Ausdruck kann durch Ersetzung der Struktur der linken Seite einer V
 \end{equation*}
 
 Wird eine Ersetzungsregel angewandt, stehen die Variablen der Regel dabei stellvertretend für die entsprechenden Teile des zu transformierenden Ausdrucks.
- Formalisiert wird diese Beziehung in Abschnitt \ref{subsecMuster}. Als Beispiel gilt für die erste Umformung $y = (\sin(a + b))^2$ mit $y$ aus Regel $(1)$.
+ Formalisiert wird diese Beziehung in Abschnitt \ref{subsecMuster}. Als Beispiel gilt für die erste Umformung $y = (\sin(a + b))^2$ mit $y$ aus Regel $(1)$. Anwendung finden Regeln ausschließlich von links nach rechts.
 \end{beispiel}
 
 ~\\
@@ -45,7 +46,7 @@ Der Einfluss von Termersetzungssystemen geht weit über die Anwendung durch Math
 
 \section{Zielsetzung}
 Ziel der Arbeit ist Design und Umsetzung eines Termersetzungssystems zur Vereinfachung algebraischer Ausdrücke. Der Kern des Termersetzungssystems ist ein Algorithmus zur Erkennung eines bestimmten Musters in einem Term. 
-Der Algorithmus soll ein Muster dabei möglichst nicht nur erkennen, wenn der Term die exakt identische Struktur aufweist. Bestimmte Äquivalenzklassen, wie etwa alle Permutationen der Parameter in einer kommutativen Funktion, sollen bereits auf der Mustererkennungsebene berücksichtigt werden. Die Formulierung einer Menge von Ersetzungsregeln für das Termersetzungssystem muss also möglichst kompakt möglich sein. 
+Der Algorithmus soll ein Muster dabei nicht nur erkennen, wenn der Term die exakt identische Struktur aufweist. Bestimmte Äquivalenzklassen, wie etwa alle Permutationen der Parameter in einer kommutativen Funktion, sollen bereits auf der Mustererkennungsebene berücksichtigt werden. Die Formulierung einer Menge von Ersetzungsregeln für das Termersetzungssystem muss also entsprechend kompakt möglich sein. 
 Damit ist das Ziel, die Mustererkennung möglichst schnell durchführen zu können, beim Treffen von Designentscheidungen in der Musterstruktur nicht ausschlaggebend, eine polynomielle Laufzeitkomplexität ist allerdings angestrebt.\\
 Das Leistungsvermögen des entwickelten Termersetzungssystems wird in einer Anwendung zur Vereinfachung algebraischer Ausdrücke über den komplexen Zahlen getestet. 
 

@@ -141,9 +141,9 @@ Die beiden letzten Regeln haben den exakt gleichen Effekt, wie noch in Abschnitt
 %.........................................................................
 \section{Lambdafunktionen} \label{subsecLambdafunktionen}
 Die umgesetzten Funktionen erweitern die Definition von Church, indem die selbe Lambdaabstraktion auch mehrere Parameter erlaubt. Während der Ausdruck $\lambda x y . x(y)$ für Church also nur eine vereinfachte Schreibweise\footnote{Die Klammern um $y$ werden in der Literatur oft weggelassen, für diese Arbeit sind sie allerdings notwendig.} für den Ausdruck $\lambda x .\lambda y .x(y)$ darstellt, handelt es sich für die hier beschriebene Umsetzung um zwei verschiedene Funktionen. 
-Ein Lambdaparameter ist in der Syntax nicht von anderen Symbolen unterscheidbar\footnote{siehe \ref{subsubsecLambdaSyntax}}, wird intern jedoch durch einen Index dargestellt. Die Darstellung unterscheidet sich von De Bruijn Indizierung \cite{deBruijn} darin, dass jede Instanz der selben Variable immer den selben Index hat\footnote{Sollte eine Ersetzungsregel auch innerhalb eines Lambdas anwendbar sein, ist eine solche Herangehensweise vorteilhaft, da der Matchalgorithmus bisher keinen Unterschied zwischen syntaktischer Gleichheit und semantischer Gleichheit macht.}.
- Jeder neu gebundene Parameter bekommt als Index die Anzahl der weiter außen bzw. in der selben Abstraktion vor ihm gebundenen Parameter. Zur Veranschaulichung wird hier der Index im Tiefsatz mitgeschrieben. Wichtig ist hervorzuheben, dass die hier nach wie vor dargestellten Namen ausschließlich der Übersichtlichkeit dienen und in der Umsetzung nicht gespeichert sind.
- Als Beispiel dient $\lambda x_0 y_1 .\lambda z_2 .x_0 + y_1 + z_2$. Das Zeichen $x$ wird in der äußersten Abstraktion zuerst gebunden, hat also keine Vorgänger und dementsprechend Index $0$. In der selben Abstraktion wird als zweiter Parameter weiter $y$ gebunden. Als Nachfolger von $x$ wird $y$ Index $1$ zugewiesen. Die Bindung von $z$ liegt innerhalb der Abbildungsvorschrift des äußeren Lambdas, $x$ und $y$ können also referenziert werden. Dementsprechend hat $z$ zwei Vorgänger und Index $2$. 
+Ein Lambdaparameter ist in der Syntax nicht von anderen Symbolen unterscheidbar\footnote{siehe \ref{subsubsecLambdaSyntax}}, wird intern jedoch durch einen Index dargestellt. Die Darstellung unterscheidet sich von De Bruijn Indizierung \cite{deBruijn} darin, dass jede Instanz derselben Variable immer denselben Index hat\footnote{Sollte eine Ersetzungsregel auch innerhalb eines Lambdas anwendbar sein, ist eine solche Herangehensweise vorteilhaft, da der Matchalgorithmus bisher keinen Unterschied zwischen syntaktischer Gleichheit und semantischer Gleichheit macht.}.
+ Jeder neu gebundene Parameter bekommt als Index die Anzahl der weiter außen bzw. in derselben Abstraktion vor ihm gebundenen Parameter. Zur Veranschaulichung wird hier der Index im Tiefsatz mitgeschrieben. Wichtig ist hervorzuheben, dass die hier nach wie vor dargestellten Namen ausschließlich der Übersichtlichkeit dienen und in der Umsetzung nicht gespeichert sind.
+ Als Beispiel dient $\lambda x_0 y_1 .\lambda z_2 .x_0 + y_1 + z_2$. Das Zeichen $x$ wird in der äußersten Abstraktion zuerst gebunden, hat also keine Vorgänger und dementsprechend Index $0$. In derselben Abstraktion wird als zweiter Parameter weiter $y$ gebunden. Als Nachfolger von $x$ wird $y$ Index $1$ zugewiesen. Die Bindung von $z$ liegt innerhalb der Abbildungsvorschrift des äußeren Lambdas, $x$ und $y$ können also referenziert werden. Dementsprechend hat $z$ zwei Vorgänger und Index $2$. 
  
  Die Auswertung der Funktionsanwendung einer Lambdafunktion $f$ entspricht der $\beta$-Reduktion (von Church \cite{ChurchLambda36} als \textit{operation II} bezeichnet). Parameter von $f$ werden dafür durch die übergebenen Argumente ersetzt. Enthält die Definition von $f$ selbst weitere Lambdaabstraktionen, so werden die Indices derer Parameter um die Stelligkeit von $f$ erniedrigt.
  Der Ausdruck $(\lambda x_0 y_1 .\lambda z_2 .x_0 + y_1 + z_2)(3, 6)$ wird damit zum Ausdruck $\lambda z_0 .3 + 6 + z_0$ ausgewertet.
@@ -152,14 +152,14 @@ Ein Lambdaparameter ist in der Syntax nicht von anderen Symbolen unterscheidbar\
  Enthält ein Argument $a$ der Funktionsanwendung einer Lambdafunktion $f$ selbst eine Lambdafunktion $g$, so reicht es für die Auswertung von $f$ mit bisher diskutierten Konzepten nicht aus, den entsprechenden Lambdaparameter von $f$ einfach durch $a$ zu ersetzen. Sollte diese Ersetzung innerhalb einer Lambdaabstraktion $f'$ stattfinden, müssen alle Lambdaparameter von $g$ im Index um die Anzahl der weiter außen gebundenen Parameter erhöht werden. Als Beispiel ist $a = g = \lambda x_0 .x_0$ die Identität, welche der Funktion $f = \lambda x_0 .\lambda y_1 .x_0(y_1)$ übergeben wird. Teil der Definition von $f$ ist $f' = \lambda y_1 .x_0(y_1)$.
  $$(\lambda x_0 .\lambda y_1 .x_0(y_1))(\lambda x_0 .x_0)$$
  
- An dieser Stelle wird zudem eine alternative Notation eingeführt, die nur Informationen benutzt, die der Implementierung tatsächlich bekannt ist. Ehrlicher ist die Darstellung einer Lambdaabstraktion mit $n$ Parametern als $\lambda [n] .\textit{<Definition>}$. Mit den Parametern geschrieben als Prozentzeichen gefolgt von ihrem Index, ist der problematische Ausdruck geschrieben als
+ An dieser Stelle wird zudem eine alternative Notation eingeführt, die nur Informationen benutzt, die der Implementierung tatsächlich bekannt sind. Ehrlicher ist die Darstellung einer Lambdaabstraktion mit $n$ Parametern als $\lambda [n] .\textit{<Definition>}$. Mit den Parametern geschrieben als Prozentzeichen gefolgt von ihrem Index, ist der problematische Ausdruck geschrieben als
  
  $$(\lambda [1] .\lambda [1] .\%0(\%1))(\lambda [1] .\%0).$$
  Die naive Ersetzung von $x_0$ in $f$ durch $g$ würde im folgenden Ausdruck resultieren.
  $$\lambda y_0 .(\lambda x_0 .x_0)(y_0)$$
  Ohne Namen ist jetzt klar, dass in der Abbildungsvorschrift von $g$ nun fälschlicherweise auf den Parameter von $f'$ abgebildet wird.
  $$\lambda [1] .(\lambda [1] .\%0)(\%0)$$
- Es gibt verschiedene Möglichkeiten, den Fehler zu beheben. Eine einfache Lösung ist, Indices von eingesetzten Argumenten in der Auswertung einer Lambdafunktion entsprechend anzupassen. Konsequenz wäre aber, dass die Komplexität der Auswertung von der Größe der Argumente abhängig ist. Ein weiterer Nachteil ist, dass veränderte Argumente kopiert werden müssen. Das macht \textit{lazy evaluation} \cite{EvalStrategien}, also die Idee, jede Funktionsanwendung höchstens einmal auswerten zu müssen, unmöglich.
+ Es gibt verschiedene Möglichkeiten den Fehler zu beheben. Eine einfache Lösung ist, Indices von eingesetzten Argumenten in der Auswertung einer Lambdafunktion entsprechend anzupassen. Eine Konsequenz wäre aber, dass die Komplexität der Auswertung von der Größe der Argumente abhängig ist. Ein weiterer Nachteil ist, dass veränderte Argumente kopiert werden müssen. Das macht \textit{lazy evaluation} \cite{EvalStrategien}, also die Idee, jede Funktionsanwendung höchstens einmal auswerten zu müssen, unmöglich.
  
  Eine Alternative ist die Unterscheidung zwischen sogenannten \Emph{\glspl{transparent}} Lambdas und \Emph{nicht-transparenten} Lambdas, zweitere dargestellt durch umschließende geschweifte Klammern: $\{\lambda \textit{<Parameter>}.\textit{<Definition>}\}$ bzw. $\{\lambda [n].\textit{<Definition>}\}$. Kommt ein transparentes Lambda $f'$ in der Definition eines Lambdas $f$ vor, wird bei der Auswertung von $f$ auch in $f'$ nach Lambdaparametern gesucht und diese ersetzt bzw. deren Index erniedrigt. Transparente Lambdas verhalten sich damit nicht anders als die Lambdas bisher. Ist $f'$ allerdings nicht-transparent, lässt die Auswertung von $f$ die Definition von $f'$ unberührt. 
  Mit zwei weiteren Bedingungen wird die Überprüfung von Argumenten bei der Auswertung Lambdas dann obsolet: 
@@ -187,7 +187,7 @@ Mit den soeben formulierten Bedingungen darf der Ausdruck nicht weiter transform
 In der Umsetzung wird zwischen drei Arten von Mustervariablen unterschieden. Die Sonderform der Multi-Mustervariable ist bereits aus Kapitel \ref{subsecMulti} bekannt, die Wert-Mustervariable ist allerdings neu. Als drittes ist die normale Mustervariable nach wie vor vorhanden. Wert-Mustervariable und normale Mustervariable können zudem durch Bedingungen eingeschränkt werden.
 
 \subsection{Wert-Mustervariable} \label{subsubsecWertMustervariable}
-Nach Definition \ref{defMatch} ist das Match $v_p$ für ein Paar $(p, t)$ aus Muster $p$ und Literal $t$ dann gültig, wenn $\Const{lit}(p, v_p) = t$ gilt. In Kapitel \ref{secPattermatching} nicht diskutiert wurde die Möglichkeit, Zahlen mit Rechenausdrücken zu matchen. Ein Muster $p = (\texttt{prod}, 2, \mathbf k)$ würde für das Literal $t = 12$ etwa ein Match $v_p$ mit $v_p~\mathbf k = 6$ besitzen. Um die Matchsuche nicht zu kompliziert zu gestalten, besitzt die Umsetzung zwei Einschränkungen. Zum einen ist eine solche Dekonstruktion des Musters zu einem Wert nur dann möglich, wenn das entsprechende Teilmuster exakt eine Instanz $w$ einer Wert-Mustervariable enthält. Zum anderen werden nur bijektive Funktionen\footnote{bzw. sonst Mehrdeutigkeiten ignoriert} dekonstruiert, wie im Beispiel die Multiplikation mit $2$. Die Umsetzung ist damit eine Verallgemeinerung von n+k-Mustern aus Haskell \cite{nPlusK}.
+Nach Definition \ref{defMatch} ist das Match $v_p$ für ein Paar $(p, t)$ aus Muster $p$ und Literal $t$ dann gültig, wenn $\Const{lit}(p, v_p) = t$ gilt. In Kapitel \ref{secPattermatching} nicht diskutiert wurde die Möglichkeit, Zahlen mit Rechenausdrücken zu matchen. Ein Muster $p = (\texttt{prod}, 2, \mathbf k)$ würde für das Literal $t = 12$ etwa ein Match $v_p$ mit $v_p~\mathbf k = 6$ besitzen. Um die Matchsuche nicht zu kompliziert zu gestalten, besitzt die Umsetzung zwei Einschränkungen. Zum einen ist eine solche Dekonstruktion des Musters zu einem Wert nur dann möglich, wenn das entsprechende Teilmuster exakt eine Instanz $w$ einer Wert-Mustervariable enthält. Zum anderen werden nur bijektive Funktionen\footnote{bzw. sonst Mehrdeutigkeiten ignoriert} dekonstruiert, wie im Beispiel die Multiplikation mit zwei. Die Umsetzung ist damit eine Verallgemeinerung von n+k-Mustern aus Haskell \cite{nPlusK}.
 
 
 Vor einem Matchversuch muss ein Muster mit Wert-Mustervariablen transformiert werden. Ziel der Transformation ist, dass für den Matchalgorithmus direkt klar ist, ab wo das Muster einen Wert repräsentieren soll. Der Teilbaum des Musters, der eine Wert-Mustervariable $w$ enthält und als ganzes einen Wert matchen soll, ist idealerweise also direkt gekennzeichnet. In der Umsetzung ist das realisiert, indem eine Wert-Mustervariable im zu matchenden Muster kein Blatt darstellt, sondern einen Teilbaum markiert. Dieser entspricht nicht der ursprünglichen Umgebung um die Wert-Mustervariable, sondern derer Inversen. 
@@ -274,7 +274,7 @@ Die Knoten des Termbaums liegen in einem Array, dem sogenannten \verb|Store|. W�
         \hline \hline
         0 & $\Sigma^+$\\
         \hline
-        1 & Komplexe Fließkommazahl\footnote{Die Nutzung von Fließkommazahlen ist für Computeralgebra nur bedingt geeignet, erlaubt aber die Verwendung der im C\texttt{++} Standard geforderten Rechenoperationen für komplexe Zahlen. Über Auslesen der entsprechenden CPU-Flags kann dennoch garantiert werden, dass ausschließlich exakte Vereinfachungen durchgeführt werden.}\\
+        1 & komplexe Fließkommazahl\footnotemark\\
         \hline
         2 & $\Lambda$\\
         \hline
@@ -300,6 +300,8 @@ Die Knoten des Termbaums liegen in einem Array, dem sogenannten \verb|Store|. W�
     \caption{Werte von \texttt{NodeType}}
     \label{tabNodeType}
 \end{figure}
+\addtocounter{footnote}{-1}
+\footnotetext{Die Nutzung von Fließkommazahlen ist für Computeralgebra nur bedingt geeignet, erlaubt aber die Verwendung der im C\texttt{++} Standard geforderten Rechenoperationen für komplexe Zahlen. Über Auslesen der entsprechenden CPU-Flags kann dennoch garantiert werden, dass ausschließlich exakte Vereinfachungen durchgeführt werden.}
 
 Manche der hier aufgezählten Knoten müssen neben ihrem Typen nur eine einzige natürliche Zahl kennen. Bereits diskutiert wurde das für Knoten von Typ $3$, den Lambdaparametern. Für einen Knoten dieser Art ist es nicht notwendig, die Information als eigenes Arrayelement des \verb|Store| zu speichern; der Index des Paares aus Index und Typ von \verb|NodeType| enthält direkt den erforderlichen Wert. Damit werden die entsprechenden Argumente ohne Indirektion direkt in einer Funktionsanwendung gespeichert. Knoten dieser Art sind Typ 0, 3, 6, 8 und 9. Für Symbole aus $\Sigma^+$ wird nicht der Name selbst gespeichert, sondern der Index in einem zentralen Namensspeicher\footnote{Nicht optimal ist damit, dass die Ordnung zweier Symbole aus $\Sigma^+$ zueinander von der Reihenfolge der Auflistung im Namensspeicher und damit von der Eingabereihenfolge abhängen, was aber nur ästhetische Nachteile birgt.}. Der Zugriff auf den Namensspeicher wird so auf die Eingabe und Ausgabe eines Terms beschränkt.
 
@@ -528,7 +530,7 @@ In der konkreten Anwendung im Muster wird also die Ableitung einer Summe umgesch
 \begin{verbatim}
 diff(_u + vs..., _x) = diff(_u, _x) + diff(sum(vs...), _x)
 \end{verbatim}
-hätte in wiederholter Anwendung den selben Effekt. Die genutzte Version benötigt allerdings nur eine einzige Ersetzung\footnote{sofern \texttt{map} in $\Const{normalize}$ ausgewertet wird} für eine Summe mit beliebig vielen Argumenten.
+hätte in wiederholter Anwendung denselben Effekt. Die genutzte Version benötigt allerdings nur eine einzige Ersetzung\footnote{sofern \texttt{map} in $\Const{normalize}$ ausgewertet wird} für eine Summe mit beliebig vielen Argumenten.
 
 \begin{beispiel}
 Angewendet auf das Literal \verb|diff(sin(pi t) + 3, t)| erzeugen die Ableitungsregeln folgende Zwischenergebnisse bzw. folgende Normalform (Leerzeichen sind zur verbesserten Lesbarkeit ergänzt).
@@ -555,7 +557,7 @@ cos((2 $k)     pi) | $k :int =  1
 cos((2 $k + 1) pi) | $k :int = -1
 \end{verbatim}\end{unbreakable}
 
-Eine alternative Regelmenge mit selbem Effekt nutzt Bedingungen.
+Eine alternative Regelmenge mit dem selbem Effekt nutzt Bedingungen.
 
 \begin{unbreakable}\begin{verbatim}
 cos(   pi)                     = -1
