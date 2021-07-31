@@ -26,3 +26,11 @@ _minted-main/
 *.glg
 *.gls
 *.loa
+
+#beamer dateien
+*.nav
+*.out
+*.snm
+*.vrb
+
+

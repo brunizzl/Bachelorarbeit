@@ -1,0 +1,700 @@
+\documentclass[aspectratio=169]{beamer}
+\usetheme{Frankfurt}
+
+\usepackage[backend=biber,
+style=alphabetic,
+]{biblatex}
+
+\usepackage{graphicx}
+
+\usepackage{minted}
+\usemintedstyle{borland}
+
+\usepackage{mathtools}
+
+\usepackage{tikz}
+\usetikzlibrary{positioning,shapes.multipart}
+
+\usepackage{multicol}
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]
+\setbeamertemplate{headline}{}
+
+\usepackage[english]{babel}
+\usepackage{csquotes}
+
+\title{Template Metaprogramming in C\texttt{++}}
+\author{Bruno Borchardt and Filip Nguyen
+\small
+\texorpdfstring{\\Seminar: Modern Programming Languages\\TUHH}{}}
+\date{January 11, 2021}
+
+\addbibresource{quellen.bib}
+
+\newcommand\blfootnote[1]{%
+  \begingroup
+  \renewcommand\thefootnote{}\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \endgroup
+}
+
+\begin{document}
+
+%------------------------------------------------------------------------
+
+\begin{frame}[noframenumbering, plain]
+\titlepage 
+\end{frame}
+
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------
+
+\section{Introduction to C++ Templates}
+
+\begin{frame}[fragile]{Introduction to C++ Templates}
+
+    \begin{columns}[t] 
+        
+        \begin{column}{0.5\textwidth}
+        
+            \scriptsize
+            \begin{block}{Challenges}
+                \begin{minted}{cpp}
+int max(int x, int y)
+{
+    return x > y ? x : y;
+}
+
+double max(double x, double y)
+{
+    return x > y ? x : y;
+}
+
+#define MAX(x, y) ((x) > (y) ? (x) : (y))
+
+void swap(int& x, int& y)
+{
+    int temp = x;
+    x = y;
+    y = temp;
+}
+                \end{minted}
+            \end{block}
+        \end{column}
+    
+        \begin{column}{0.5\textwidth}
+        
+            \begin{itemize}
+                \item Clean code
+                \item No duplicate
+                \item Reusability
+            \end{itemize}
+        
+            \scriptsize
+            \begin{block}{Possible Solution}
+                \begin{minted}{cpp}
+template <typename T>
+T max(T x, T y)
+{
+    return x > y ? x : y;
+}
+template <class T>
+void swap(T& x, T& y)
+{
+    T temp = x;
+    x = y;
+    y = temp;
+}
+                \end{minted}
+            \end{block}
+        \end{column}
+        
+    \end{columns}
+    
+\end{frame}
+
+%------------------------------------------------------------------------
+
+\begin{frame}[fragile]{Introduction to C++ Templates}
+
+    \begin{columns}[t] 
+        \begin{column}{0.5\textwidth}
+        
+            \begin{itemize}
+                \item Constant values can be passed 
+                \item Exposing T as "type"
+                \item Most specific Specialization is used
+            \end{itemize}
+        
+            \scriptsize
+            \begin{block}{Structs and Classes}
+                \begin{minted}{cpp}
+template <typename T, int Size>
+class Array
+{
+public:
+    // Obsolete: typedef T type;
+    using type = T; 
+    T * get(); 
+    void set(T * value);
+    
+private:
+    T buffer[Size];
+};
+                \end{minted}
+            \end{block}
+        \end{column}
+        
+        \begin{column}{0.5\textwidth}
+        
+            \scriptsize
+            \begin{block}{User Specialization}
+                \begin{minted}{cpp}
+template <int Size>
+class Array<bool, Size>
+{
+public:
+    using type = bool; 
+    ...
+private:
+    ...
+};
+Array<bool, 20> booleanArray;
+                \end{minted}
+            \end{block}
+            
+            \begin{block}{'type' in Use}
+                \begin{minted}{cpp}
+template<typename TArray>
+void modifyArray(TArray& data) 
+{   // modify data using localVariable ...
+    Array::type localVariable = {}; 
+}   
+                \end{minted}
+            \end{block}
+        \end{column}
+    \end{columns}
+    
+\end{frame}
+
+%------------------------------------------------------------------------
+
+\begin{frame}[fragile]{Introduction to C++ Templates}
+
+    \scriptsize
+    \begin{block}{Syntax Error}
+        \begin{minted}{cpp}
+std::cout << max(5, 5.5) << "\n";
+        \end{minted}
+    \end{block}
+
+    \begin{block}{Poor Solution}
+        \begin{minted}{cpp}
+template <typename T1, typename T2>
+T1 max(T1 x, T2 y)
+{
+    return x > y ? x : y;
+}
+std::cout << max(5, 5.5) << "\n";
+        \end{minted}
+    \end{block}
+
+    \begin{block}{Better Solution}
+        \begin{minted}{cpp}
+template <typename TReturnValue, typename T1, typename T2>
+TReturnValue max(T1 x, T2 y, TReturnValue)
+{
+    return x > y ? x : y;
+}
+std::cout << max(5, 5.5, 0.0) << "\n"; // Misleading, but works.
+        \end{minted}
+    \end{block}
+
+\end{frame}
+
+%------------------------------------------------------------------------
+
+\begin{frame}[fragile]{Introduction to C++ Templates}
+
+    \scriptsize
+    \begin{block}{Better Solution}
+        \begin{minted}{cpp}
+template <typename TReturnValue, typename T1, typename T2>
+TReturnValue max(T1 x, T2 y, TReturnValue)
+{
+    return x > y ? x : y;
+}
+std::cout << max(5, 5.5, 0.0) << "\n"; // Misleading, but works.
+        \end{minted}
+    \end{block}
+    
+    \begin{block}{Explicit Specialization}
+        \begin{minted}{cpp}
+std::cout << max<double>(5, 5.5) << "\n";
+std::cout << max<double, int, double>(5, 5.5) << "\n";
+        \end{minted}
+    \end{block}
+
+    \begin{block}{Best Solution}
+        \begin{minted}{cpp}
+template <typename T1, typename T2>
+typename If<(sizeof(T1) > sizeof(T2)), T1, T2>::type max(T1 x, T2 y)
+{
+    return x > y ? x : y;
+}
+std::cout << max(5, 5.5) << "\n";
+        \end{minted}
+    \end{block}
+
+\end{frame}
+
+%------------------------------------------------------------------------
+
+\section{Metaprogramming Basics}
+
+\begin{frame}[fragile]{The First Metaprogram}
+    
+\begin{columns}[t]
+        \begin{column}{0.5\textwidth}
+            \scriptsize
+            \begin{block}{Haskell}
+                \begin{minted}{haskell}
+square :: Int -> Int
+square x = x * x
+
+nine = square 3
+                \end{minted}
+            \end{block}
+            
+            \begin{block}{C\texttt{++}}
+                \begin{minted}{cpp}
+template<int x>
+struct Square 
+{ 
+    enum { value = x * x };  
+};
+
+const int nine = Square<3>::value;
+                \end{minted}
+            \end{block}
+        \end{column}
+        
+        \begin{column}{0.5\textwidth}
+            \begin{itemize}
+                \item Enum identifiers have their associated values evaluated at compile time
+                \pause
+                \item Today written as "static constexpr $<$type$>$"
+            \end{itemize}
+            \scriptsize
+            
+            \begin{block}{Modern C\texttt{++}}
+                \begin{minted}{cpp}
+template<int x>
+struct Square 
+{ 
+    static constexpr int value = x * x;  
+};
+
+constexpr int nine = Square<3>::value;
+
+constexpr int square(int x) { return x * x; }
+constexpr int anotherNine = square(3);
+                \end{minted}
+            \end{block}
+        \end{column}
+\end{columns}
+    
+\end{frame}
+
+%------------------------------------------------------------------------
+
+\begin{frame}[fragile]{Types as Data: List}
+    
+\begin{columns}[t] %t für align nach oben
+        \begin{column}{0.6\textwidth}
+            \scriptsize
+            \begin{block}{Haskell}
+                \begin{minted}{haskell}
+data List a = Nil 
+            | Cons a (List a)
+
+types = Cons "bool" (Cons "int" (Cons "double" Nil))
+                \end{minted}
+            \end{block}
+            
+            \begin{block}{C\texttt{++}}
+                \begin{minted}{cpp}
+struct Nil;
+
+template<typename Value, typename Tail>
+struct Cons;
+
+using types = Cons<bool, Cons<int, Cons<double, Nil>>>;
+                \end{minted}
+            \end{block}
+        \end{column}
+        
+        \begin{column}{0.4\textwidth}
+            \begin{itemize}
+                \item "Nil" and "Cons" are only ever declared
+                \item A list of types is a type itself
+                \pause
+                \item Today variadic templates simplify the syntax
+            \end{itemize}
+            \scriptsize
+            
+            \begin{block}{Modern C\texttt{++}}
+                \begin{minted}{cpp}
+template<typename...>
+struct List;
+
+using types = List<bool, int, double>;
+                \end{minted}
+            \end{block}
+        \end{column}
+\end{columns}
+
+\end{frame}
+
+%------------------------------------------------------------------------
+
+\begin{frame}[fragile]{Make Everything a Type!}
+\begin{columns}[t] 
+        \begin{column}{0.5\textwidth}
+            \scriptsize
+            \begin{block}{Haskell}
+                \begin{minted}{haskell}
+data Nat = Zero
+         | Successor Nat 
+
+
+
+two = Successor (Successor Zero)
+                \end{minted}
+            \end{block}
+        \end{column}
+
+        \begin{column}{0.5\textwidth}
+            \scriptsize
+            \begin{block}{C\texttt{++}}
+                \begin{minted}{cpp}
+struct Zero;
+
+template<typename Natural>
+struct Successor;
+
+using two = Successor<Successor<Zero>>;
+                \end{minted}
+            \end{block}
+            ~\\~\\~\\~\\~\\~\\~\\~\\~\\~
+        \end{column}
+\end{columns}
+\scriptsize
+\end{frame}
+
+%------------------------------------------------------------------------
+
+\begin{frame}[fragile]{Make Everything a Type!}
+    
+    \addtocounter{framenumber}{-1}
+\begin{columns}[t] 
+        \begin{column}{0.5\textwidth}
+            \scriptsize
+            \begin{block}{Haskell}
+                \begin{minted}{haskell}
+data Nat = Zero
+         | Successor Nat 
+
+
+
+two = Successor (Successor Zero)
+
+--Word is an unsigned integral type
+nat :: Word -> Nat 
+nat value | value /= 0 = 
+    Successor (
+        nat (value - 1))
+    
+
+nat 0 = Zero
+
+nine = nat 9
+                \end{minted}
+            \end{block}
+        \end{column}
+
+        \begin{column}{0.5\textwidth}
+            \scriptsize
+            \begin{block}{C\texttt{++}}
+                \begin{minted}{cpp}
+struct Zero;
+
+template<typename Natural>
+struct Successor;
+
+using two = Successor<Successor<Zero>>;
+
+template<unsigned Value>
+struct Nat { 
+    using type = Successor<
+        typename Nat<Value - 1u>::type>; 
+};
+
+template<>
+struct Nat<0u> { using type = Zero; };
+
+using nine = Nat<9u>::type;
+                \end{minted}
+            \end{block}
+        \end{column}
+\end{columns}
+
+\end{frame}
+
+%------------------------------------------------------------------------
+
+\begin{frame}[fragile]{A More Practical Version}
+    
+    \scriptsize
+    \begin{block}{Integral Constant}
+        \begin{minted}{cpp}
+template<class T, T v>
+struct integral_constant {
+    static constexpr T value = v;
+    using value_type = T;
+    using type = integral_constant; // using injected-class-name
+    constexpr operator value_type() const noexcept { return value; }
+    constexpr value_type operator()() const noexcept { return value; } //since c++14
+};
+
+template <bool B>
+using bool_constant = integral_constant<bool, B>;
+
+//same as: using true_type = integral_constant<bool, true>;
+using true_type =  bool_constant<true>;
+
+//same as: using false_type = integral_constant<bool, false>;
+using false_type = bool_constant<false>;
+        \end{minted}
+    \end{block}
+    
+    \blfootnote{integral\_constant example implementation taken from cppreference.com}
+\end{frame}
+
+%-----------------------------------------------------------------
+
+\begin{frame}[fragile]{Solving the 'max' Problem}
+
+    \scriptsize
+    \begin{block}{Best Solution}
+        \begin{minted}{cpp}
+template <typename T1, typename T2>
+typename If<(sizeof(T1) > sizeof(T2)), T1, T2>::type max(T1 x, T2 y)
+{
+    return x > y ? x : y;
+}
+std::cout << max(5, 5.5) << "\n";
+        \end{minted}
+    \end{block}
+
+    \begin{block}{}
+        \begin{minted}{cpp}
+template <bool Condition, typename TThen, typename TElse>
+struct If
+{
+    using type = TThen;
+};
+
+template <typename TThen, typename TElse>
+struct If<false, TThen, TElse>
+{
+    using type = TElse;
+};
+        \end{minted}
+    \end{block}
+
+\end{frame}
+
+%-----------------------------------------------------------------
+
+\begin{frame}[fragile]{Limitations}
+    
+    \begin{itemize}
+        \item Compile-time infinite recursion
+        \item Maximum of 17 level of recursive template instantiations is required by C\texttt{++} standard
+        \item Compiler g\texttt{++} 3.4 stops after 17 levels 
+        \item Compiler MSVC 6 runs until the resources provided are exhausted
+    \end{itemize}
+
+    \scriptsize
+    
+    \begin{block}{Missing Specialization}
+        \begin{minted}{cpp}
+template <int N>
+struct Factorial
+{
+    static constexpr int value = N * Factorial<N - 1>::value;
+};
+constexpr int six = Factorial<3>::value;
+        \end{minted}
+    \end{block}
+
+\end{frame}
+
+%-----------------------------------------------------------------
+
+\begin{frame}[fragile]{Iterating over a List}
+    \scriptsize
+    \begin{block}{Is Type 'Needle' contained?}
+        \begin{minted}{cpp}
+struct Nil;
+
+template<typename Value, typename Tail>
+struct Cons;
+
+
+template<typename, typename>
+struct InList;
+
+template<typename Needle>
+struct InList<Needle, Nil> { static constexpr bool value = false; };
+
+template<typename Needle, typename Tail>
+struct InList<Needle, Cons<Needle, Tail>> { static constexpr bool value = true; };
+
+template<typename Needle, typename Head, typename Tail>
+struct InList<Needle, Cons<Head, Tail>> 
+{
+    static constexpr bool value = InList<Needle, Tail>::value;
+};
+        \end{minted}
+    \end{block}
+
+\end{frame}
+
+%------------------------------------------------------------------------
+
+\begin{frame}{Conclusion}
+    \begin{itemize}
+        \item C\texttt{++} templates are turing complete
+        \item Templates where not designed as own language
+        
+        \begin{itemize}
+            \item Initially hard to read
+            \item Long compile times
+        \end{itemize}
+        
+        \item Newer C\texttt{++} standards improve language facilities
+            \begin{itemize}
+                \item Constexpr functions allow compile-time value computations without templates
+                \item Parameter packs ease variadic syntax
+                \item Template template parameters ease higher order function syntax
+                \item Concepts bring gradual typing to templates
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+%-----------------------------------------------------------------
+
+\begin{frame}[fragile]{Question}
+    
+    What is a more familiar name for the 'Mystery' function?
+    \scriptsize
+    \begin{block}{}
+        \begin{minted}{cpp}
+template <int N>
+struct Mystery
+{
+    static constexpr int value = Mystery<N - 2>::value + Mystery<N - 1>::value;
+};
+
+template<>
+struct Mystery<1>
+{
+    static constexpr int value = 1;
+};
+
+template<>
+struct Mystery<0>
+{
+    static constexpr int value = 0;
+};
+
+constexpr int five = Mystery<5>::value;
+        \end{minted}
+    \end{block}
+\end{frame}
+
+%------------------------------------------------------------------------
+
+\begin{frame}{References}
+
+    \nocite{*}
+    
+    \printbibliography
+\end{frame}
+
+%------------------------------------------------------------------------
+
+\begin{frame}[fragile]{Higher Order Functions}
+    \addtocounter{framenumber}{-1}
+    \begin{columns}[t] 
+        \begin{column}{0.5\textwidth}
+            \scriptsize
+            \begin{block}{Haskell}
+                \begin{minted}{haskell}
+data List a = Nil 
+            | Cons a (List a)
+            
+            
+map :: (a -> b) -> (List a) -> (List b)
+
+
+
+
+
+map f (Cons head tail) = 
+    Cons 
+        (f head) 
+        (map f tail)
+        
+
+
+map f Nil = Nil
+                \end{minted}
+            \end{block}
+        \end{column}
+
+        \begin{column}{0.5\textwidth}
+            \scriptsize
+            \begin{block}{C\texttt{++}}
+                \begin{minted}{cpp}
+struct Nil;
+template<typename Head, typename Tail>
+struct Cons;
+
+template<template<typename> class, typename> 
+struct Map;
+
+template<template<typename> class F, 
+    typename Head, typename Tail>
+struct Map<F, Cons<Head, Tail>> 
+{
+    using type = Cons<
+        typename F<Head>::type, 
+        typename Map<F, Tail>::type>;
+};
+
+template<template<typename> class F>
+struct Map<F, Nil> { using type = Nil; };
+                \end{minted}
+            \end{block}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+
+%------------------------------------------------------------------------
+
+\end{document}
