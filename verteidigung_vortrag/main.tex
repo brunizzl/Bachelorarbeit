@@ -21,14 +21,18 @@ style=alphabetic,
 \setbeamertemplate{footline}[frame number]
 \setbeamertemplate{headline}{}
 
-\usepackage[english]{babel}
+\usepackage[german]{babel}
 \usepackage{csquotes}
 
-\title{Template Metaprogramming in C\texttt{++}}
-\author{Bruno Borchardt and Filip Nguyen
-\small
-\texorpdfstring{\\Seminar: Modern Programming Languages\\TUHH}{}}
-\date{January 11, 2021}
+\usepackage{qtree}
+
+
+
+
+\title{Entwurf eines Termersetzungsverfahrens}
+\subtitle{Vortrag zur Bachelorarbeit}
+\author{Bruno Borchardt}
+\date{\today}
 
 \addbibresource{quellen.bib}
 
@@ -39,55 +43,91 @@ style=alphabetic,
   \endgroup
 }
 
+\newcommand\Mono[1]{\texttt{#1}}
+
 \begin{document}
 
 %------------------------------------------------------------------------
-
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------
 \begin{frame}[noframenumbering, plain]
-\titlepage 
+	%\titlepage
+	\maketitle 
+	\footnotesize
+	\begin{center}
+		\begin{tabular}[t]{l l}
+			Betreuer: & PD Dr. Prashant Batra \\
+					~ & Prof. Dr. Siegfried Rump
+		\end{tabular}
+	\end{center}
+\end{frame}
+
+
+%------------------------------------------------------------------------
+\section{Definitionen}
+\begin{frame}[fragile]{Term}
+	\begin{block}{Definition}
+		Terme sind
+		\begin{itemize}
+			\item{Konstantensymbole, etwa \Mono{1}, \Mono{-3i}, \Mono{a}, \Mono{sin}}
+			\item{oder Funktionsanwendungen eines Terms $f$ auf die Terme $t_0, \dots, t_n$, geschrieben
+			$f(t_1, \dots t_n)$, etwa \Mono{sin(3)}}
+		\end{itemize}
+	\end{block}		
+	
+	\begin{columns}[t] %t für align nach 
+        \begin{column}{0.5\textwidth}
+			\pause
+			Ist $t = 3 + 4 a$ ein Term?
+			\pause
+			\\~\\
+			Ja, formal geschrieben \\
+			$t = $ \Mono{sum(3, prod(4, a))}
+        \end{column}
+        \begin{column}{0.5\textwidth}	
+			\small
+			\Tree [.Anw. \Mono{sum} \Mono{3} [.Anw. \Mono{prod} \Mono{4} \Mono{a} ] ]
+        \end{column}
+	\end{columns}
+
 \end{frame}
 
 %------------------------------------------------------------------------
-%------------------------------------------------------------------------
+\begin{frame}[fragile]{Einfache Muster}
 
-%------------------------------------------------------------------------
-
-\begin{frame}[fragile]{Introduction to C++ Templates}
-
-    \scriptsize
-    \begin{block}{Syntax Error}
-        \begin{minted}{cpp}
-std::cout << max(5, 5.5) << "\n";
-        \end{minted}
-    \end{block}
-
-    \begin{block}{Poor Solution}
-        \begin{minted}{cpp}
-template <typename T1, typename T2>
-T1 max(T1 x, T2 y)
-{
-    return x > y ? x : y;
-}
-std::cout << max(5, 5.5) << "\n";
-        \end{minted}
-    \end{block}
-
-    \begin{block}{Better Solution}
-        \begin{minted}{cpp}
-template <typename TReturnValue, typename T1, typename T2>
-TReturnValue max(T1 x, T2 y, TReturnValue)
-{
-    return x > y ? x : y;
-}
-std::cout << max(5, 5.5, 0.0) << "\n"; // Misleading, but works.
-        \end{minted}
-    \end{block}
+	\begin{verbatim}
+sin(_x)^2 + cos(_x)^2 = 1
+	\end{verbatim}
 
 \end{frame}
-
-%------------------------------------------------------------------------
-
 
 %------------------------------------------------------------------------
 
 \end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
