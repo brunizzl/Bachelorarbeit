@@ -1,6 +1,8 @@
 \documentclass{beamer}
 \usetheme{Frankfurt}
 
+\usepackage[utf8]{inputenc}
+
 \usepackage[backend=biber,
 style=alphabetic,
 ]{biblatex}
@@ -19,7 +21,7 @@ style=alphabetic,
 
 \setbeamertemplate{navigation symbols}{}
 \setbeamertemplate{footline}[frame number]
-\setbeamertemplate{headline}{}
+%\setbeamertemplate{headline}{}
 
 \usepackage[german]{babel}
 \usepackage{csquotes}
@@ -43,8 +45,6 @@ style=alphabetic,
   \endgroup
 }
 
-\newcommand\Mono[1]{\texttt{#1}}
-
 \begin{document}
 
 %------------------------------------------------------------------------
@@ -62,44 +62,117 @@ style=alphabetic,
 	\end{center}
 \end{frame}
 
+%------------------------------------------------------------------------
+
+\section{Motivation}
+\begin{frame}{Motivation}
+	
+\end{frame}
 
 %------------------------------------------------------------------------
-\section{Definitionen}
+\section{Grundlagen}
 \begin{frame}[fragile]{Term}
 	\begin{block}{Definition}
 		Terme sind
 		\begin{itemize}
-			\item{Konstantensymbole, etwa \Mono{1}, \Mono{-3i}, \Mono{a}, \Mono{sin}}
-			\item{oder Funktionsanwendungen eines Terms $f$ auf die Terme $t_0, \dots, t_n$, geschrieben
-			$f(t_1, \dots t_n)$, etwa \Mono{sin(3)}}
+			\item{\emph{Konstantensymbole}, etwa \verb~1~, \verb~-3i~, \verb~a~, \verb~sin~}
+			\item{oder \emph{Funktionsanwendungen} eines Terms $f$ auf die Terme $t_0, \dots, t_n$, geschrieben
+			$f(t_1, \dots t_n)$, etwa \verb~sin(3)~}
 		\end{itemize}
 	\end{block}		
-	
-	\begin{columns}[t] %t f�r align nach 
+	~\\~\\
+	\begin{columns}[t] %t für align nach oben
         \begin{column}{0.5\textwidth}
 			\pause
 			Ist $t = 3 + 4 a$ ein Term?
 			\pause
 			\\~\\
 			Ja, formal geschrieben \\
-			$t = $ \Mono{sum(3, prod(4, a))}
+			$t = $ \verb~sum(3, prod(4, a))~
         \end{column}
         \begin{column}{0.5\textwidth}	
 			\small
-			\Tree [.Anw. \Mono{sum} \Mono{3} [.Anw. \Mono{prod} \Mono{4} \Mono{a} ] ]
+			\Tree [.{$t$} \verb~sum~ \verb~3~ [ \verb~prod~ \verb~4~ \verb~a~ ]!\qsetw{2cm} ]
         \end{column}
 	\end{columns}
-
+	~\\~\\
 \end{frame}
 
 %------------------------------------------------------------------------
-\begin{frame}[fragile]{Einfache Muster}
 
-	\begin{verbatim}
-sin(_x)^2 + cos(_x)^2 = 1
-	\end{verbatim}
-
+\begin{frame}[fragile]{Ersetzungsregeln}
+	
+	\begin{itemize}
+		\item{Paar $(l, r)$ aus Termen $l$ und $r$, geschrieben $l$\verb~ = ~$r$}
+		\item{unterscheide \emph{Literale} (zu vereinfachende Terme) von \emph{Mustern} (Terme in Regeln)}
+		\item{wird $l$ in einem Literal gefunden, erfolgt die Ersetzung durch $r$}
+		\item{\emph{Mustervariablen} sind Platzhalter in Regeln, idetifiziert durch vorangestellten Unterstrich {\verb~_~}, etwa \verb~_x~}
+	\end{itemize}	
 \end{frame}
+
+%------------------------------------------------------------------------
+
+\begin{frame}[fragile]{Beispiel}
+	
+	Die Regel \verb~sum(_x, _x) = prod(2, _x)~ steht für die folgende Transformation eines Literals.
+	~\\
+	\begin{columns}[c] 
+		\footnotesize
+        \begin{column}{0.45\textwidth}			
+			\Tree [.{\dots} [ \verb~sum~ \qroof{~~~~$x$~~~~}. \qroof{~~~~$x$~~~~}. ] ] 
+        \end{column}
+        \begin{column}{0.0001\textwidth}
+			$\rightarrow$
+        \end{column}
+        \begin{column}{0.45\textwidth}	
+			\Tree [.{\dots} [ \verb~prod~ \verb~2~ \qroof{~~~~$x$~~~~}. ] ]
+        \end{column}
+	\end{columns}
+	~\\
+	\pause
+	Aus $t =$\verb~ sin(sum(a, a))~ wird $t' =$\verb~ sin(prod(2, a))~.	
+	~\\
+	\begin{columns}[c] 
+		\footnotesize
+        \begin{column}{0.45\textwidth}			
+			\Tree [.{$t$} \verb~sin~ [ \verb~sum~ \verb~a~ \verb~a~ ] !{\qframesubtree} ] 
+        \end{column}
+        \begin{column}{0.0001\textwidth}
+			$\rightarrow$
+        \end{column}
+        \begin{column}{0.45\textwidth}	
+			\Tree [.{$t'$} \verb~sin~ [ \verb~prod~ \verb~2~ \verb~a~ ] !{\qframesubtree} ]
+        \end{column}
+	\end{columns}
+	
+\end{frame}
+
+%------------------------------------------------------------------------
+
+\begin{frame}{Normalisierung}
+	Wann sind zwei Terme identisch?
+	\begin{enumerate}
+		\item{\verb~sum(2, 2) ~ vs. \verb~ 4~}
+		\item{\verb~sum(a, b) ~ vs. \verb~ sum(b, a)~}
+		\item{\verb~sum(sum(a, b), 2) ~ vs. \verb~ sum(a, sum(b, 2))~}
+	\end{enumerate}
+	~\\
+	\pause
+	\begin{enumerate}
+		\item{werte bekannte Funktionsanwendungen aus:\\
+			\verb~  sum(2, 2)~ $\rightarrow$ \verb~4~}			
+		\item{sortiere Argumente kommutativer Funktionsanwendungen:\\
+			\verb~  sum(b, a)~ $\rightarrow$ \verb~sum(a, b)~}
+		\item{erlaube keine geschachtelten Funktionsanwendungen der selben assoziativen Funktionen:\\
+			\verb~  sum(sum(a, b), 2)~ $\rightarrow$ \verb~sum(a, b, 2)~}
+	\end{enumerate}	
+\end{frame}
+
+%------------------------------------------------------------------------
+
+%------------------------------------------------------------------------
+
+%------------------------------------------------------------------------
 
 %------------------------------------------------------------------------
 
