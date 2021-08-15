@@ -23,7 +23,7 @@ style=alphabetic,
 \setbeamertemplate{footline}[frame number]
 %\setbeamertemplate{headline}{}
 
-\usepackage[german]{babel}
+\usepackage[ngerman]{babel}
 \usepackage{csquotes}
 
 \usepackage{qtree}
@@ -31,7 +31,8 @@ style=alphabetic,
 
 
 
-\title{Entwurf eines Termersetzungsverfahrens}
+\title{Entwicklung eines Termersetzungssystems für
+assoziative und kommutative Ausdrücke}
 \subtitle{Vortrag zur Bachelorarbeit}
 \author{Bruno Borchardt}
 \date{\today}
@@ -63,14 +64,19 @@ style=alphabetic,
 \end{frame}
 
 %------------------------------------------------------------------------
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------
 
 \section{Motivation}
-\begin{frame}{Motivation}
-	
+\begin{frame}[fragile]{Motivation}
+	hi.
 \end{frame}
 
 %------------------------------------------------------------------------
-\section{Grundlagen}
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------
+
+\section{Grundidee}
 \begin{frame}[fragile]{Term}
 	\begin{block}{Definition}
 		Terme sind
@@ -149,10 +155,10 @@ style=alphabetic,
 
 %------------------------------------------------------------------------
 
-\begin{frame}{Normalisierung}
+\begin{frame}[fragile]{Normalisierung}
 	Wann sind zwei Terme identisch?
 	\begin{enumerate}
-		\item{\verb~sum(2, 2) ~ vs. \verb~ 4~}
+		\item{\verb~sum(1, 1) ~ vs. \verb~ 2~}
 		\item{\verb~sum(a, b) ~ vs. \verb~ sum(b, a)~}
 		\item{\verb~sum(sum(a, b), 2) ~ vs. \verb~ sum(a, sum(b, 2))~}
 	\end{enumerate}
@@ -160,12 +166,94 @@ style=alphabetic,
 	\pause
 	\begin{enumerate}
 		\item{werte bekannte Funktionsanwendungen aus:\\
-			\verb~  sum(2, 2)~ $\rightarrow$ \verb~4~}			
+			\verb~  sum(1, 1)~ $\rightarrow$ \verb~2~}			
 		\item{sortiere Argumente kommutativer Funktionsanwendungen:\\
 			\verb~  sum(b, a)~ $\rightarrow$ \verb~sum(a, b)~}
-		\item{erlaube keine geschachtelten Funktionsanwendungen der selben assoziativen Funktionen:\\
+		\item{erlaube keine geschachtelten Funktionsanwendungen derselben assoziativen Funktion:\\
 			\verb~  sum(sum(a, b), 2)~ $\rightarrow$ \verb~sum(a, b, 2)~}
 	\end{enumerate}	
+\end{frame}
+
+%------------------------------------------------------------------------
+
+\begin{frame}[fragile]{Multi-Mustervariablen}
+	\begin{itemize}
+		\item{Bestimmte Muster sollen Funktionsanwendungen beliebiger Argumentanzahl darstellen können.}
+		\item{Multi-Mustervariablen sind Platzhalter für beliebig viele Argumente, identifiziert durch einen Suffix aus drei Punkten, etwa \verb~xs...~}
+	\end{itemize}
+	
+	\pause
+	Regel \verb|sum(_x, _x) = prod(2, _x)| wird zu \verb|sum(_x, _x, ys...) = sum(prod(2, _x), ys...)|.	
+	~\\
+	\begin{columns}[c] 
+		\scriptsize
+        \begin{column}{0.45\textwidth}			
+			\Tree [ \verb~sum~ \qroof{~~~~$x$~~~~}. \qroof{~~~~$x$~~~~}. {\ldots}  ] 
+        \end{column}
+        \begin{column}{0.0001\textwidth}
+			$\rightarrow$
+        \end{column}
+        \begin{column}{0.45\textwidth}	
+			\Tree [ \verb~sum~ [ \verb~prod~ \verb~2~ \qroof{~~~~$x$~~~~}. ] {\dots} ]
+        \end{column}
+	\end{columns}
+\end{frame}
+
+%------------------------------------------------------------------------
+
+\begin{frame}[fragile]{Termersetzungssystem}
+	\begin{block}{Pseudocode Termersetzungssystem}
+		Input: Regelmenge $R$, Literal $t$ \\
+		
+		\begin{enumerate}
+			\item normalisiere $t$ \label{schritt:normalisieren}
+			\item Wenn $\exists (l, r) \in R$ anwendbar auf $t$ oder Teil von $t$
+			\item ~~~~ ersetze $l$ in $t$ durch $r$
+			\item ~~~~ gehe zu \ref{schritt:normalisieren}
+			\item gebe $t$ zurück
+		\end{enumerate}
+	\end{block}
+\end{frame}
+
+%------------------------------------------------------------------------
+
+\begin{frame}[fragile]{Demo}
+	\pause
+	\begin{block}{Spickzettel}
+		\footnotesize
+		\begin{verbatim}
+diff(3 + t + a, t)
+
+:add diff(_u + vs..., _x) = diff(_u, _x) + diff(sum(vs...), _x)
+
+:add diff(_y, _x) | !contains(_y, _x) = 0
+
+:add diff(_x, _x) = 1
+		\end{verbatim}
+	\end{block}
+\end{frame}
+
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------
+
+\section{Mustererkennung}
+\begin{frame}[fragile]{Match}
+	\begin{block}{Definition}
+		Eine Funktion $v$, die Mustervariablen auf Literale abbildet, ist ein \emph{Match} des Musters $p$ mit dem Literal $t$, wenn die normalisierte Form der Ersetzung der Mustervariablen $x_i$ in $p$ durch ihre Funktionswerte $v(x_i)$ mit $t$ identisch ist.
+	\end{block}
+	
+	\pause
+	\begin{block}{Beispiel 1}
+		Mit $v($\verb~_x~$) =$\verb~ sin(a)~ ist $v$ ein Match des
+		Musters $p =$\verb~ sum(_x, _x)~ mit dem Literal $t =$\verb~ sum(sin(a), sin(a))~.
+	\end{block}
+	
+	\pause
+	\begin{block}{Beispiel 2}
+		Mit $v($\verb~_x~$) =$\verb~ 3~ ist $v$ ein Match des
+		Musters $p =$\verb~ sum(_x, _x)~ mit dem Literal $t =$\verb~ 6~.
+	\end{block}
 \end{frame}
 
 %------------------------------------------------------------------------
@@ -173,6 +261,18 @@ style=alphabetic,
 %------------------------------------------------------------------------
 
 %------------------------------------------------------------------------
+
+%------------------------------------------------------------------------
+
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------
+\section{Fazit}
+\begin{frame}{Fazit}
+	\begin{itemize}
+		\item{\emph{heehee}}
+	\end{itemize}
+\end{frame}
 
 %------------------------------------------------------------------------
 
