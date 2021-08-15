@@ -27,7 +27,15 @@ style=alphabetic,
 \usepackage{csquotes}
 
 \usepackage{qtree}
+\noautomath %qtree parsing ist besser? vielleicht?
 
+\usepackage{dirtree} %alternative bäume
+%\DTsetlength{offset}{width}{sep}{rule-width}{dot-size} (siehe doku)
+\DTsetlength{0.2em}{1em}{0.2em}{0.4pt}{0pt}
+
+\usepackage{multirow} %mehrspaltige eintraege in tabelle
+
+\usepackage{xcolor} %\textcolor{blue}{This is a sample text in blue.}
 
 
 
@@ -82,7 +90,7 @@ assoziative und kommutative Ausdrücke}
 		Terme sind
 		\begin{itemize}
 			\item{\emph{Konstantensymbole}, etwa \verb~1~, \verb~-3i~, \verb~a~, \verb~sin~}
-			\item{oder \emph{Funktionsanwendungen} eines Terms $f$ auf die Terme $t_0, \dots, t_n$, geschrieben
+			\item{oder \emph{Funktionsanwendungen} eines Terms $f$ auf die Terme $t_1, \dots, t_n$, geschrieben
 			$f(t_1, \dots t_n)$, etwa \verb~sin(3)~}
 		\end{itemize}
 	\end{block}		
@@ -229,6 +237,10 @@ diff(3 + t + a, t)
 :add diff(_y, _x) | !contains(_y, _x) = 0
 
 :add diff(_x, _x) = 1
+
+:memory 1
+
+:verb 1
 		\end{verbatim}
 	\end{block}
 \end{frame}
@@ -257,6 +269,73 @@ diff(3 + t + a, t)
 \end{frame}
 
 %------------------------------------------------------------------------
+
+\begin{frame}[fragile]{Vorgehen}
+	\begin{itemize}
+		\item{Muster und Literal werden parallel abgelaufen}
+		\item{Mustervariablen werden in Entdeckungsreihenfolge der Tiefensuche an Teilterme des Literals gebunden}
+		\item{Backtracking wenn Match aktuell unmöglich}
+		\item{Algorithmus berücksichtigt Kommutativität entsprechender Funktionsanwendungen}
+	\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------------------
+
+\begin{frame}[fragile]{Beispiel}
+	Matche $p =$\verb~ prod(_x, pow(_x, _y), zs...)~ in 
+	$t =$\verb~ prod(pow(a, 2), pow(sum(3, b), 4), sum(3, b))~
+	~\\
+	\begin{columns}[c] %t für align nach oben
+		\scriptsize
+        \begin{column}{0.3\textwidth}	
+			\dirtree{%
+			.1 \texttt{prod}.
+				.2 \texttt{\char`_x}.		
+				.2 \texttt{pow}.
+					.3 \texttt{\char`_x}.
+					.3 \texttt{\char`_y}.
+				.2 \texttt{zs...}.
+			}
+			~\\~\\
+			\begin{tabular} {c|c}
+			\multicolumn{2}{c}{Matchstatus}\\
+			\hline
+			\verb~_x~      & -            \\
+			\verb~_y~      & -            \\
+			\verb~zs...~   & -            
+			\end{tabular}
+        \end{column}
+		
+        \begin{column}{0.3\textwidth}	
+			\dirtree{%
+			.1 \texttt{prod}.		
+				.2 \texttt{pow}.
+					.3 \texttt{a}.
+					.3 \texttt{2}.
+				.2 \texttt{pow}.
+					.3 \texttt{sum}.
+						.4 \texttt{3}.
+						.4 \texttt{b}.
+					.3 \texttt{4}.
+				.2 \texttt{sum}.
+					.3 \texttt{3}.
+					.3 \texttt{b}.
+			}
+        \end{column}
+	\end{columns}
+\end{frame}
+
+%------------------------------------------------------------------------
+
+\begin{frame}[fragile]{Aufbau}
+
+
+	Konkrete Programmstrukturen
+	\begin{itemize}
+		\item{Matchvariablen sind über einen Index identifiziert}
+		\item{Match $v$ als Tabelle der Funktionswerte für entsprechende Indices (Name im Programm ist \verb~match::State~)}
+	\end{itemize}
+\end{frame}
 
 %------------------------------------------------------------------------
 
