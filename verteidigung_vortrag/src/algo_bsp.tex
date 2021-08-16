@@ -1,0 +1,593 @@
+
+
+\begin{frame}[fragile]{Beispiel}
+	Matche $p =$\verb~ prod(pow(_x, _y), _x, zs...)~ in 
+	$t =$\verb~ prod(pow(a, 2), pow(sum(3, b), 4), sum(3, b))~
+	~\\
+	\begin{columns}[c] %t für align nach oben
+		\scriptsize
+        \begin{column}{0.3\textwidth}	
+			\dirtree{%
+			.1 \texttt{prod}.	
+				.2 \texttt{pow}.
+					.3 \texttt{\char`_x}.
+					.3 \texttt{\char`_y}.
+				.2 \texttt{\char`_x}.	
+				.2 \texttt{zs...}.
+			}
+			~\\~\\
+			\begin{tabular} {c|c}
+			\multicolumn{2}{c}{Matchstatus}\\
+			\hline
+			\verb~_x~      & -            \\
+			\verb~_y~      & -            \\
+			\verb~zs...~   & -            
+			\end{tabular}
+        \end{column}
+		
+        \begin{column}{0.3\textwidth}	
+			\dirtree{%
+			.1 \texttt{prod}.		
+				.2 \texttt{pow}.
+					.3 \texttt{a}.
+					.3 \texttt{2}.
+				.2 \texttt{pow}.
+					.3 \texttt{sum}.
+						.4 \texttt{3}.
+						.4 \texttt{b}.
+					.3 \texttt{4}.
+				.2 \texttt{sum}.
+					.3 \texttt{3}.
+					.3 \texttt{b}.
+			}
+        \end{column}
+	\end{columns}
+\end{frame}
+
+%teste äußeres produkt
+\begin{frame}[fragile, noframenumbering]{Beispiel}
+	Matche $p =$\verb~ prod(pow(_x, _y), _x, zs...)~ in 
+	$t =$\verb~ prod(pow(a, 2), pow(sum(3, b), 4), sum(3, b))~
+	~\\
+	\begin{columns}[c] %t für align nach oben
+		\scriptsize
+        \begin{column}{0.3\textwidth}	
+			\dirtree{%
+			.1 \textcolor{cyan}{\texttt{prod}}.
+				.2 \texttt{pow}.
+					.3 \texttt{\char`_x}.
+					.3 \texttt{\char`_y}.
+				.2 \texttt{\char`_x}.	
+				.2 \texttt{zs...}.	
+			}
+			~\\~\\
+			\begin{tabular} {c|c}
+			\multicolumn{2}{c}{Matchstatus}\\
+			\hline
+			\verb~_x~      & -            \\
+			\verb~_y~      & -            \\
+			\verb~zs...~   & -            
+			\end{tabular}
+        \end{column}
+		
+        \begin{column}{0.3\textwidth}	
+			\dirtree{%
+			.1 \textcolor{cyan}{\texttt{prod}}.		
+				.2 \texttt{pow}.
+					.3 \texttt{a}.
+					.3 \texttt{2}.
+				.2 \texttt{pow}.
+					.3 \texttt{sum}.
+						.4 \texttt{3}.
+						.4 \texttt{b}.
+					.3 \texttt{4}.
+				.2 \texttt{sum}.
+					.3 \texttt{3}.
+					.3 \texttt{b}.
+			}
+        \end{column}
+	\end{columns}
+\end{frame}
+
+%teste erste pow
+\begin{frame}[fragile, noframenumbering]{Beispiel}
+	Matche $p =$\verb~ prod(pow(_x, _y), _x, zs...)~ in 
+	$t =$\verb~ prod(pow(a, 2), pow(sum(3, b), 4), sum(3, b))~
+	~\\
+	\begin{columns}[c] %t für align nach oben
+		\scriptsize
+        \begin{column}{0.3\textwidth}	
+			\dirtree{%
+			.1 \textcolor{green}{\texttt{prod}}.
+				.2 \textcolor{cyan}{\texttt{pow}}.
+					.3 \texttt{\char`_x}.
+					.3 \texttt{\char`_y}.
+				.2 \texttt{\char`_x}.		
+				.2 \texttt{zs...}.
+			}
+			~\\~\\
+			\begin{tabular} {c|c}
+			\multicolumn{2}{c}{Matchstatus}\\
+			\hline
+			\verb~_x~      & -            \\
+			\verb~_y~      & -            \\
+			\verb~zs...~   & -            
+			\end{tabular}
+        \end{column}
+		
+        \begin{column}{0.3\textwidth}	
+			\dirtree{%
+			.1 \textcolor{green}{\texttt{prod}}.		
+				.2 \textcolor{cyan}{\texttt{pow}}.
+					.3 \texttt{a}.
+					.3 \texttt{2}.
+				.2 \texttt{pow}.
+					.3 \texttt{sum}.
+						.4 \texttt{3}.
+						.4 \texttt{b}.
+					.3 \texttt{4}.
+				.2 \texttt{sum}.
+					.3 \texttt{3}.
+					.3 \texttt{b}.
+			}
+        \end{column}
+	\end{columns}
+\end{frame}
+
+%argument 1 von erstem pow
+\begin{frame}[fragile, noframenumbering]{Beispiel}
+	Matche $p =$\verb~ prod(pow(_x, _y), _x, zs...)~ in 
+	$t =$\verb~ prod(pow(a, 2), pow(sum(3, b), 4), sum(3, b))~
+	~\\
+	\begin{columns}[c] %t für align nach oben
+		\scriptsize
+        \begin{column}{0.3\textwidth}	
+			\dirtree{%
+			.1 \textcolor{green}{\texttt{prod}}.
+				.2 \textcolor{green}{\texttt{pow}}.
+					.3 \textcolor{cyan}{\texttt{\char`_x}}.
+					.3 \texttt{\char`_y}.
+				.2 \texttt{\char`_x}.		
+				.2 \texttt{zs...}.
+			}
+			~\\~\\
+			\begin{tabular} {c|c}
+			\multicolumn{2}{c}{Matchstatus}\\
+			\hline
+			\verb~_x~      & \textcolor{cyan}{a}            \\
+			\verb~_y~      & -            \\
+			\verb~zs...~   & -            
+			\end{tabular}
+        \end{column}
+		
+        \begin{column}{0.3\textwidth}	
+			\dirtree{%
+			.1 \textcolor{green}{\texttt{prod}}.		
+				.2 \textcolor{green}{\texttt{pow}}.
+					.3 \textcolor{cyan}{\texttt{a}}.
+					.3 \texttt{2}.
+				.2 \texttt{pow}.
+					.3 \texttt{sum}.
+						.4 \texttt{3}.
+						.4 \texttt{b}.
+					.3 \texttt{4}.
+				.2 \texttt{sum}.
+					.3 \texttt{3}.
+					.3 \texttt{b}.
+			}
+        \end{column}
+	\end{columns}
+\end{frame}
+
+%argument 2 von erstem pow
+\begin{frame}[fragile, noframenumbering]{Beispiel}
+	Matche $p =$\verb~ prod(pow(_x, _y), _x, zs...)~ in 
+	$t =$\verb~ prod(pow(a, 2), pow(sum(3, b), 4), sum(3, b))~
+	~\\
+	\begin{columns}[c] %t für align nach oben
+		\scriptsize
+        \begin{column}{0.3\textwidth}	
+			\dirtree{%
+			.1 \textcolor{green}{\texttt{prod}}.
+				.2 \textcolor{green}{\texttt{pow}}.
+					.3 \textcolor{green}{\texttt{\char`_x}}.
+					.3 \textcolor{cyan}{\texttt{\char`_y}}.
+				.2 \texttt{\char`_x}.		
+				.2 \texttt{zs...}.
+			}
+			~\\~\\
+			\begin{tabular} {c|c}
+			\multicolumn{2}{c}{Matchstatus}\\
+			\hline
+			\verb~_x~      & \textcolor{green}{a}            \\
+			\verb~_y~      & \textcolor{cyan}{2}            \\
+			\verb~zs...~   & -            
+			\end{tabular}
+        \end{column}
+		
+        \begin{column}{0.3\textwidth}	
+			\dirtree{%
+			.1 \textcolor{green}{\texttt{prod}}.		
+				.2 \textcolor{green}{\texttt{pow}}.
+					.3 \textcolor{green}{\texttt{a}}.
+					.3 \textcolor{cyan}{\texttt{2}}.
+				.2 \texttt{pow}.
+					.3 \texttt{sum}.
+						.4 \texttt{3}.
+						.4 \texttt{b}.
+					.3 \texttt{4}.
+				.2 \texttt{sum}.
+					.3 \texttt{3}.
+					.3 \texttt{b}.
+			}
+        \end{column}
+	\end{columns}
+\end{frame}
+
+%suche _x alleine mit erstem pow
+\begin{frame}[fragile, noframenumbering]{Beispiel}
+	Matche $p =$\verb~ prod(pow(_x, _y), _x, zs...)~ in 
+	$t =$\verb~ prod(pow(a, 2), pow(sum(3, b), 4), sum(3, b))~
+	~\\
+	\begin{columns}[c] %t für align nach oben
+		\scriptsize
+        \begin{column}{0.3\textwidth}	
+			\dirtree{%
+			.1 \textcolor{green}{\texttt{prod}}.
+				.2 \textcolor{green}{\texttt{pow}}.
+					.3 \textcolor{green}{\texttt{\char`_x}}.
+					.3 \textcolor{green}{\texttt{\char`_y}}.
+				.2 \textcolor{cyan}{\texttt{\char`_x}}.		
+				.2 \texttt{zs...}.
+			}
+			~\\~\\
+			\begin{tabular} {c|c}
+			\multicolumn{2}{c}{Matchstatus}\\
+			\hline
+			\verb~_x~      & \textcolor{green}{a}            \\
+			\verb~_y~      & \textcolor{green}{2}            \\
+			\verb~zs...~   & -            
+			\end{tabular}
+        \end{column}
+		
+        \begin{column}{0.3\textwidth}	
+			\dirtree{%
+			.1 \textcolor{green}{\texttt{prod}}.		
+				.2 \textcolor{green}{\texttt{pow}}.
+					.3 \textcolor{green}{\texttt{a}}.
+					.3 \textcolor{green}{\texttt{2}}.
+				.2 \textcolor{cyan}{\texttt{pow}}.
+					.3 \textcolor{cyan}{\texttt{sum}}.
+						.4 \textcolor{cyan}{\texttt{3}}.
+						.4 \textcolor{cyan}{\texttt{b}}.
+					.3 \textcolor{cyan}{\texttt{4}}.
+				.2 \texttt{sum}.
+					.3 \texttt{3}.
+					.3 \texttt{b}.
+			}
+        \end{column}
+	\end{columns}
+\end{frame}
+
+%suche _x alleine mit erstem pow
+\begin{frame}[fragile, noframenumbering]{Beispiel}
+	Matche $p =$\verb~ prod(pow(_x, _y), _x, zs...)~ in 
+	$t =$\verb~ prod(pow(a, 2), pow(sum(3, b), 4), sum(3, b))~
+	~\\
+	\begin{columns}[c] %t für align nach oben
+		\scriptsize
+        \begin{column}{0.3\textwidth}	
+			\dirtree{%
+			.1 \textcolor{green}{\texttt{prod}}.
+				.2 \textcolor{green}{\texttt{pow}}.
+					.3 \textcolor{green}{\texttt{\char`_x}}.
+					.3 \textcolor{green}{\texttt{\char`_y}}.
+				.2 \textcolor{cyan}{\texttt{\char`_x}}.		
+				.2 \texttt{zs...}.
+			}
+			~\\~\\
+			\begin{tabular} {c|c}
+			\multicolumn{2}{c}{Matchstatus}\\
+			\hline
+			\verb~_x~      & \textcolor{green}{a}            \\
+			\verb~_y~      & \textcolor{green}{2}            \\
+			\verb~zs...~   & -            
+			\end{tabular}
+        \end{column}
+		
+        \begin{column}{0.3\textwidth}	
+			\dirtree{%
+			.1 \textcolor{green}{\texttt{prod}}.		
+				.2 \textcolor{green}{\texttt{pow}}.
+					.3 \textcolor{green}{\texttt{a}}.
+					.3 \textcolor{green}{\texttt{2}}.
+				.2 \textcolor{black}{\texttt{pow}}.
+					.3 \textcolor{black}{\texttt{sum}}.
+						.4 \textcolor{black}{\texttt{3}}.
+						.4 \textcolor{black}{\texttt{b}}.
+					.3 \textcolor{black}{\texttt{4}}.
+				.2 \textcolor{cyan}{\texttt{sum}}.
+					.3 \textcolor{cyan}{\texttt{3}}.
+					.3 \textcolor{cyan}{\texttt{b}}.
+			}
+        \end{column}
+	\end{columns}
+\end{frame}
+
+
+%neues mach für pow musterfaktor
+\begin{frame}[fragile, noframenumbering]{Beispiel}
+	Matche $p =$\verb~ prod(pow(_x, _y), _x, zs...)~ in 
+	$t =$\verb~ prod(pow(a, 2), pow(sum(3, b), 4), sum(3, b))~
+	~\\
+	\begin{columns}[c] %t für align nach oben
+		\scriptsize
+        \begin{column}{0.3\textwidth}	
+			\dirtree{%
+			.1 \textcolor{green}{\texttt{prod}}.
+				.2 \textcolor{cyan}{\texttt{pow}}.
+					.3 \textcolor{black}{\texttt{\char`_x}}.
+					.3 \textcolor{black}{\texttt{\char`_y}}.
+				.2 \textcolor{black}{\texttt{\char`_x}}.		
+				.2 \texttt{zs...}.
+			}
+			~\\~\\
+			\begin{tabular} {c|c}
+			\multicolumn{2}{c}{Matchstatus}\\
+			\hline
+			\verb~_x~      & -            \\
+			\verb~_y~      & -            \\
+			\verb~zs...~   & -            
+			\end{tabular}
+        \end{column}
+		
+        \begin{column}{0.3\textwidth}	
+			\dirtree{%
+			.1 \textcolor{green}{\texttt{prod}}.		
+				.2 \textcolor{black}{\texttt{pow}}.
+					.3 \textcolor{black}{\texttt{a}}.
+					.3 \textcolor{black}{\texttt{2}}.
+				.2 \textcolor{cyan}{\texttt{pow}}.
+					.3 \textcolor{black}{\texttt{sum}}.
+						.4 \textcolor{black}{\texttt{3}}.
+						.4 \textcolor{black}{\texttt{b}}.
+					.3 \textcolor{black}{\texttt{4}}.
+				.2 \textcolor{black}{\texttt{sum}}.
+					.3 \textcolor{black}{\texttt{3}}.
+					.3 \textcolor{black}{\texttt{b}}.
+			}
+        \end{column}
+	\end{columns}
+\end{frame}
+
+%neues mach für pow musterfaktor, matche _x neu
+\begin{frame}[fragile, noframenumbering]{Beispiel}
+	Matche $p =$\verb~ prod(pow(_x, _y), _x, zs...)~ in 
+	$t =$\verb~ prod(pow(a, 2), pow(sum(3, b), 4), sum(3, b))~
+	~\\
+	\begin{columns}[c] %t für align nach oben
+		\scriptsize
+        \begin{column}{0.3\textwidth}	
+			\dirtree{%
+			.1 \textcolor{green}{\texttt{prod}}.
+				.2 \textcolor{green}{\texttt{pow}}.
+					.3 \textcolor{cyan}{\texttt{\char`_x}}.
+					.3 \textcolor{black}{\texttt{\char`_y}}.
+				.2 \textcolor{black}{\texttt{\char`_x}}.		
+				.2 \texttt{zs...}.
+			}
+			~\\~\\
+			\begin{tabular} {c|c}
+			\multicolumn{2}{c}{Matchstatus}\\
+			\hline
+			\verb~_x~      & \textcolor{cyan}{\verb~sum(3, b)~}            \\
+			\verb~_y~      & -            \\
+			\verb~zs...~   & -            
+			\end{tabular}
+        \end{column}
+		
+        \begin{column}{0.3\textwidth}	
+			\dirtree{%
+			.1 \textcolor{green}{\texttt{prod}}.		
+				.2 \textcolor{black}{\texttt{pow}}.
+					.3 \textcolor{black}{\texttt{a}}.
+					.3 \textcolor{black}{\texttt{2}}.
+				.2 \textcolor{green}{\texttt{pow}}.
+					.3 \textcolor{cyan}{\texttt{sum}}.
+						.4 \textcolor{cyan}{\texttt{3}}.
+						.4 \textcolor{cyan}{\texttt{b}}.
+					.3 \textcolor{black}{\texttt{4}}.
+				.2 \textcolor{black}{\texttt{sum}}.
+					.3 \textcolor{black}{\texttt{3}}.
+					.3 \textcolor{black}{\texttt{b}}.
+			}
+        \end{column}
+	\end{columns}
+\end{frame}
+
+%neues mach für pow musterfaktor, matche _y neu
+\begin{frame}[fragile, noframenumbering]{Beispiel}
+	Matche $p =$\verb~ prod(pow(_x, _y), _x, zs...)~ in 
+	$t =$\verb~ prod(pow(a, 2), pow(sum(3, b), 4), sum(3, b))~
+	~\\
+	\begin{columns}[c] %t für align nach oben
+		\scriptsize
+        \begin{column}{0.3\textwidth}	
+			\dirtree{%
+			.1 \textcolor{green}{\texttt{prod}}.
+				.2 \textcolor{green}{\texttt{pow}}.
+					.3 \textcolor{green}{\texttt{\char`_x}}.
+					.3 \textcolor{cyan}{\texttt{\char`_y}}.
+				.2 \textcolor{black}{\texttt{\char`_x}}.		
+				.2 \texttt{zs...}.
+			}
+			~\\~\\
+			\begin{tabular} {c|c}
+			\multicolumn{2}{c}{Matchstatus}\\
+			\hline
+			\verb~_x~      & \textcolor{green}{\verb~sum(3, b)~}            \\
+			\verb~_y~      & \textcolor{cyan}{\verb~4~}            \\
+			\verb~zs...~   & -            
+			\end{tabular}
+        \end{column}
+		
+        \begin{column}{0.3\textwidth}	
+			\dirtree{%
+			.1 \textcolor{green}{\texttt{prod}}.		
+				.2 \textcolor{black}{\texttt{pow}}.
+					.3 \textcolor{black}{\texttt{a}}.
+					.3 \textcolor{black}{\texttt{2}}.
+				.2 \textcolor{green}{\texttt{pow}}.
+					.3 \textcolor{green}{\texttt{sum}}.
+						.4 \textcolor{green}{\texttt{3}}.
+						.4 \textcolor{green}{\texttt{b}}.
+					.3 \textcolor{cyan}{\texttt{4}}.
+				.2 \textcolor{black}{\texttt{sum}}.
+					.3 \textcolor{black}{\texttt{3}}.
+					.3 \textcolor{black}{\texttt{b}}.
+			}
+        \end{column}
+	\end{columns}
+\end{frame}
+
+
+%neuer versuch matche faktor _x
+\begin{frame}[fragile, noframenumbering]{Beispiel}
+	Matche $p =$\verb~ prod(pow(_x, _y), _x, zs...)~ in 
+	$t =$\verb~ prod(pow(a, 2), pow(sum(3, b), 4), sum(3, b))~
+	~\\
+	\begin{columns}[c] %t für align nach oben
+		\scriptsize
+        \begin{column}{0.3\textwidth}	
+			\dirtree{%
+			.1 \textcolor{green}{\texttt{prod}}.
+				.2 \textcolor{green}{\texttt{pow}}.
+					.3 \textcolor{green}{\texttt{\char`_x}}.
+					.3 \textcolor{green}{\texttt{\char`_y}}.
+				.2 \textcolor{cyan}{\texttt{\char`_x}}.		
+				.2 \texttt{zs...}.
+			}
+			~\\~\\
+			\begin{tabular} {c|c}
+			\multicolumn{2}{c}{Matchstatus}\\
+			\hline
+			\verb~_x~      & \textcolor{green}{\verb~sum(3, b)~}            \\
+			\verb~_y~      & \textcolor{green}{\verb~4~}            \\
+			\verb~zs...~   & -            
+			\end{tabular}
+        \end{column}
+		
+        \begin{column}{0.3\textwidth}	
+			\dirtree{%
+			.1 \textcolor{green}{\texttt{prod}}.		
+				.2 \textcolor{cyan}{\texttt{pow}}.
+					.3 \textcolor{cyan}{\texttt{a}}.
+					.3 \textcolor{cyan}{\texttt{2}}.
+				.2 \textcolor{green}{\texttt{pow}}.
+					.3 \textcolor{green}{\texttt{sum}}.
+						.4 \textcolor{green}{\texttt{3}}.
+						.4 \textcolor{green}{\texttt{b}}.
+					.3 \textcolor{green}{\texttt{4}}.
+				.2 \textcolor{black}{\texttt{sum}}.
+					.3 \textcolor{black}{\texttt{3}}.
+					.3 \textcolor{black}{\texttt{b}}.
+			}
+        \end{column}
+	\end{columns}
+\end{frame}
+
+
+%neuer versuch matche faktor _x
+\begin{frame}[fragile, noframenumbering]{Beispiel}
+	Matche $p =$\verb~ prod(pow(_x, _y), _x, zs...)~ in 
+	$t =$\verb~ prod(pow(a, 2), pow(sum(3, b), 4), sum(3, b))~
+	~\\
+	\begin{columns}[c] %t für align nach oben
+		\scriptsize
+        \begin{column}{0.3\textwidth}	
+			\dirtree{%
+			.1 \textcolor{green}{\texttt{prod}}.
+				.2 \textcolor{green}{\texttt{pow}}.
+					.3 \textcolor{green}{\texttt{\char`_x}}.
+					.3 \textcolor{green}{\texttt{\char`_y}}.
+				.2 \textcolor{cyan}{\texttt{\char`_x}}.		
+				.2 \texttt{zs...}.
+			}
+			~\\~\\
+			\begin{tabular} {c|c}
+			\multicolumn{2}{c}{Matchstatus}\\
+			\hline
+			\verb~_x~      & \textcolor{green}{\verb~sum(3, b)~}            \\
+			\verb~_y~      & \textcolor{green}{\verb~4~}            \\
+			\verb~zs...~   & -            
+			\end{tabular}
+        \end{column}
+		
+        \begin{column}{0.3\textwidth}	
+			\dirtree{%
+			.1 \textcolor{green}{\texttt{prod}}.		
+				.2 \textcolor{black}{\texttt{pow}}.
+					.3 \textcolor{black}{\texttt{a}}.
+					.3 \textcolor{black}{\texttt{2}}.
+				.2 \textcolor{green}{\texttt{pow}}.
+					.3 \textcolor{green}{\texttt{sum}}.
+						.4 \textcolor{green}{\texttt{3}}.
+						.4 \textcolor{green}{\texttt{b}}.
+					.3 \textcolor{green}{\texttt{4}}.
+				.2 \textcolor{cyan}{\texttt{sum}}.
+					.3 \textcolor{cyan}{\texttt{3}}.
+					.3 \textcolor{cyan}{\texttt{b}}.
+			}
+        \end{column}
+	\end{columns}
+\end{frame}
+
+%erfolg!
+\begin{frame}[fragile, noframenumbering]{Beispiel}
+	Matche $p =$\verb~ prod(pow(_x, _y), _x, zs...)~ in 
+	$t =$\verb~ prod(pow(a, 2), pow(sum(3, b), 4), sum(3, b))~
+	~\\
+	\begin{columns}[c] %t für align nach oben
+		\scriptsize
+        \begin{column}{0.3\textwidth}	
+			\dirtree{%
+			.1 \textcolor{green}{\texttt{prod}}.
+				.2 \textcolor{green}{\texttt{pow}}.
+					.3 \textcolor{green}{\texttt{\char`_x}}.
+					.3 \textcolor{green}{\texttt{\char`_y}}.
+				.2 \textcolor{green}{\texttt{\char`_x}}.		
+				.2 \texttt{zs...}.
+			}
+			~\\~\\
+			\begin{tabular} {c|c}
+			\multicolumn{2}{c}{Matchstatus}\\
+			\hline
+			\verb~_x~      & \textcolor{green}{\verb~sum(3, b)~}            \\
+			\verb~_y~      & \textcolor{green}{\verb~4~}            \\
+			\verb~zs...~   & \verb~pow(a, 2)~            
+			\end{tabular}
+        \end{column}
+		
+        \begin{column}{0.3\textwidth}	
+			\dirtree{%
+			.1 \textcolor{green}{\texttt{prod}}.		
+				.2 \textcolor{black}{\texttt{pow}}.
+					.3 \textcolor{black}{\texttt{a}}.
+					.3 \textcolor{black}{\texttt{2}}.
+				.2 \textcolor{green}{\texttt{pow}}.
+					.3 \textcolor{green}{\texttt{sum}}.
+						.4 \textcolor{green}{\texttt{3}}.
+						.4 \textcolor{green}{\texttt{b}}.
+					.3 \textcolor{green}{\texttt{4}}.
+				.2 \textcolor{green}{\texttt{sum}}.
+					.3 \textcolor{green}{\texttt{3}}.
+					.3 \textcolor{green}{\texttt{b}}.
+			}
+        \end{column}
+	\end{columns}
+\end{frame}
+
+
+
+
+

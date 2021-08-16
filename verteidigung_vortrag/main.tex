@@ -1,5 +1,9 @@
 \documentclass{beamer}
-\usetheme{Frankfurt}
+\usetheme{Madrid}
+
+\setbeamertemplate{navigation symbols}{}
+%\setbeamertemplate{footline}[frame number]
+%\setbeamertemplate{headline}{}
 
 \usepackage[utf8]{inputenc}
 
@@ -19,10 +23,6 @@ style=alphabetic,
 
 \usepackage{multicol}
 
-\setbeamertemplate{navigation symbols}{}
-\setbeamertemplate{footline}[frame number]
-%\setbeamertemplate{headline}{}
-
 \usepackage[ngerman]{babel}
 \usepackage{csquotes}
 
@@ -39,7 +39,7 @@ style=alphabetic,
 
 
 
-\title{Entwicklung eines Termersetzungssystems für
+\title[Entwicklung eines Termersetzungssystems]{Entwicklung eines Termersetzungssystems für
 assoziative und kommutative Ausdrücke}
 \subtitle{Vortrag zur Bachelorarbeit}
 \author{Bruno Borchardt}
@@ -281,49 +281,7 @@ diff(3 + t + a, t)
 
 %------------------------------------------------------------------------
 
-\begin{frame}[fragile]{Beispiel}
-	Matche $p =$\verb~ prod(_x, pow(_x, _y), zs...)~ in 
-	$t =$\verb~ prod(pow(a, 2), pow(sum(3, b), 4), sum(3, b))~
-	~\\
-	\begin{columns}[c] %t für align nach oben
-		\scriptsize
-        \begin{column}{0.3\textwidth}	
-			\dirtree{%
-			.1 \texttt{prod}.
-				.2 \texttt{\char`_x}.		
-				.2 \texttt{pow}.
-					.3 \texttt{\char`_x}.
-					.3 \texttt{\char`_y}.
-				.2 \texttt{zs...}.
-			}
-			~\\~\\
-			\begin{tabular} {c|c}
-			\multicolumn{2}{c}{Matchstatus}\\
-			\hline
-			\verb~_x~      & -            \\
-			\verb~_y~      & -            \\
-			\verb~zs...~   & -            
-			\end{tabular}
-        \end{column}
-		
-        \begin{column}{0.3\textwidth}	
-			\dirtree{%
-			.1 \texttt{prod}.		
-				.2 \texttt{pow}.
-					.3 \texttt{a}.
-					.3 \texttt{2}.
-				.2 \texttt{pow}.
-					.3 \texttt{sum}.
-						.4 \texttt{3}.
-						.4 \texttt{b}.
-					.3 \texttt{4}.
-				.2 \texttt{sum}.
-					.3 \texttt{3}.
-					.3 \texttt{b}.
-			}
-        \end{column}
-	\end{columns}
-\end{frame}
+\include{src/algo_bsp}
 
 %------------------------------------------------------------------------
 
