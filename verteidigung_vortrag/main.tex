@@ -54,6 +54,11 @@ assoziative und kommutative Ausdrücke}
   \endgroup
 }
 
+
+%\paren*{a + b} skaliert automatisch klammern um a + b
+\DeclarePairedDelimiter\paren{(}{)} 
+\DeclarePairedDelimiter\curl{\{}{\}}
+
 \begin{document}
 
 %------------------------------------------------------------------------
@@ -76,8 +81,18 @@ assoziative und kommutative Ausdrücke}
 %------------------------------------------------------------------------
 
 \section{Motivation}
-\begin{frame}[fragile]{Motivation}
-	hi.
+\begin{frame}{Motivation}
+	\begin{itemize}
+		\item{Ziel: vereinfache mathematische Ausdrücke automatisch, 
+			etwa $\sin\paren{\frac{21}{2} \pi}$ zu (exakt) $1$ 
+			oder $x^2 + 5 x y - 12 x y$ zu $x^2 - 7 x y$}
+		\pause
+		\item{Problem: Computer kennen keine mathematischen Gesetzmäßigkeiten}
+		\pause
+		\item{Idee: formuliere Vereinfachungsregeln}
+		\pause
+		\item{Mathematica ist Beispiel einer kommerziellen Umsetzung}
+	\end{itemize}
 \end{frame}
 
 %------------------------------------------------------------------------
@@ -90,8 +105,8 @@ assoziative und kommutative Ausdrücke}
 		Terme sind
 		\begin{itemize}
 			\item{\emph{Konstantensymbole}, etwa \verb~1~, \verb~-3i~, \verb~a~, \verb~sin~}
-			\item{oder \emph{Funktionsanwendungen} eines Terms $f$ auf die Terme $t_1, \dots, t_n$, geschrieben
-			$f(t_1, \dots t_n)$, etwa \verb~sin(3)~}
+			\item{oder \emph{Funktionsanwendungen} eines Terms $f$ auf die Terme 
+				$t_1, \dots, t_n$, geschrieben $f(t_1, \dots, t_n)$, etwa \verb~sin(3)~}
 		\end{itemize}
 	\end{block}		
 	~\\~\\
@@ -133,13 +148,13 @@ assoziative und kommutative Ausdrücke}
 	\begin{columns}[c] 
 		\footnotesize
         \begin{column}{0.45\textwidth}			
-			\Tree [.{\dots} [ \verb~sum~ \qroof{~~~~$x$~~~~}. \qroof{~~~~$x$~~~~}. ] ] 
+			\Tree [.{\dots} [ \verb~sum~ \qroof{~~~\texttt{\char`_x}~~~}. \qroof{~~~\texttt{\char`_x}~~~}. ] ] 
         \end{column}
         \begin{column}{0.0001\textwidth}
 			$\rightarrow$
         \end{column}
         \begin{column}{0.45\textwidth}	
-			\Tree [.{\dots} [ \verb~prod~ \verb~2~ \qroof{~~~~$x$~~~~}. ] ]
+			\Tree [.{\dots} [ \verb~prod~ \verb~2~ \qroof{~~~\texttt{\char`_x}~~~}. ] ]
         \end{column}
 	\end{columns}
 	~\\
@@ -195,14 +210,14 @@ assoziative und kommutative Ausdrücke}
 	~\\
 	\begin{columns}[c] 
 		\scriptsize
-        \begin{column}{0.45\textwidth}			
-			\Tree [ \verb~sum~ \qroof{~~~~$x$~~~~}. \qroof{~~~~$x$~~~~}. {\ldots}  ] 
+        \begin{column}{0.49\textwidth}			
+			\Tree [ \verb~sum~ \qroof{~~~\texttt{\char`_x}~~~}. \qroof{~~~\texttt{\char`_x}~~~}. {\texttt{ys...}}  ] 
         \end{column}
         \begin{column}{0.0001\textwidth}
 			$\rightarrow$
         \end{column}
-        \begin{column}{0.45\textwidth}	
-			\Tree [ \verb~sum~ [ \verb~prod~ \verb~2~ \qroof{~~~~$x$~~~~}. ] {\dots} ]
+        \begin{column}{0.49\textwidth}	
+			\Tree [ \verb~sum~ [ \verb~prod~ \verb~2~ \qroof{~~~\texttt{\char`_x}~~~}. ] {\texttt{ys...}} ]
         \end{column}
 	\end{columns}
 \end{frame}
@@ -237,10 +252,6 @@ diff(3 + t + a, t)
 :add diff(_y, _x) | !contains(_y, _x) = 0
 
 :add diff(_x, _x) = 1
-
-:memory 1
-
-:verb 1
 		\end{verbatim}
 	\end{block}
 \end{frame}
@@ -285,30 +296,33 @@ diff(3 + t + a, t)
 
 %------------------------------------------------------------------------
 
-\begin{frame}[fragile]{Aufbau}
+\begin{frame}{Demo}
+\end{frame}
 
-
-	Konkrete Programmstrukturen
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------
+%------------------------------------------------------------------------
+\section{Zusammenfassung}
+\begin{frame}{Zusammenfassung}
 	\begin{itemize}
-		\item{Matchvariablen sind über einen Index identifiziert}
-		\item{Match $v$ als Tabelle der Funktionswerte für entsprechende Indices (Name im Programm ist \verb~match::State~)}
+		\item{Terme als Baumstrukturen}
+		\item{Ersetzungsregeln als Paare von Mustertermen}
+		\item{Mustererkennung für assoziative und kommutative Funktionen teilweise rechenintensiv}
+		\begin{itemize}
+			\item{Assoziativität indirekt über Multi-Mustervariablen ausgedrückt}
+			\item{Kommutativität direkt berücksichtigt}
+			\item{Backtracking}
+		\end{itemize}
 	\end{itemize}
 \end{frame}
 
 %------------------------------------------------------------------------
 
-%------------------------------------------------------------------------
-
-%------------------------------------------------------------------------
-
-%------------------------------------------------------------------------
-%------------------------------------------------------------------------
-%------------------------------------------------------------------------
-\section{Fazit}
-\begin{frame}{Fazit}
-	\begin{itemize}
-		\item{\emph{heehee}}
-	\end{itemize}
+\begin{frame}[plain, noframenumbering]
+	\begin{center}
+		\Huge
+		Fragen?
+	\end{center}
 \end{frame}
 
 %------------------------------------------------------------------------
