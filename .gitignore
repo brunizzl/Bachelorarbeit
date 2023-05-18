@@ -34,3 +34,5 @@ _minted-main/
 *.vrb
 
 
+text/main.fdb_latexmk
+text/main.fls
